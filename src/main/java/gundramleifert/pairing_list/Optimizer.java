@@ -1,12 +1,12 @@
-package gundram.leifert.pairing_list;
+package gundramleifert.pairing_list;
 
-import gundram.leifert.pairing_list.configs.DisplayProps;
-import gundram.leifert.pairing_list.configs.OptimizationProps;
-import gundram.leifert.pairing_list.configs.ScheduleProps;
-import gundram.leifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
-import gundram.leifert.pairing_list.cost_calculators.CostCalculatorMatchMatrix;
-import gundram.leifert.pairing_list.cost_calculators.ICostCalculator;
-import gundram.leifert.pairing_list.types.Schedule;
+import gundramleifert.pairing_list.configs.DisplayProps;
+import gundramleifert.pairing_list.configs.OptimizationProps;
+import gundramleifert.pairing_list.configs.ScheduleProps;
+import gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
+import gundramleifert.pairing_list.cost_calculators.CostCalculatorMatchMatrix;
+import gundramleifert.pairing_list.cost_calculators.ICostCalculator;
+import gundramleifert.pairing_list.types.Schedule;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -214,11 +214,7 @@ public class Optimizer {
         Optimizer optimizer = new Optimizer();
         optimizer.init(scheduleProps, optimizationProps);
         schedule = optimizer.optimizeMatchMatrix(schedule);
-        System.out.println("before shuffle:");
-        Util.printCount(scheduleProps, schedule);
         schedule = Util.shuffleBoats(schedule, new Random(optimizationProps.seed));
-        System.out.println("after shuffle:");
-        Util.printCount(scheduleProps, schedule);
         schedule = optimizer.optimizeBoatSchedule(schedule);
 
         String outputValue = cmd.getOptionValue(output);

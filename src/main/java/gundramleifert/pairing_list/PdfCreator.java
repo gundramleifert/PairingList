@@ -1,4 +1,4 @@
-package gundram.leifert.pairing_list;
+package gundramleifert.pairing_list;
 
 import com.itextpdf.kernel.colors.Color;
 import com.itextpdf.kernel.colors.ColorConstants;
@@ -13,13 +13,13 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import gundram.leifert.pairing_list.configs.DisplayProps;
-import gundram.leifert.pairing_list.configs.ScheduleProps;
-import gundram.leifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
-import gundram.leifert.pairing_list.types.BoatMatrix;
-import gundram.leifert.pairing_list.types.Flight;
-import gundram.leifert.pairing_list.types.Race;
-import gundram.leifert.pairing_list.types.Schedule;
+import gundramleifert.pairing_list.configs.DisplayProps;
+import gundramleifert.pairing_list.configs.ScheduleProps;
+import gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
+import gundramleifert.pairing_list.types.BoatMatrix;
+import gundramleifert.pairing_list.types.Flight;
+import gundramleifert.pairing_list.types.Race;
+import gundramleifert.pairing_list.types.Schedule;
 import lombok.SneakyThrows;
 
 import java.io.File;
@@ -250,6 +250,10 @@ public class PdfCreator implements AutoCloseable {
                 .collect(Collectors.joining(", "));
     }
 
+    private static String toCount(List<Byte> lst) {
+        return lst.size()>0?String.valueOf(lst.size()):"";
+    }
+
     @SneakyThrows
     public void create(Schedule schedule) {
         init();
@@ -330,7 +334,7 @@ public class PdfCreator implements AutoCloseable {
         for (int i = 1; i < schedule.flights.length; i++) {
             CostCalculatorBoatSchedule.InterFlightStat interFlightStat =
                     CostCalculatorBoatSchedule.getInterFlightStat(schedule.flights[i - 1], schedule.flights[i]);
-            table.addCell(getCell(String.valueOf(i + 1)));
+            table.addCell(getCell(String.format("%d -> %d", i,i + 1)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsStayOnBoat)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsAtWaterAtLastRace)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsAtWaterAtFirstRace)));

@@ -1,9 +1,9 @@
-package gundram.leifert.pairing_list;
+package gundramleifert.pairing_list;
 
-import gundram.leifert.pairing_list.configs.ScheduleProps;
-import gundram.leifert.pairing_list.types.Flight;
-import gundram.leifert.pairing_list.types.Race;
-import gundram.leifert.pairing_list.types.Schedule;
+import gundramleifert.pairing_list.configs.ScheduleProps;
+import gundramleifert.pairing_list.types.Flight;
+import gundramleifert.pairing_list.types.Race;
+import gundramleifert.pairing_list.types.Schedule;
 
 import java.util.*;
 

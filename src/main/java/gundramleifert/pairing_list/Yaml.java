@@ -1,4 +1,4 @@
-package gundram.leifert.pairing_list;
+package gundramleifert.pairing_list;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import gundram.leifert.pairing_list.types.Race;
+import gundramleifert.pairing_list.types.Race;
 
 import java.io.IOException;
 

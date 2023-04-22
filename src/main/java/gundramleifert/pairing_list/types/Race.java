@@ -1,4 +1,4 @@
-package gundram.leifert.pairing_list.types;
+package gundramleifert.pairing_list.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

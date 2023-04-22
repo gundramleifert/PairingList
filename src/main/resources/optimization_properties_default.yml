@@ -12,10 +12,4 @@ optBoatUsage:
     weightChangeBetweenBoats: 5.0
     swapBoats: 200
     swapRaces: 200
-  - loops: 3000
-    individuals: 700
-    weightStayOnBoat: 3.0
-    weightStayOnShuttle: 1.5
-    weightChangeBetweenBoats: 5.0
-    swapBoats: 200
-    swapRaces: 000
+

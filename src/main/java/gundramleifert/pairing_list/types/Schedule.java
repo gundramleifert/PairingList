@@ -1,8 +1,8 @@
-package gundram.leifert.pairing_list.types;
+package gundramleifert.pairing_list.types;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import gundram.leifert.pairing_list.Yaml;
+import gundramleifert.pairing_list.Yaml;
 
 import java.io.File;
 import java.io.IOException;

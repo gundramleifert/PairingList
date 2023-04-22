@@ -1,10 +1,10 @@
-package gundram.leifert.pairing_list.configs;
+package gundramleifert.pairing_list.configs;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gundram.leifert.pairing_list.Optimizer;
-import gundram.leifert.pairing_list.Yaml;
+import gundramleifert.pairing_list.Optimizer;
+import gundramleifert.pairing_list.Yaml;
 
 import java.io.File;
 import java.io.IOException;

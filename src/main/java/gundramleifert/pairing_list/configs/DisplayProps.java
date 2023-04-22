@@ -1,11 +1,11 @@
-package gundram.leifert.pairing_list.configs;
+package gundramleifert.pairing_list.configs;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.kernel.colors.DeviceRgb;
-import gundram.leifert.pairing_list.Optimizer;
-import gundram.leifert.pairing_list.Yaml;
+import gundramleifert.pairing_list.Optimizer;
+import gundramleifert.pairing_list.Yaml;
 
 import java.io.File;
 import java.io.IOException;
@@ -111,13 +111,4 @@ public class DisplayProps {
 
     }
 
-    public static class ColorProps {
-        @JsonProperty
-        int[] rgba;
-
-        public DeviceRgbWithAlpha getColor() {
-            return DeviceRgbWithAlpha.fromArray(rgba);
-        }
-
-    }
 }

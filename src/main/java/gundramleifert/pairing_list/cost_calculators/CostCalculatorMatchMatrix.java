@@ -1,11 +1,11 @@
-package gundram.leifert.pairing_list.cost_calculators;
+package gundramleifert.pairing_list.cost_calculators;
 
-import gundram.leifert.pairing_list.MatchMatrix;
-import gundram.leifert.pairing_list.configs.ScheduleProps;
-import gundram.leifert.pairing_list.types.Flight;
-import gundram.leifert.pairing_list.types.Schedule;
+import gundramleifert.pairing_list.MatchMatrix;
+import gundramleifert.pairing_list.configs.ScheduleProps;
+import gundramleifert.pairing_list.types.Flight;
+import gundramleifert.pairing_list.types.Schedule;
 
-import static gundram.leifert.pairing_list.FlightWeight.getFlightWeight;
+import static gundramleifert.pairing_list.FlightWeight.getFlightWeight;
 
 public class CostCalculatorMatchMatrix implements ICostCalculator {
 

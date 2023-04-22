@@ -1,8 +1,8 @@
-package gundram.leifert.pairing_list.types;
+package gundramleifert.pairing_list.types;
 
-import gundram.leifert.pairing_list.configs.ScheduleProps;
-import gundram.leifert.pairing_list.types.Flight;
-import gundram.leifert.pairing_list.types.Race;
+import gundramleifert.pairing_list.configs.ScheduleProps;
+import gundramleifert.pairing_list.types.Flight;
+import gundramleifert.pairing_list.types.Race;
 
 public class BoatMatrix {
     public byte[][] mat;
