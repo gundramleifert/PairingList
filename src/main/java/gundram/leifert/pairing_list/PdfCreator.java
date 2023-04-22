@@ -113,9 +113,13 @@ public class PdfCreator implements AutoCloseable {
 
 
     private Cell getDft(int row, int col) {
-        return new Cell(row, col)
+        Cell cell = new Cell(row, col)
                 .setPadding(0.0f)
                 .setFontSize(displayProps.fontsize);
+        if (row * col == 1) {
+            //cell.setMaxHeight(displayProps.cell_height);
+        }
+        return cell;
     }
 
     public static Cell emph(Cell cell, Color colorFg) {
@@ -139,11 +143,17 @@ public class PdfCreator implements AutoCloseable {
     }
 
     private Cell getCell(String text, int index) {
+        return getCell(text, index, 1.0f);
+    }
+
+    private Cell getCell(String text, int index, float opacity) {
         Cell cell = getCell(text);
         if (index >= 0) {
-        DisplayProps.DeviceRgbWithAlpha bgColor = bgColors[index];
-            cell.setBackgroundColor(bgColor,bgColor.alpha)
-                    .setFontColor(fgColors[index]);
+            DisplayProps.DeviceRgbWithAlpha bgColor = bgColors[index];
+            float v = (1 - (1 - avg(bgColor)) * bgColor.alpha * opacity);
+            DisplayProps.DeviceRgbWithAlpha fg = v > 0.3f ? DisplayProps.DeviceRgbWithAlpha.BLACK : DisplayProps.DeviceRgbWithAlpha.WHITE;
+            cell.setBackgroundColor(bgColor, bgColor.alpha * opacity)
+                    .setFontColor(fg);
         }
         return cell;
     }
@@ -252,7 +262,7 @@ public class PdfCreator implements AutoCloseable {
         if (displayProps.show_schuttle_stat) {
             createShuttleDistribution(schedule);
         }
-        createSchedule(schedule, "");
+        createSchedule(schedule, null);
         if (displayProps.teamwise_list) {
             for (int i = 0; i < scheduleProps.teams.length; i++) {
                 createSchedule(schedule, scheduleProps.teams[i]);
@@ -336,9 +346,10 @@ public class PdfCreator implements AutoCloseable {
             Schedule schedule,
             String emphClub) {
         newPage(false);
-        int columns = scheduleProps.numBoats + 2;
-        float[] columnWidths = new float[columns];
-        Arrays.fill(columnWidths, displayProps.width / columns);
+        float[] columnWidths = new float[scheduleProps.numBoats + 2];
+        double basewith = displayProps.width / (scheduleProps.numBoats + 2 * displayProps.factor_flight_race_width);
+        Arrays.fill(columnWidths, 2, columnWidths.length, (float) basewith);
+        Arrays.fill(columnWidths, 0, 2, (float) (basewith * displayProps.factor_flight_race_width));
         Table table = new Table(columnWidths);
         table.addCell(getCell("Flight", -1));
         table.addCell(getCell("Race", -1));
@@ -357,13 +368,11 @@ public class PdfCreator implements AutoCloseable {
                 int col = 0;
                 for (; col < r.teams.length; col++) {
                     String team = clubs[r.teams[col]];
-                    Cell cell = getCell(team, col);
-                    if (team.equals(emphClub)) {
-                        cell = emph(cell, fgColors[col]);
-                    }
+                    float opacity = emphClub != null && !team.equals(emphClub) ? 0.5f : 1.0f;
+                    Cell cell = getCell(team, col, opacity);
                     table.addCell(cell);
                 }
-                while (col < columns - 2) {
+                while (col < scheduleProps.numBoats) {
                     //add empty cell
                     table.addCell(getCell("", col++));
                 }

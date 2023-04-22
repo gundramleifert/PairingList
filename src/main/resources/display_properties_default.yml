@@ -1,8 +1,11 @@
 title: Pairing List
-fontsize: 10
+fontsize: 8
 tablewidth: 600
+cell_height: 20
+factor_flight_race_width: 0.5
 show_match_stat: true
 show_boat_stat: true
 show_schuttle_stat: true
+teamwise_list: true
 additional_colors:
   "WOHOO": [234,23,55]

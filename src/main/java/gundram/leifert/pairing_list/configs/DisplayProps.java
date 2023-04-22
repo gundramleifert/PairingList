@@ -3,13 +3,10 @@ package gundram.leifert.pairing_list.configs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itextpdf.kernel.colors.Color;
-import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import gundram.leifert.pairing_list.Optimizer;
 import gundram.leifert.pairing_list.Yaml;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -45,7 +42,9 @@ public class DisplayProps {
     @JsonProperty
     public String title;
     @JsonProperty
-    public float fontsize = 10;
+    public int fontsize = 10;
+    @JsonProperty
+    public int cell_height = 5;
     @JsonProperty
     public float width = 600f;
 
@@ -60,6 +59,9 @@ public class DisplayProps {
 
     @JsonProperty
     public boolean teamwise_list = false;
+
+    @JsonProperty
+    public double factor_flight_race_width = 1.0;
 
     @JsonProperty
     public Map<String, int[]> additional_colors = new HashMap<>();
@@ -107,10 +109,6 @@ public class DisplayProps {
             alpha = a;
         }
 
-        private DeviceRgbWithAlpha(int r, int g, int b, float a) {
-            super(r, g, b);
-            alpha = a;
-        }
     }
 
     public static class ColorProps {

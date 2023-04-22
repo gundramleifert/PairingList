@@ -1,14 +1,21 @@
 seed: 1235
 optMatchMatrix:
-  - loops: 1000
+  - loops: 10000
     individuals: 100
     swapTeams: 50
     merges: 50
 optBoatUsage:
-  - loops: 5000
+  - loops: 2000
     individuals: 500
-    weightStayOnBoat: 6.0
-    weightStayOnShuttle: 3.0
-    weightChangeBetweenBoats: 20.0
+    weightStayOnBoat: 3.0
+    weightStayOnShuttle: 1.5
+    weightChangeBetweenBoats: 5.0
     swapBoats: 200
     swapRaces: 200
+  - loops: 3000
+    individuals: 700
+    weightStayOnBoat: 3.0
+    weightStayOnShuttle: 1.5
+    weightChangeBetweenBoats: 5.0
+    swapBoats: 200
+    swapRaces: 000
