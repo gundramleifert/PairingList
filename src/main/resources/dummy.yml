@@ -1,0 +1,29 @@
+flights: 16
+fontsize: 9.0
+title: "Pairing-Liste 1. Spieltag 2023 Berlin"
+teams:
+  - "A"
+  - "B"
+  - "C"
+  - "D"
+  - "E"
+  - "F"
+  - "G"
+  - "H"
+  - "I"
+  - "J"
+  - "K"
+  - "L"
+  - "M"
+  - "N"
+  - "O"
+  - "P"
+  - "Q"
+  - "R"
+boats:
+  - RED
+  - GREEN
+  - BLUE
+  - YELLOW
+  - BLACK
+  - DARK_GRAY

@@ -1,0 +1,29 @@
+flights: 16
+fontsize: 9.0
+title: "Pairingliste 1. Spieltag 2023 Berlin"
+teams:
+  - "ASVW"
+  - "WSC"
+  - "VSAW"
+  - "FSC"
+  - "WYC"
+  - "MSC"
+  - "NRV"
+  - "PYC"
+  - "KAR"
+  - "NRS"
+  - "SV03"
+  - "BSC(HH)"
+  - "RSC92"
+  - "BSC(BA)"
+  - "SVI"
+  - "KYC"
+  - "ONE KIEL"
+  - "DYC"
+boats:
+  - RED
+  - GREEN
+  - BLUE
+  - YELLOW
+  - BLACK
+  - DARK_GRAY
