@@ -1,6 +1,13 @@
 package gundram.leifert.pairing_list;
 
+import gundram.leifert.pairing_list.configs.DisplayProps;
+import gundram.leifert.pairing_list.configs.OptimizationProps;
+import gundram.leifert.pairing_list.configs.ScheduleProps;
+import gundram.leifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
+import gundram.leifert.pairing_list.cost_calculators.CostCalculatorMatchMatrix;
+import gundram.leifert.pairing_list.cost_calculators.ICostCalculator;
 import gundram.leifert.pairing_list.types.Schedule;
+import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,14 +15,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-public class Environment {
+public class Optimizer {
     private ScheduleProps properties;
-    private OptimizationProperties optProps;
+    private OptimizationProps optProps;
     private Random r;
 
-    public void init(ScheduleProps properties, OptimizationProperties optimizationProperties) throws Exception {
+    public void init(ScheduleProps properties, OptimizationProps optimizationProps) throws Exception {
         this.properties = properties;
-        this.optProps = optimizationProperties;
+        this.optProps = optimizationProps;
         r = new Random(optProps.seed);
 
     }
@@ -28,7 +35,7 @@ public class Environment {
         List<Schedule> schedules = new ArrayList<>();
         schedules.add(schedule);
         final CostCalculatorMatchMatrix scorer = new CostCalculatorMatchMatrix(properties);
-        for (OptimizationProperties.OptMatchMatrix optMatchMatrix : optProps.optMatchMatrix) {
+        for (OptimizationProps.OptMatchMatrix optMatchMatrix : optProps.optMatchMatrix) {
             for (int i = 0; i < optMatchMatrix.loops; i++) {
                 for (int j = 0; j < optMatchMatrix.swapTeams; j++) {
                     Schedule mutation = schedules.get(r.nextInt(schedules.size()));
@@ -76,7 +83,7 @@ public class Environment {
     public Schedule optimizeBoatSchedule(Schedule schedule) throws Exception {
         List<Schedule> schedules = new ArrayList<>();
         schedules.add(schedule);
-        for (OptimizationProperties.OptBoatUsage optBoatUsage : optProps.optBoatUsage) {
+        for (OptimizationProps.OptBoatUsage optBoatUsage : optProps.optBoatUsage) {
             final CostCalculatorBoatSchedule scorer = new CostCalculatorBoatSchedule(properties, optBoatUsage);
             for (int i = 0; i < optBoatUsage.loops; i++) {
                 for (int j = 0; j < optBoatUsage.swapBoats; j++) {
@@ -119,34 +126,109 @@ public class Environment {
 
     }
 
-    public void saveSchedule(Schedule schedule, File outSchedule, File outPdf, String markClub) throws Exception {
-        if (outSchedule != null) {
-            schedule.writeYaml(outSchedule);
-        }
-        if (outPdf != null) {
-            new PdfCreator(properties, outPdf)
-                    .createScheduleDistribution(schedule, true)
-                    .createBoatDistribution(schedule)
-                    .createPageSchedule(schedule, markClub == null ? "" : markClub)
-                    .close();
-        }
-
+    public void savePdf(Schedule schedule, File outPdf, DisplayProps displayProps) throws Exception {
+        new PdfCreator(displayProps, properties, outPdf).create(schedule);
     }
 
 
     public static void main(String[] args) throws Exception {
-        Environment environment = new Environment();
-        OptimizationProperties optimizationProperties = OptimizationProperties.readYaml("optprops.yml");
-        ScheduleProps properties = ScheduleProps.readYaml("dummy.yml");
-        environment.init(properties, optimizationProperties);
-        Schedule schedule = Util.getRandomSchedule(properties, new Random(optimizationProperties.seed));
-        schedule = environment.optimizeMatchMatrix(schedule);
+        Options options = new Options();
+
+        Option scheduleConfig = new Option(
+                "s",
+                "schedule_config",
+                true,
+                "the path to the yaml-file containing the schedule configuration");
+        scheduleConfig.setRequired(true);
+        options.addOption(scheduleConfig);
+
+        Option optimizationConfig = new Option(
+                "opt",
+                true,
+                "the path to the yaml-file containing the schedule configuration. If not given, take default configuration");
+        optimizationConfig.setRequired(false);
+        options.addOption(optimizationConfig);
+
+        Option displayConfig = new Option(
+                "d",
+                "display_config",
+                true,
+                "the path to the yaml-file containing the display configuration for the pdf");
+        displayConfig.setRequired(false);
+        options.addOption(displayConfig);
+
+        Option outPdf = new Option(
+                "p",
+                "out_pdf",
+                true,
+                "if given, save the pdf to the given path");
+        displayConfig.setRequired(false);
+        options.addOption(outPdf);
+
+
+        Option input = new Option(
+                "i",
+                "in",
+                true,
+                "if given, start with this configuration (must fit to schedule configuration), otherwise use random.");
+        input.setRequired(false);
+        options.addOption(input);
+
+        Option output = new Option(
+                "o",
+                "out_schedule",
+                true,
+                "if given, save best schedule to this file as yaml-structure");
+        output.setRequired(false);
+        options.addOption(output);
+
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd = null;
+
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("Method to calculate a Pairing List for the Liga-Format", options);
+            System.exit(1);
+        }
+
+        String scheduleConfigValue = cmd.getOptionValue(scheduleConfig, null);
+        if (scheduleConfigValue == null) {
+            throw new ParseException("no schedule configuration given " + scheduleConfig);
+        }
+        ScheduleProps scheduleProps = ScheduleProps.readYaml(scheduleConfigValue);
+
+        String optimizationConfigValue = cmd.getOptionValue(optimizationConfig, "optimization_properties_default.yml");
+        OptimizationProps optimizationProps = OptimizationProps.readYaml(optimizationConfigValue);
+
+        String displayConfigValue = cmd.getOptionValue(displayConfig, "display_properties_default.yml");
+        DisplayProps displayProps = DisplayProps.readYaml(displayConfigValue);
+
+        String inputValue = cmd.getOptionValue(input);
+        Schedule schedule = inputValue == null ?
+                Util.getRandomSchedule(scheduleProps, new Random(optimizationProps.seed)) :
+                Schedule.readYaml(new File(inputValue));
+
+        Optimizer optimizer = new Optimizer();
+        optimizer.init(scheduleProps, optimizationProps);
+        schedule = optimizer.optimizeMatchMatrix(schedule);
         System.out.println("before shuffle:");
-        Util.printCount(properties, schedule);
-        schedule = Util.shuffleBoats(schedule, new Random(optimizationProperties.seed));
+        Util.printCount(scheduleProps, schedule);
+        schedule = Util.shuffleBoats(schedule, new Random(optimizationProps.seed));
         System.out.println("after shuffle:");
-        Util.printCount(properties, schedule);
-        schedule = environment.optimizeBoatSchedule(schedule);
-        environment.saveSchedule(schedule, new File("winner.yml"), new File("res.pdf"), "RSC92");
+        Util.printCount(scheduleProps, schedule);
+        schedule = optimizer.optimizeBoatSchedule(schedule);
+
+        String outputValue = cmd.getOptionValue(output);
+        if (outputValue != null) {
+            schedule.writeYaml(new File(outputValue));
+        }
+
+        String outPdfValue = cmd.getOptionValue(outPdf);
+        if (outPdfValue != null) {
+            new PdfCreator(displayProps, scheduleProps, new File(outPdfValue)).create(schedule);
+        }
     }
 }

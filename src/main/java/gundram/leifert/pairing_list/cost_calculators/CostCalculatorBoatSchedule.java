@@ -1,5 +1,8 @@
-package gundram.leifert.pairing_list;
+package gundram.leifert.pairing_list.cost_calculators;
 
+import gundram.leifert.pairing_list.types.BoatMatrix;
+import gundram.leifert.pairing_list.configs.OptimizationProps;
+import gundram.leifert.pairing_list.configs.ScheduleProps;
 import gundram.leifert.pairing_list.types.Flight;
 import gundram.leifert.pairing_list.types.Race;
 import gundram.leifert.pairing_list.types.Schedule;
@@ -12,7 +15,7 @@ public class CostCalculatorBoatSchedule implements ICostCalculator {
 
     private ScheduleProps properties;
     private double[] flightWeight;
-    private OptimizationProperties.OptBoatUsage optBoatUsage;
+    private OptimizationProps.OptBoatUsage optBoatUsage;
 
     public static class InterFlightStat {
         public ArrayList<Byte> teamsChangeBoats = new ArrayList<>();
@@ -24,7 +27,7 @@ public class CostCalculatorBoatSchedule implements ICostCalculator {
         public int shuttleBetweenFlight;
     }
 
-    public CostCalculatorBoatSchedule(ScheduleProps properties, OptimizationProperties.OptBoatUsage optBoatUsage) {
+    public CostCalculatorBoatSchedule(ScheduleProps properties, OptimizationProps.OptBoatUsage optBoatUsage) {
         this.properties = properties;
         flightWeight = getFlightWeight();
         this.optBoatUsage = optBoatUsage;

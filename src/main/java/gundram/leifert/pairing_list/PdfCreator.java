@@ -13,12 +13,16 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
+import gundram.leifert.pairing_list.configs.DisplayProps;
+import gundram.leifert.pairing_list.configs.ScheduleProps;
+import gundram.leifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
+import gundram.leifert.pairing_list.types.BoatMatrix;
 import gundram.leifert.pairing_list.types.Flight;
 import gundram.leifert.pairing_list.types.Race;
 import gundram.leifert.pairing_list.types.Schedule;
+import lombok.SneakyThrows;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,30 +31,49 @@ import java.util.stream.Collectors;
 
 public class PdfCreator implements AutoCloseable {
 
-    private ScheduleProps properties;
+    private DisplayProps displayProps;
+    private ScheduleProps scheduleProps;
     private File outFile;
     private Document doc;
     private boolean isEmptyPage = true;
-    private static Map<String, Color> colorMap = generateMap();
+    private Map<String, DisplayProps.DeviceRgbWithAlpha> colorMap;
+    private DisplayProps.DeviceRgbWithAlpha[] fgColors;
+    private DisplayProps.DeviceRgbWithAlpha[] bgColors;
 
-    private static Map<String, Color> generateMap() {
-        HashMap<String, Color> res = new HashMap<>();
-        res.put("BLACK", ColorConstants.BLACK);
-        res.put("BLUE", ColorConstants.BLUE);
-        res.put("CYAN", ColorConstants.CYAN);
-        res.put("DARK_GRAY", ColorConstants.DARK_GRAY);
-        res.put("GRAY", ColorConstants.GRAY);
-        res.put("GREEN", ColorConstants.GREEN);
-        res.put("LIGHT_GRAY", ColorConstants.LIGHT_GRAY);
-        res.put("MAGENTA", ColorConstants.MAGENTA);
-        res.put("ORANGE", ColorConstants.ORANGE);
-        res.put("PINK", ColorConstants.PINK);
-        res.put("RED", ColorConstants.RED);
-        res.put("YELLOW", ColorConstants.YELLOW);
+    private static Map<String, DisplayProps.DeviceRgbWithAlpha> createColorMap(DisplayProps displayProps) {
+        Map<String, DisplayProps.DeviceRgbWithAlpha> res = defaultColorMap();
+        if (displayProps.additional_colors == null || displayProps.additional_colors.isEmpty()) {
+            return res;
+        }
+        for (String name : displayProps.additional_colors.keySet()) {
+            if (!name.toUpperCase().equals(name)) {
+                throw new RuntimeException(String.format("color name %s is not upper.", name));
+            }
+            int[] rgba = displayProps.additional_colors.get(name);
+            res.put(name, DisplayProps.DeviceRgbWithAlpha.fromArray(rgba));
+        }
         return res;
     }
 
-    private static float avg(Color color) {
+    private static Map<String, DisplayProps.DeviceRgbWithAlpha> defaultColorMap() {
+        HashMap<String, DisplayProps.DeviceRgbWithAlpha> res = new HashMap<>();
+        res.put("BLACK", DisplayProps.DeviceRgbWithAlpha.fromArray(0));
+        res.put("BLUE", DisplayProps.DeviceRgbWithAlpha.fromArray(0, 0, 255));
+        res.put("CYAN", DisplayProps.DeviceRgbWithAlpha.fromArray(0, 255, 255));
+        res.put("DARK_GRAY", DisplayProps.DeviceRgbWithAlpha.fromArray(64));
+        res.put("GRAY", DisplayProps.DeviceRgbWithAlpha.fromArray(128));
+        res.put("GREEN", DisplayProps.DeviceRgbWithAlpha.fromArray(0, 255, 0));
+        res.put("LIGHT_GRAY", DisplayProps.DeviceRgbWithAlpha.fromArray(192));
+        res.put("MAGENTA", DisplayProps.DeviceRgbWithAlpha.fromArray(255, 0, 255));
+        res.put("ORANGE", DisplayProps.DeviceRgbWithAlpha.fromArray(255, 200, 0));
+        res.put("PINK", DisplayProps.DeviceRgbWithAlpha.fromArray(255, 175, 175));
+        res.put("RED", DisplayProps.DeviceRgbWithAlpha.fromArray(255, 0, 0));
+        res.put("YELLOW", DisplayProps.DeviceRgbWithAlpha.fromArray(255, 255, 0));
+        res.put("WHITE", DisplayProps.DeviceRgbWithAlpha.fromArray(255));
+        return res;
+    }
+
+    private static float avg(DisplayProps.DeviceRgbWithAlpha color) {
         float[] f = color.getColorValue();
         float res = 0;
         for (int i = 0; i < f.length; i++) {
@@ -59,39 +82,40 @@ public class PdfCreator implements AutoCloseable {
         return res / f.length;
     }
 
-    public PdfCreator(ScheduleProps properties,
+    public PdfCreator(DisplayProps displayProps,
+                      ScheduleProps scheduleProps,
                       File outFile) {
-        this.properties = properties;
+        this.displayProps = displayProps;
+        this.scheduleProps = scheduleProps;
         this.outFile = outFile;
-        try {
-            PdfWriter writer = new PdfWriter(this.outFile);
-            this.doc = new Document(new PdfDocument(writer));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    }
 
-        String[] colors = properties.boats;
-        this.fgColors = new Color[colors.length];
-        this.bgColors = new Color[colors.length];
+    @SneakyThrows
+    public void init() {
+        PdfWriter writer = new PdfWriter(this.outFile);
+        this.doc = new Document(new PdfDocument(writer));
+
+        String[] colors = scheduleProps.boats;
+        this.fgColors = new DisplayProps.DeviceRgbWithAlpha[colors.length];
+        this.bgColors = new DisplayProps.DeviceRgbWithAlpha[colors.length];
+        colorMap = createColorMap(displayProps);
         for (int i = 0; i < colors.length; i++) {
-            Color color = colorMap.getOrDefault(colors[i].toUpperCase(), null);
+            DisplayProps.DeviceRgbWithAlpha color = colorMap.getOrDefault(colors[i].toUpperCase(), null);
             if (color == null) {
                 throw new RuntimeException(String.format("cannot interpret key `%s` - choose one of %s",
                         colors[i],
                         String.join(",", colorMap.keySet())));
             }
             bgColors[i] = color;
-            fgColors[i] = avg(color) > 0.3 ? ColorConstants.BLACK : ColorConstants.WHITE;
+            fgColors[i] = avg(color) > 0.3 ? DisplayProps.DeviceRgbWithAlpha.BLACK : DisplayProps.DeviceRgbWithAlpha.WHITE;
         }
     }
 
-    private Color[] fgColors;
-    private Color[] bgColors;
 
     private Cell getDft(int row, int col) {
         return new Cell(row, col)
                 .setPadding(0.0f)
-                .setFontSize(properties.fontsize);
+                .setFontSize(displayProps.fontsize);
     }
 
     public static Cell emph(Cell cell, Color colorFg) {
@@ -117,7 +141,8 @@ public class PdfCreator implements AutoCloseable {
     private Cell getCell(String text, int index) {
         Cell cell = getCell(text);
         if (index >= 0) {
-            cell.setBackgroundColor(bgColors[index])
+        DisplayProps.DeviceRgbWithAlpha bgColor = bgColors[index];
+            cell.setBackgroundColor(bgColor,bgColor.alpha)
                     .setFontColor(fgColors[index]);
         }
         return cell;
@@ -162,8 +187,8 @@ public class PdfCreator implements AutoCloseable {
 
     public PdfCreator createScheduleDistribution(Schedule schedule, boolean sortBoats) {
         newPage(false);
-        MatchMatrix matchMatrix = new MatchMatrix(this.properties.numTeams);
-        int[][] values = new int[properties.flights][properties.flights + 1];
+        MatchMatrix matchMatrix = new MatchMatrix(scheduleProps.numTeams);
+        int[][] values = new int[scheduleProps.flights][scheduleProps.flights + 1];
         for (int i = 0; i < schedule.flights.length; i++) {
             Flight flight = schedule.flights[i];
             matchMatrix.add(flight, sortBoats);
@@ -180,7 +205,7 @@ public class PdfCreator implements AutoCloseable {
             }
         }
         float[] columnWidths = new float[columns];
-        Arrays.fill(columnWidths, properties.width / columns);
+        Arrays.fill(columnWidths, displayProps.width / columns);
         Table table = new Table(columnWidths);
         table.addCell(getCell(""));
         table.addCell(getCell("number of matches", 1, columns - 1));
@@ -207,23 +232,45 @@ public class PdfCreator implements AutoCloseable {
         isEmptyPage = false;
         return this;
     }
-    private static String toString(String[] teams, List<Byte> lst){
+
+    private static String toString(String[] teams, List<Byte> lst) {
         return lst
                 .stream()
                 .map(aByte -> teams[aByte])
                 .collect(Collectors.joining(", "));
     }
 
+    @SneakyThrows
+    public void create(Schedule schedule) {
+        init();
+        if (displayProps.show_match_stat) {
+            createScheduleDistribution(schedule, true);
+        }
+        if (displayProps.show_boat_stat) {
+            createBoatDistribution(schedule);
+        }
+        if (displayProps.show_schuttle_stat) {
+            createShuttleDistribution(schedule);
+        }
+        createSchedule(schedule, "");
+        if (displayProps.teamwise_list) {
+            for (int i = 0; i < scheduleProps.teams.length; i++) {
+                createSchedule(schedule, scheduleProps.teams[i]);
+            }
+        }
+        close();
+    }
+
     public PdfCreator createBoatDistribution(Schedule schedule) {
         newPage(false);
-        BoatMatrix matchMatrix = new BoatMatrix(properties);
-        int[][] values = new int[properties.flights][];
+        BoatMatrix matchMatrix = new BoatMatrix(scheduleProps);
+        int[][] values = new int[scheduleProps.flights][];
         for (int flightIdx = 0; flightIdx < schedule.flights.length; flightIdx++) {
             Flight flight = schedule.flights[flightIdx];
             matchMatrix.add(flight);
             values[flightIdx] = matchMatrix.getBoatDistribution();
         }
-        int[] matchDistribution = values[properties.flights - 1];
+        int[] matchDistribution = values[scheduleProps.flights - 1];
         int columns = 0;
         for (int i = 0; i < matchDistribution.length; i++) {
             if (matchDistribution[i] > 0) {
@@ -231,7 +278,7 @@ public class PdfCreator implements AutoCloseable {
             }
         }
         float[] columnWidths = new float[columns];
-        Arrays.fill(columnWidths, properties.width / columns);
+        Arrays.fill(columnWidths, displayProps.width / columns);
         Table table = new Table(columnWidths);
         table.setVerticalBorderSpacing(10f);
         table.addCell(getCell(""));
@@ -256,44 +303,50 @@ public class PdfCreator implements AutoCloseable {
             }
         }
         doc.add(table);
-
-        String[] clubs = properties.teams;
-        columnWidths = new float[5];
-        Arrays.fill(columnWidths, properties.width / 10);
-        Table table2 = new Table(columnWidths);
-        table.setVerticalBorderSpacing(10f);
-        Arrays.asList("At Flight", "On Boat","On Water 1", "On Water 2", "Boatchange")
-                .forEach(s -> table2.addCell(getCell(s)));
-        table2.addCell(getCellSep(5,0.3f));
-        for (int i = 1; i < schedule.flights.length; i++) {
-            CostCalculatorBoatSchedule.InterFlightStat interFlightStat =
-                    CostCalculatorBoatSchedule.getInterFlightStat(schedule.flights[i - 1], schedule.flights[i]);
-            table2.addCell(getCell(String.valueOf(i + 1)));
-            table2.addCell(getCell(toString(clubs,interFlightStat.teamsStayOnBoat)));
-            table2.addCell(getCell(toString(clubs,interFlightStat.teamsAtWaterAtLastRace)));
-            table2.addCell(getCell(toString(clubs,interFlightStat.teamsAtWaterAtFirstRace)));
-            table2.addCell(getCell(toString(clubs,interFlightStat.teamsChangeBoats)));
-        }
-        doc.add(table2);
         isEmptyPage = false;
         return this;
     }
 
-    public PdfCreator createPageSchedule(
-            Schedule schedule,
-            String emphClub) throws FileNotFoundException {
+    public PdfCreator createShuttleDistribution(Schedule schedule) {
         newPage(false);
-        int columns = properties.numBoats + 2;
+        String[] clubs = scheduleProps.teams;
+        float[] columnWidths = new float[5];
+        Arrays.fill(columnWidths, displayProps.width / 5);
+        Table table = new Table(columnWidths);
+        table.setVerticalBorderSpacing(10f);
+        Arrays.asList("At Flight", "On Boat", "On Water 1", "On Water 2", "Boatchange")
+                .forEach(s -> table.addCell(getCell(s)));
+        table.addCell(getCellSep(5, 0.3f));
+        for (int i = 1; i < schedule.flights.length; i++) {
+            CostCalculatorBoatSchedule.InterFlightStat interFlightStat =
+                    CostCalculatorBoatSchedule.getInterFlightStat(schedule.flights[i - 1], schedule.flights[i]);
+            table.addCell(getCell(String.valueOf(i + 1)));
+            table.addCell(getCell(toString(clubs, interFlightStat.teamsStayOnBoat)));
+            table.addCell(getCell(toString(clubs, interFlightStat.teamsAtWaterAtLastRace)));
+            table.addCell(getCell(toString(clubs, interFlightStat.teamsAtWaterAtFirstRace)));
+            table.addCell(getCell(toString(clubs, interFlightStat.teamsChangeBoats)));
+        }
+        doc.add(table);
+        isEmptyPage = false;
+        return this;
+    }
+
+    @SneakyThrows
+    public PdfCreator createSchedule(
+            Schedule schedule,
+            String emphClub) {
+        newPage(false);
+        int columns = scheduleProps.numBoats + 2;
         float[] columnWidths = new float[columns];
-        Arrays.fill(columnWidths, properties.width / columns);
+        Arrays.fill(columnWidths, displayProps.width / columns);
         Table table = new Table(columnWidths);
         table.addCell(getCell("Flight", -1));
         table.addCell(getCell("Race", -1));
-        for (int i = 0; i < properties.numBoats; i++) {
+        for (int i = 0; i < scheduleProps.numBoats; i++) {
             table.addCell(getCell(String.format("Boat %d", i + 1), i));
         }
         int race = 1;
-        String[] clubs = properties.teams;
+        String[] clubs = scheduleProps.teams;
         for (int flight = 0; flight < schedule.flights.length; flight++) {
             table.addCell(getCellSep(columnWidths.length, 1.0f));
             Flight f = schedule.flights[flight];
@@ -316,8 +369,8 @@ public class PdfCreator implements AutoCloseable {
                 }
             }
         }
-        doc.add(new Paragraph(properties.title)
-                .setFontSize(properties.fontsize * 2)
+        doc.add(new Paragraph(displayProps.title)
+                .setFontSize(displayProps.fontsize * 2)
                 .setTextAlignment(TextAlignment.CENTER)
         );
         doc.add(table);
@@ -325,7 +378,8 @@ public class PdfCreator implements AutoCloseable {
         return this;
     }
 
-    public void close() throws Exception {
+    @SneakyThrows
+    public void close() {
         this.doc.close();
     }
 }

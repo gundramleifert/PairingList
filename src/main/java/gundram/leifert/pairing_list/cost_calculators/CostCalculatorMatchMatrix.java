@@ -1,5 +1,7 @@
-package gundram.leifert.pairing_list;
+package gundram.leifert.pairing_list.cost_calculators;
 
+import gundram.leifert.pairing_list.MatchMatrix;
+import gundram.leifert.pairing_list.configs.ScheduleProps;
 import gundram.leifert.pairing_list.types.Flight;
 import gundram.leifert.pairing_list.types.Schedule;
 

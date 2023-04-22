@@ -1,7 +1,9 @@
-package gundram.leifert.pairing_list;
+package gundram.leifert.pairing_list.configs;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import gundram.leifert.pairing_list.Optimizer;
+import gundram.leifert.pairing_list.Yaml;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,13 +11,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
-public class OptimizationProperties {
+public class OptimizationProps {
 
-    public static OptimizationProperties readYaml(String string) throws IOException, URISyntaxException {
+    public static OptimizationProps readYaml(String string) throws IOException, URISyntaxException {
         if (new File(string).exists()) {
             return readYaml(new File(string));
         }
-        URL resource = Environment.class.getClassLoader().getResource(string);
+        URL resource = Optimizer.class.getClassLoader().getResource(string);
         if (resource == null) {
             throw new IllegalArgumentException("file not found in resources an on disc");
         }
@@ -24,12 +26,12 @@ public class OptimizationProperties {
 
     }
 
-    public static OptimizationProperties readYaml(final File file) throws IOException {
-        OptimizationProperties properties = Yaml.dftMapper().readValue(file, OptimizationProperties.class);
+    public static OptimizationProps readYaml(final File file) throws IOException {
+        OptimizationProps properties = Yaml.dftMapper().readValue(file, OptimizationProps.class);
         return properties;
     }
 
-    public static void writeYaml(final File file, OptimizationProperties properties) throws IOException {
+    public static void writeYaml(final File file, OptimizationProps properties) throws IOException {
         Yaml.dftMapper().writeValue(file, properties);
     }
 

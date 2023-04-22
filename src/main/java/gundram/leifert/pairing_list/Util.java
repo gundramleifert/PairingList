@@ -1,5 +1,6 @@
 package gundram.leifert.pairing_list;
 
+import gundram.leifert.pairing_list.configs.ScheduleProps;
 import gundram.leifert.pairing_list.types.Flight;
 import gundram.leifert.pairing_list.types.Race;
 import gundram.leifert.pairing_list.types.Schedule;
