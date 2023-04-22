@@ -1,4 +1,4 @@
-package gundram.leifert.sail_schedule;
+package gundram.leifert.pairing_list;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

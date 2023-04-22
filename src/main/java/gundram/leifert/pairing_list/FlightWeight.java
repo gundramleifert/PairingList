@@ -1,4 +1,4 @@
-package gundram.leifert.sail_schedule;
+package gundram.leifert.pairing_list;
 
 public class FlightWeight {
     public static double[] flightWeight;

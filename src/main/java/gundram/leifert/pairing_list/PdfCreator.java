@@ -1,4 +1,4 @@
-package gundram.leifert.sail_schedule;
+package gundram.leifert.pairing_list;
 
 import com.itextpdf.kernel.colors.Color;
 import com.itextpdf.kernel.colors.ColorConstants;
@@ -13,9 +13,9 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import gundram.leifert.sail_schedule.types.Flight;
-import gundram.leifert.sail_schedule.types.Race;
-import gundram.leifert.sail_schedule.types.Schedule;
+import gundram.leifert.pairing_list.types.Flight;
+import gundram.leifert.pairing_list.types.Race;
+import gundram.leifert.pairing_list.types.Schedule;
 
 import java.io.File;
 import java.io.FileNotFoundException;

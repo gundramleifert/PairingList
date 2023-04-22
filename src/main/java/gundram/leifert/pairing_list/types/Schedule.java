@@ -1,8 +1,8 @@
-package gundram.leifert.sail_schedule.types;
+package gundram.leifert.pairing_list.types;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import gundram.leifert.sail_schedule.Yaml;
+import gundram.leifert.pairing_list.Yaml;
 
 import java.io.File;
 import java.io.IOException;

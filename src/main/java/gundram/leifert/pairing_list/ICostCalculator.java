@@ -1,6 +1,6 @@
-package gundram.leifert.sail_schedule;
+package gundram.leifert.pairing_list;
 
-import gundram.leifert.sail_schedule.types.Schedule;
+import gundram.leifert.pairing_list.types.Schedule;
 
 public interface ICostCalculator {
     double score(Schedule schedule);

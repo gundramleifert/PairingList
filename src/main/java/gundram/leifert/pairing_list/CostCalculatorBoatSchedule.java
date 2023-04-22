@@ -1,12 +1,12 @@
-package gundram.leifert.sail_schedule;
+package gundram.leifert.pairing_list;
 
-import gundram.leifert.sail_schedule.types.Flight;
-import gundram.leifert.sail_schedule.types.Race;
-import gundram.leifert.sail_schedule.types.Schedule;
+import gundram.leifert.pairing_list.types.Flight;
+import gundram.leifert.pairing_list.types.Race;
+import gundram.leifert.pairing_list.types.Schedule;
 
 import java.util.ArrayList;
 
-import static gundram.leifert.sail_schedule.FlightWeight.getFlightWeight;
+import static gundram.leifert.pairing_list.FlightWeight.getFlightWeight;
 
 public class CostCalculatorBoatSchedule implements ICostCalculator {
 
