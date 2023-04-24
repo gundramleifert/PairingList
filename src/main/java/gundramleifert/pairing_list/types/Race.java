@@ -9,6 +9,10 @@ public class Race {
     @JsonProperty
     public byte[] teams;
 
+    public Race(){
+
+    }
+
     public Race(byte[] crews) {
         teams = crews;
     }

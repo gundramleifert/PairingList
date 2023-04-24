@@ -1,9 +1,9 @@
 seed: 1235
-optMatchMatrix:
-  - loops: 10000
-    individuals: 500
-    swapTeams: 100
-    merges: 100
+optMatchMatrix: []
+#  - loops: 10000
+#    individuals: 500
+#    swapTeams: 100
+#    merges: 100
 optBoatUsage:
   - loops: 10000
     individuals: 1000

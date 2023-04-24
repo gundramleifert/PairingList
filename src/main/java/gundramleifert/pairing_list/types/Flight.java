@@ -9,6 +9,7 @@ public class Flight {
     @JsonProperty
     public Race[] races;
 
+    public Flight(){}
     public Flight(Race[] races) {
         this.races = races;
     }
