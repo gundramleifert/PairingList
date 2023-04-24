@@ -35,37 +35,39 @@ public class OptimizationProps {
         Yaml.dftMapper().writeValue(file, properties);
     }
 
-    public static class OptMatchMatrix {
+    public static class OptBase {
+        @JsonProperty
+        public int loops;
+        @JsonProperty
+        public int individuals;
+        @JsonProperty
+        public double earlyStopping = -1;
+        @JsonProperty
+        public double saveEveryN = -1;
+
+    }
+
+    public static class OptMatchMatrix extends OptBase {
         @JsonProperty
         public int swapTeams;
         @JsonProperty
         public int merges;
 
-        @JsonProperty
-        public int loops;
-        @JsonProperty
-        public int individuals;
     }
 
-    public static class OptBoatUsage {
+    public static class OptBoatUsage extends OptBase {
 
         @JsonProperty
         public int swapBoats;
         @JsonProperty
         public int swapRaces;
         @JsonProperty
-        public int loops;
-        @JsonProperty
-        public int individuals;
-        @JsonProperty
-        public int maxStayOnBoat;
-
-        @JsonProperty
         public double weightStayOnBoat;
         @JsonProperty
         public double weightStayOnShuttle;
         @JsonProperty
         public double weightChangeBetweenBoats;
+
     }
 
     @JsonProperty

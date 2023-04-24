@@ -1,6 +1,7 @@
 package gundramleifert.pairing_list;
 
 import gundramleifert.pairing_list.configs.ScheduleProps;
+import gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
 import gundramleifert.pairing_list.types.Flight;
 import gundramleifert.pairing_list.types.Race;
 import gundramleifert.pairing_list.types.Schedule;
@@ -87,9 +88,72 @@ public class Util {
             System.out.println(sb.toString());
         }
     }
+    public static class SameShuttle{
+        public Race race;
+        public List<Byte> boats=new ArrayList<>(3);
 
-    public static byte[] copy(byte[] bytes) {
-        return copy(bytes, 0, bytes.length);
+        public SameShuttle(Race race) {
+            this.race = race;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            SameShuttle that = (SameShuttle) o;
+
+            if (!race.equals(that.race)) return false;
+            return boats.equals(that.boats);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = race.hashCode();
+            result = 31 * result + boats.hashCode();
+            return result;
+        }
+    }
+
+    private static SameShuttle teamsOnSameShuttles(Race before, Race middle, Race after,Random random){
+        SameShuttle sameShuttle = new SameShuttle(middle);
+        for (int i = 0; i < before.teams.length; i++) {
+            byte t1 = before.teams[i];
+            for (int j = 0; j < after.teams.length; j++) {
+                byte t2 = after.teams[j];
+                if (t1==t2){
+                    sameShuttle.boats.add(middle.teams[i]);
+                }
+            }
+        }
+        if (sameShuttle.boats.size()%2==1){
+            sameShuttle.boats.remove(random.nextInt(sameShuttle.boats.size()));
+        }
+        if (sameShuttle.boats.size()>0){
+           return sameShuttle;
+        }
+        return null;
+    }
+
+    public static Map<Race,SameShuttle> teamsOnSameShuttles(Schedule schedule, Random random){
+        Map<Race,SameShuttle> res = new HashMap<>();
+        for (int i = 1; i < schedule.flights.length; i++) {
+            Flight flight1 = schedule.flights[i - 1];
+            Flight flight2 = schedule.flights[i];
+            Race race1 = flight1.races[flight1.races.length-2];
+            Race race2 = flight1.races[flight1.races.length-1];
+            Race race3 = flight2.races[0];
+            Race race4 = flight2.races[1];
+            SameShuttle sameShuttle1 = teamsOnSameShuttles(race1, race2, race3, random);
+            SameShuttle sameShuttle2 = teamsOnSameShuttles( race2, race3,race4, random);
+            if(sameShuttle1!=null){
+                res.put(race2,sameShuttle1);
+            }
+            if(sameShuttle2!=null){
+                res.put(race3,sameShuttle2);
+            }
+        }
+        return res;
     }
 
     public static byte[] copy(byte[] bytes, int from, int length) {

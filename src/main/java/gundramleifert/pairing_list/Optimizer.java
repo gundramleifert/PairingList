@@ -7,6 +7,7 @@ import gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
 import gundramleifert.pairing_list.cost_calculators.CostCalculatorMatchMatrix;
 import gundramleifert.pairing_list.cost_calculators.ICostCalculator;
 import gundramleifert.pairing_list.types.Schedule;
+import lombok.SneakyThrows;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -14,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
+
+import static gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule.getInterFlightStat;
 
 public class Optimizer {
     private ScheduleProps properties;
@@ -31,10 +35,11 @@ public class Optimizer {
         System.out.format("Score:%6.2f Age:%3d %s\n", scorer.score(schedule), schedule.getAge(), prefix);
     }
 
-    public Schedule optimizeMatchMatrix(Schedule schedule) throws Exception {
+    public Schedule optimizeMatchMatrix(Schedule schedule, Consumer<Schedule> saver) throws Exception {
         List<Schedule> schedules = new ArrayList<>();
         schedules.add(schedule);
         final CostCalculatorMatchMatrix scorer = new CostCalculatorMatchMatrix(properties);
+        int counter = 0;
         for (OptimizationProps.OptMatchMatrix optMatchMatrix : optProps.optMatchMatrix) {
             for (int i = 0; i < optMatchMatrix.loops; i++) {
                 for (int j = 0; j < optMatchMatrix.swapTeams; j++) {
@@ -74,15 +79,25 @@ public class Optimizer {
                 for (Schedule s : schedules) {
                     s.getOlder();
                 }
+                counter++;
+                if (optMatchMatrix.earlyStopping > 0 && schedules.get(0).getAge() >= optMatchMatrix.earlyStopping) {
+                    System.out.println("Early Stopping applied");
+                    break;
+                }
+                if (saver != null && optMatchMatrix.saveEveryN > 0 && counter % optMatchMatrix.saveEveryN == 0) {
+                    saver.accept(schedules.get(0));
+                }
+
             }
         }
         return schedules.get(0);
 
     }
 
-    public Schedule optimizeBoatSchedule(Schedule schedule) throws Exception {
+    public Schedule optimizeBoatSchedule(Schedule schedule, Consumer<Schedule> saver) {
         List<Schedule> schedules = new ArrayList<>();
         schedules.add(schedule);
+        int counter = 0;
         for (OptimizationProps.OptBoatUsage optBoatUsage : optProps.optBoatUsage) {
             final CostCalculatorBoatSchedule scorer = new CostCalculatorBoatSchedule(properties, optBoatUsage);
             for (int i = 0; i < optBoatUsage.loops; i++) {
@@ -115,21 +130,25 @@ public class Optimizer {
                     printQuality("worst", scorer, schedules.get(schedules.size() - 1));
                     //System.out.println(saveFuel.score(properties, schedules.get(0)));
                     //Util.printMatchMatrix(properties, schedules.get(0));
-                    Util.printCount(properties, schedules.get(0));
+                    int[] ii = getInterFlightStat(schedules.get(0));
+                    System.out.println(String.format("saved Shuttles: in habour: %d at sea: %d - boat changes: %d", ii[0], ii[1], ii[2]));
                 }
                 for (Schedule s : schedules) {
                     s.getOlder();
+                }
+                counter++;
+                if (optBoatUsage.earlyStopping > 0 && schedules.get(0).getAge() >= optBoatUsage.earlyStopping) {
+                    System.out.println("Early Stopping applied");
+                    break;
+                }
+                if (saver != null && optBoatUsage.saveEveryN > 0 && counter % optBoatUsage.saveEveryN == 0) {
+                    saver.accept(schedules.get(0));
                 }
             }
         }
         return schedules.get(0);
 
     }
-
-    public void savePdf(Schedule schedule, File outPdf, DisplayProps displayProps) throws Exception {
-        new PdfCreator(displayProps, properties, outPdf).create(schedule);
-    }
-
 
     public static void main(String[] args) throws Exception {
         Options options = new Options();
@@ -211,20 +230,28 @@ public class Optimizer {
                 Util.getRandomSchedule(scheduleProps, new Random(optimizationProps.seed)) :
                 Schedule.readYaml(new File(inputValue));
 
+        String outputValue = cmd.getOptionValue(output);
+        String outPdfValue = cmd.getOptionValue(outPdf);
+        class Saver implements Consumer<Schedule> {
+
+            @Override
+            @SneakyThrows
+            public void accept(Schedule schedule) {
+                if (outputValue != null) {
+                    schedule.writeYaml(new File(outputValue));
+                }
+                if (outPdfValue != null) {
+                    new PdfCreator(displayProps, scheduleProps, new File(outPdfValue)).create(schedule, new Random(optimizationProps.seed));
+                }
+
+            }
+        }
+        Saver saver = new Saver();
         Optimizer optimizer = new Optimizer();
         optimizer.init(scheduleProps, optimizationProps);
-        schedule = optimizer.optimizeMatchMatrix(schedule);
+        schedule = optimizer.optimizeMatchMatrix(schedule, saver);
         schedule = Util.shuffleBoats(schedule, new Random(optimizationProps.seed));
-        schedule = optimizer.optimizeBoatSchedule(schedule);
-
-        String outputValue = cmd.getOptionValue(output);
-        if (outputValue != null) {
-            schedule.writeYaml(new File(outputValue));
-        }
-
-        String outPdfValue = cmd.getOptionValue(outPdf);
-        if (outPdfValue != null) {
-            new PdfCreator(displayProps, scheduleProps, new File(outPdfValue)).create(schedule);
-        }
+        schedule = optimizer.optimizeBoatSchedule(schedule, saver);
+        saver.accept(schedule);
     }
 }

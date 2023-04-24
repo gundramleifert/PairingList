@@ -23,10 +23,7 @@ import gundramleifert.pairing_list.types.Schedule;
 import lombok.SneakyThrows;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PdfCreator implements AutoCloseable {
@@ -70,6 +67,12 @@ public class PdfCreator implements AutoCloseable {
         res.put("RED", DisplayProps.DeviceRgbWithAlpha.fromArray(255, 0, 0));
         res.put("YELLOW", DisplayProps.DeviceRgbWithAlpha.fromArray(255, 255, 0));
         res.put("WHITE", DisplayProps.DeviceRgbWithAlpha.fromArray(255));
+        res.put("HELLBLAU", DisplayProps.DeviceRgbWithAlpha.fromArray(54,166,216));
+        res.put("SCHWARZ", DisplayProps.DeviceRgbWithAlpha.fromArray(0));
+        res.put("ROT", DisplayProps.DeviceRgbWithAlpha.fromArray(229,9,71));
+        res.put("WEISS", DisplayProps.DeviceRgbWithAlpha.fromArray(255));
+        res.put("LILA", DisplayProps.DeviceRgbWithAlpha.fromArray(130,64,145));
+        res.put("GRAU", DisplayProps.DeviceRgbWithAlpha.fromArray(135,140,140));
         return res;
     }
 
@@ -251,11 +254,11 @@ public class PdfCreator implements AutoCloseable {
     }
 
     private static String toCount(List<Byte> lst) {
-        return lst.size()>0?String.valueOf(lst.size()):"";
+        return lst.size() > 0 ? String.valueOf(lst.size()) : "";
     }
 
     @SneakyThrows
-    public void create(Schedule schedule) {
+    public void create(Schedule schedule, Random random) {
         init();
         if (displayProps.show_match_stat) {
             createScheduleDistribution(schedule, true);
@@ -266,10 +269,12 @@ public class PdfCreator implements AutoCloseable {
         if (displayProps.show_schuttle_stat) {
             createShuttleDistribution(schedule);
         }
-        createSchedule(schedule, null);
+        createSchedule(schedule, (byte) -1, null);
         if (displayProps.teamwise_list) {
-            for (int i = 0; i < scheduleProps.teams.length; i++) {
-                createSchedule(schedule, scheduleProps.teams[i]);
+            Map<Race, Util.SameShuttle> sameShuttles = Util.teamsOnSameShuttles(schedule, random);
+
+            for (byte i = 0; i < scheduleProps.teams.length; i++) {
+                createSchedule(schedule, i, sameShuttles);
             }
         }
         close();
@@ -334,7 +339,7 @@ public class PdfCreator implements AutoCloseable {
         for (int i = 1; i < schedule.flights.length; i++) {
             CostCalculatorBoatSchedule.InterFlightStat interFlightStat =
                     CostCalculatorBoatSchedule.getInterFlightStat(schedule.flights[i - 1], schedule.flights[i]);
-            table.addCell(getCell(String.format("%d -> %d", i,i + 1)));
+            table.addCell(getCell(String.format("%d -> %d", i, i + 1)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsStayOnBoat)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsAtWaterAtLastRace)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsAtWaterAtFirstRace)));
@@ -345,10 +350,32 @@ public class PdfCreator implements AutoCloseable {
         return this;
     }
 
+    private float getOpacity(byte teamCurrent, byte teamToHighlight, int currentIndex, Util.SameShuttle sameShuttles, boolean raceContainsEmphClub) {
+        if (teamToHighlight < 0) {
+            return 0.5f;
+        }
+        if (teamCurrent == teamToHighlight) {
+            return 1.0f;
+        }
+//        if (!raceContainsEmphClub) {
+//            return 0.25f;
+//        }
+        if (sameShuttles != null) {
+            if (!sameShuttles.boats.contains(teamToHighlight)) {
+                return 0.25f;
+            }
+            if (sameShuttles.boats.contains(teamCurrent)) {
+                return 1.0f;
+            }
+        }
+        return 0.25f;
+    }
+
     @SneakyThrows
     public PdfCreator createSchedule(
             Schedule schedule,
-            String emphClub) {
+            byte teamIndex,
+            Map<Race, Util.SameShuttle> sameShuttles) {
         newPage(false);
         float[] columnWidths = new float[scheduleProps.numBoats + 2];
         double basewith = displayProps.width / (scheduleProps.numBoats + 2 * displayProps.factor_flight_race_width);
@@ -370,10 +397,22 @@ public class PdfCreator implements AutoCloseable {
                 table.addCell(getCell(String.valueOf(race++), -1));
                 Race r = f.races[i];
                 int col = 0;
+                boolean raceContainsEmphClub = false;
+                for (int j = 0; j < r.teams.length; j++) {
+                    if (r.teams[j] == teamIndex) {
+                        raceContainsEmphClub = true;
+                        break;
+                    }
+                }
                 for (; col < r.teams.length; col++) {
-                    String team = clubs[r.teams[col]];
-                    float opacity = emphClub != null && !team.equals(emphClub) ? 0.5f : 1.0f;
-                    Cell cell = getCell(team, col, opacity);
+                    byte team = r.teams[col];
+                    String teamName = clubs[team];
+                    float opacity = getOpacity(team,
+                            teamIndex,
+                            col,
+                            sameShuttles == null ? null : sameShuttles.get(r),
+                            raceContainsEmphClub);
+                    Cell cell = getCell(teamName, col, opacity);
                     table.addCell(cell);
                 }
                 while (col < scheduleProps.numBoats) {

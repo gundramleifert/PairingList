@@ -49,6 +49,21 @@ public class CostCalculatorBoatSchedule implements ICostCalculator {
         return teamsToTranfer;
     }
 
+    public static int[] getInterFlightStat(Schedule schedule) {
+        int shuttleAtHabour=0;
+        int shuttleAtSea = 0;
+        int shuttlesEachRace = shuttlesPerTeams(schedule.flights[0].races[0].teams.length);
+        int boatChanges = 0;
+        for (int i = 1; i < schedule.flights.length; i++) {
+            InterFlightStat interFlightStat = getInterFlightStat(schedule.flights[i - 1], schedule.flights[i]);
+            shuttleAtHabour +=(shuttlesEachRace-shuttlesPerTeams(interFlightStat.shuttleBetweenFlight));
+            shuttleAtSea +=(shuttlesEachRace-shuttlesPerTeams(interFlightStat.shuttleFirstRace));
+            shuttleAtSea +=(shuttlesEachRace-shuttlesPerTeams(interFlightStat.shuttleLastRace));
+            boatChanges += interFlightStat.teamsChangeBoats.size();
+        }
+        return new int[]{shuttleAtHabour,shuttleAtSea,boatChanges};
+    }
+
     public static InterFlightStat getInterFlightStat(Flight before, Flight after) {
         InterFlightStat res = new InterFlightStat();
         Race race1 = before.races[before.races.length - 1];
@@ -87,7 +102,7 @@ public class CostCalculatorBoatSchedule implements ICostCalculator {
 
     }
 
-    private static int shuttlesPerTeams(int teams) {
+    public static int shuttlesPerTeams(int teams) {
         return (teams + 1) / 2;
     }
 
