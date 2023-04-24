@@ -67,12 +67,12 @@ public class PdfCreator implements AutoCloseable {
         res.put("RED", DisplayProps.DeviceRgbWithAlpha.fromArray(255, 0, 0));
         res.put("YELLOW", DisplayProps.DeviceRgbWithAlpha.fromArray(255, 255, 0));
         res.put("WHITE", DisplayProps.DeviceRgbWithAlpha.fromArray(255));
-        res.put("HELLBLAU", DisplayProps.DeviceRgbWithAlpha.fromArray(54,166,216));
-        res.put("SCHWARZ", DisplayProps.DeviceRgbWithAlpha.fromArray(0));
-        res.put("ROT", DisplayProps.DeviceRgbWithAlpha.fromArray(229,9,71));
-        res.put("WEISS", DisplayProps.DeviceRgbWithAlpha.fromArray(255));
-        res.put("LILA", DisplayProps.DeviceRgbWithAlpha.fromArray(130,64,145));
-        res.put("GRAU", DisplayProps.DeviceRgbWithAlpha.fromArray(135,140,140));
+//        res.put("HELLBLAU", DisplayProps.DeviceRgbWithAlpha.fromArray(54,166,216));
+//        res.put("SCHWARZ", DisplayProps.DeviceRgbWithAlpha.fromArray(0));
+//        res.put("ROT", DisplayProps.DeviceRgbWithAlpha.fromArray(229,9,71));
+//        res.put("WEISS", DisplayProps.DeviceRgbWithAlpha.fromArray(255));
+//        res.put("LILA", DisplayProps.DeviceRgbWithAlpha.fromArray(130,64,145));
+//        res.put("GRAU", DisplayProps.DeviceRgbWithAlpha.fromArray(135,140,140));
         return res;
     }
 
@@ -97,7 +97,6 @@ public class PdfCreator implements AutoCloseable {
     public void init() {
         PdfWriter writer = new PdfWriter(this.outFile);
         this.doc = new Document(new PdfDocument(writer));
-
         String[] colors = scheduleProps.boats;
         this.fgColors = new DisplayProps.DeviceRgbWithAlpha[colors.length];
         this.bgColors = new DisplayProps.DeviceRgbWithAlpha[colors.length];
@@ -352,23 +351,20 @@ public class PdfCreator implements AutoCloseable {
 
     private float getOpacity(byte teamCurrent, byte teamToHighlight, int currentIndex, Util.SameShuttle sameShuttles, boolean raceContainsEmphClub) {
         if (teamToHighlight < 0) {
-            return 0.5f;
+            return this.displayProps.opacity_default;
         }
         if (teamCurrent == teamToHighlight) {
-            return 1.0f;
+            return displayProps.opacity_active;
         }
-//        if (!raceContainsEmphClub) {
-//            return 0.25f;
-//        }
         if (sameShuttles != null) {
             if (!sameShuttles.boats.contains(teamToHighlight)) {
-                return 0.25f;
+                return displayProps.opacity_inactive;
             }
             if (sameShuttles.boats.contains(teamCurrent)) {
-                return 1.0f;
+                return displayProps.opacity_same_shuttle;
             }
         }
-        return 0.25f;
+        return displayProps.opacity_inactive;
     }
 
     @SneakyThrows
@@ -421,10 +417,16 @@ public class PdfCreator implements AutoCloseable {
                 }
             }
         }
-        doc.add(new Paragraph(displayProps.title)
+        doc.add(new Paragraph(scheduleProps.title)
                 .setFontSize(displayProps.fontsize * 2)
                 .setTextAlignment(TextAlignment.CENTER)
         );
+        if (teamIndex >= 0) {
+            doc.add(new Paragraph(scheduleProps.teams[teamIndex])
+                    .setFontSize(displayProps.fontsize * 1.5f)
+                    .setTextAlignment(TextAlignment.CENTER)
+            );
+        }
         doc.add(table);
         isEmptyPage = false;
         return this;

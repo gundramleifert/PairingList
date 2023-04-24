@@ -46,10 +46,9 @@ public class ScheduleProps {
 
     @JsonProperty
     public String title;
+
     @JsonProperty
     public int flights;
-    @JsonProperty
-    public float fontsize = 10;
     @JsonProperty
     public String[] teams;
 

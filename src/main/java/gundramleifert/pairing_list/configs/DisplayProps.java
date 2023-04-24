@@ -64,6 +64,18 @@ public class DisplayProps {
     public double factor_flight_race_width = 1.0;
 
     @JsonProperty
+    public float opacity_default = 0.5f;
+
+    @JsonProperty
+    public float opacity_active = 1.0f;
+
+    @JsonProperty
+    public float opacity_inactive = 0.5f;
+
+    @JsonProperty
+    public float opacity_same_shuttle = 1.0f;
+
+    @JsonProperty
     public Map<String, int[]> additional_colors = new HashMap<>();
 
 

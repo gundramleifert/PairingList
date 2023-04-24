@@ -224,20 +224,6 @@ public class Optimizer {
 
         String displayConfigValue = cmd.getOptionValue(displayConfig, "display_properties_default.yml");
         DisplayProps displayProps = DisplayProps.readYaml(displayConfigValue);
-
-        String inputValue = cmd.getOptionValue(input);
-        Schedule schedule = inputValue == null ?
-                Util.getRandomSchedule(scheduleProps, new Random(optimizationProps.seed)) :
-                Schedule.readYaml(new File(inputValue));
-
-        Optimizer optimizer = new Optimizer();
-        optimizer.init(scheduleProps, optimizationProps);
-        schedule = optimizer.optimizeMatchMatrix(schedule);
-        if (optimizationProps.optMatchMatrix.size() > 1 && optimizationProps.optMatchMatrix.get(0).loops > 0) {
-            schedule = Util.shuffleBoats(schedule, new Random(optimizationProps.seed));
-        }
-        schedule = optimizer.optimizeBoatSchedule(schedule);
-
         String outputValue = cmd.getOptionValue(output);
         String outPdfValue = cmd.getOptionValue(outPdf);
         class Saver implements Consumer<Schedule> {
@@ -255,11 +241,20 @@ public class Optimizer {
             }
         }
         Saver saver = new Saver();
+
+        String inputValue = cmd.getOptionValue(input);
+        Schedule schedule = inputValue == null ?
+                Util.getRandomSchedule(scheduleProps, new Random(optimizationProps.seed)) :
+                Schedule.readYaml(new File(inputValue));
+
         Optimizer optimizer = new Optimizer();
         optimizer.init(scheduleProps, optimizationProps);
-        schedule = optimizer.optimizeMatchMatrix(schedule, saver);
-        schedule = Util.shuffleBoats(schedule, new Random(optimizationProps.seed));
-        schedule = optimizer.optimizeBoatSchedule(schedule, saver);
+        schedule = optimizer.optimizeMatchMatrix(schedule,saver);
+        if (optimizationProps.optMatchMatrix.size() > 1 && optimizationProps.optMatchMatrix.get(0).loops > 0) {
+            schedule = Util.shuffleBoats(schedule, new Random(optimizationProps.seed));
+        }
+        schedule = optimizer.optimizeBoatSchedule(schedule,saver);
+
         saver.accept(schedule);
     }
 }
