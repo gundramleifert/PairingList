@@ -6,6 +6,8 @@ import gundramleifert.pairing_list.configs.ScheduleProps;
 import gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
 import gundramleifert.pairing_list.cost_calculators.CostCalculatorMatchMatrix;
 import gundramleifert.pairing_list.cost_calculators.ICostCalculator;
+import gundramleifert.pairing_list.types.BoatMatrix;
+import gundramleifert.pairing_list.types.Flight;
 import gundramleifert.pairing_list.types.Schedule;
 import lombok.SneakyThrows;
 import org.apache.commons.cli.*;
@@ -130,6 +132,14 @@ public class Optimizer {
                     printQuality("worst", scorer, schedules.get(schedules.size() - 1));
                     //System.out.println(saveFuel.score(properties, schedules.get(0)));
                     //Util.printMatchMatrix(properties, schedules.get(0));
+                    BoatMatrix matchMatrix = new BoatMatrix(properties);
+                    int[][] values = new int[properties.flights][];
+                    for (int flightIdx = 0; flightIdx < schedule.flights.length; flightIdx++) {
+                        Flight flight = schedule.flights[flightIdx];
+                        matchMatrix.add(flight);
+                    }
+                    int[] boatDistribution = matchMatrix.getBoatDistribution();
+                    Util.printCount(boatDistribution,false);
                     int[] ii = getInterFlightStat(schedules.get(0));
                     System.out.println(String.format("saved Shuttles: in habour: %d at sea: %d - boat changes: %d", ii[0], ii[1], ii[2]));
                 }

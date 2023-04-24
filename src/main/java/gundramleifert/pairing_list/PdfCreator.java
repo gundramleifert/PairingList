@@ -97,6 +97,8 @@ public class PdfCreator implements AutoCloseable {
     public void init() {
         PdfWriter writer = new PdfWriter(this.outFile);
         this.doc = new Document(new PdfDocument(writer));
+        doc.setBottomMargin(10.0f);
+        doc.setTopMargin(10.0f);
         String[] colors = scheduleProps.boats;
         this.fgColors = new DisplayProps.DeviceRgbWithAlpha[colors.length];
         this.bgColors = new DisplayProps.DeviceRgbWithAlpha[colors.length];
@@ -122,14 +124,6 @@ public class PdfCreator implements AutoCloseable {
             //cell.setMaxHeight(displayProps.cell_height);
         }
         return cell;
-    }
-
-    public static Cell emph(Cell cell, Color colorFg) {
-        SolidBorder solidBorder = new SolidBorder(2f);
-        solidBorder.setColor(colorFg);
-        return cell
-                .setBorder(solidBorder)
-                .setBold();
     }
 
     private Cell getCell(String text, int row, int col) {
@@ -179,14 +173,6 @@ public class PdfCreator implements AutoCloseable {
             doc.add(new AreaBreak());
             isEmptyPage = true;
         }
-    }
-
-    private static int max(int[] vec) {
-        int res = vec[0];
-        for (int i = 1; i < vec.length; i++) {
-            res = Math.max(res, vec[i]);
-        }
-        return res;
     }
 
     private static int sum(int[] vec) {
@@ -250,10 +236,6 @@ public class PdfCreator implements AutoCloseable {
                 .stream()
                 .map(aByte -> teams[aByte])
                 .collect(Collectors.joining(", "));
-    }
-
-    private static String toCount(List<Byte> lst) {
-        return lst.size() > 0 ? String.valueOf(lst.size()) : "";
     }
 
     @SneakyThrows

@@ -64,6 +64,22 @@ public class Util {
         System.out.println(sb1.toString());
         System.out.println(sb.toString());
     }
+    public static void printCount(int[] counts,boolean startAtOne) {
+        int max_value = 1;
+        for (int i = 0; i < counts.length; i++) {
+            if (counts[i] > 0) {
+                max_value = i;
+            }
+        }
+        StringBuilder sb1 = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
+        for (int j = 0; j <= max_value; j++) {
+            sb1.append(String.format("%4d", (startAtOne?j+1:j)));
+            sb.append(String.format("%4d", counts[j]));
+        }
+        System.out.println(sb1.toString());
+        System.out.println(sb.toString());
+    }
 
     public static void printMatchMatrix(ScheduleProps props, Schedule schedule) {
         MatchMatrix mm = new MatchMatrix(props.numTeams);
