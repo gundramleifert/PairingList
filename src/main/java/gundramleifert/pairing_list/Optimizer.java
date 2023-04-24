@@ -214,7 +214,9 @@ public class Optimizer {
         Optimizer optimizer = new Optimizer();
         optimizer.init(scheduleProps, optimizationProps);
         schedule = optimizer.optimizeMatchMatrix(schedule);
-        schedule = Util.shuffleBoats(schedule, new Random(optimizationProps.seed));
+        if (optimizationProps.optMatchMatrix.size() > 1 && optimizationProps.optMatchMatrix.get(0).loops > 0) {
+            schedule = Util.shuffleBoats(schedule, new Random(optimizationProps.seed));
+        }
         schedule = optimizer.optimizeBoatSchedule(schedule);
 
         String outputValue = cmd.getOptionValue(output);
