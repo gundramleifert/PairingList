@@ -5,8 +5,8 @@ optMatchMatrix:
     swapTeams: 100
     merges: 100
 optBoatUsage:
-  - loops: 2000
-    individuals: 500
+  - loops: 10000
+    individuals: 1000
     weightStayOnBoat: 3.0
     weightStayOnShuttle: 1.5
     weightChangeBetweenBoats: 5.0
