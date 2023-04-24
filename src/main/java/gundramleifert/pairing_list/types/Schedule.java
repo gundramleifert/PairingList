@@ -14,6 +14,10 @@ public class Schedule {
     private int generation = 0;
     public HashMap<Object,Double> scoreMap = new HashMap<>(2);
 
+
+    public Schedule(){
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

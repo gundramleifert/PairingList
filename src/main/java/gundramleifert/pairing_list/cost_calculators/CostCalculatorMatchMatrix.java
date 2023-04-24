@@ -11,8 +11,9 @@ public class CostCalculatorMatchMatrix implements ICostCalculator {
 
     private ScheduleProps properties;
     private double[] flightWeight;
-    public CostCalculatorMatchMatrix(ScheduleProps properties){
-        this.properties=properties;
+
+    public CostCalculatorMatchMatrix(ScheduleProps properties) {
+        this.properties = properties;
         flightWeight = getFlightWeight();
     }
 
@@ -29,7 +30,8 @@ public class CostCalculatorMatchMatrix implements ICostCalculator {
             double resPart = 0;
             for (byte[] vec : matchMatrix.mat) {
                 for (byte v : vec) {
-                    resPart += (int) Math.abs(v - avg);
+                    int diff = (int) (v - avg);
+                    resPart += diff * diff;
                     //resPart +=(v - avg)*(v - avg);
                 }
             }
