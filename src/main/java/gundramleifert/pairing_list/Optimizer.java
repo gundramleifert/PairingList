@@ -38,12 +38,15 @@ public class Optimizer {
     }
 
     public Schedule optimizeMatchMatrix(Schedule schedule, Consumer<Schedule> saver) {
-        schedule.resetAge();
         List<Schedule> schedules = new ArrayList<>();
         schedules.add(schedule);
         final CostCalculatorMatchMatrix scorer = new CostCalculatorMatchMatrix(properties);
         int counter = 0;
         for (OptimizationProps.OptMatchMatrix optMatchMatrix : optProps.optMatchMatrix) {
+            System.out.println(String.format("run with %s", optMatchMatrix));
+            for (Schedule s : schedules) {
+                s.resetAge();
+            }
             for (int i = 0; i < optMatchMatrix.loops; i++) {
                 for (int j = 0; j < optMatchMatrix.swapTeams; j++) {
                     Schedule mutation = schedules.get(random.nextInt(schedules.size()));
@@ -98,11 +101,14 @@ public class Optimizer {
     }
 
     public Schedule optimizeBoatSchedule(Schedule schedule, Consumer<Schedule> saver) {
-        schedule.resetAge();
         List<Schedule> schedules = new ArrayList<>();
         schedules.add(schedule);
         int counter = 0;
         for (OptimizationProps.OptBoatUsage optBoatUsage : optProps.optBoatUsage) {
+            System.out.println(String.format("run with %s", optBoatUsage));
+            for (Schedule s : schedules) {
+                s.resetAge();
+            }
             final CostCalculatorBoatSchedule scorer = new CostCalculatorBoatSchedule(properties, optBoatUsage);
             for (int i = 0; i < optBoatUsage.loops; i++) {
                 for (int j = 0; j < optBoatUsage.swapBoats; j++) {
@@ -135,7 +141,6 @@ public class Optimizer {
                     //System.out.println(saveFuel.score(properties, schedules.get(0)));
                     //Util.printMatchMatrix(properties, schedules.get(0));
                     BoatMatrix matchMatrix = new BoatMatrix(properties);
-                    int[][] values = new int[properties.flights][];
                     for (int flightIdx = 0; flightIdx < schedule.flights.length; flightIdx++) {
                         Flight flight = schedule.flights[flightIdx];
                         matchMatrix.add(flight);

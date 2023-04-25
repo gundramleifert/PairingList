@@ -55,6 +55,18 @@ public class OptimizationProps {
         @JsonProperty
         public int merges;
 
+        @Override
+        public String toString() {
+            return "OptMatchMatrix{" +
+                    "swapTeams=" + swapTeams +
+                    ", merges=" + merges +
+                    ", loops=" + loops +
+                    ", individuals=" + individuals +
+                    ", earlyStopping=" + earlyStopping +
+                    ", saveEveryN=" + saveEveryN +
+                    ", showEveryN=" + showEveryN +
+                    '}';
+        }
     }
 
     public static class OptBoatUsage extends OptBase {
@@ -70,6 +82,21 @@ public class OptimizationProps {
         @JsonProperty
         public double weightChangeBetweenBoats;
 
+        @Override
+        public String toString() {
+            return "OptBoatUsage{" +
+                    "swapBoats=" + swapBoats +
+                    ", swapRaces=" + swapRaces +
+                    ", weightStayOnBoat=" + weightStayOnBoat +
+                    ", weightStayOnShuttle=" + weightStayOnShuttle +
+                    ", weightChangeBetweenBoats=" + weightChangeBetweenBoats +
+                    ", loops=" + loops +
+                    ", individuals=" + individuals +
+                    ", earlyStopping=" + earlyStopping +
+                    ", saveEveryN=" + saveEveryN +
+                    ", showEveryN=" + showEveryN +
+                    '}';
+        }
     }
 
     @JsonProperty
