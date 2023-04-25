@@ -43,9 +43,9 @@ public class OptimizationProps {
         @JsonProperty
         public double earlyStopping = -1;
         @JsonProperty
-        public double saveEveryN = -1;
+        public int saveEveryN = -1;
         @JsonProperty
-        public double showEveryN = 1000;
+        public int showEveryN = 1000;
 
     }
 

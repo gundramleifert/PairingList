@@ -38,6 +38,7 @@ public class Optimizer {
     }
 
     public Schedule optimizeMatchMatrix(Schedule schedule, Consumer<Schedule> saver) {
+        schedule.resetAge();
         List<Schedule> schedules = new ArrayList<>();
         schedules.add(schedule);
         final CostCalculatorMatchMatrix scorer = new CostCalculatorMatchMatrix(properties);
@@ -86,6 +87,9 @@ public class Optimizer {
                     System.out.println("Early Stopping applied");
                     break;
                 }
+                if (saver != null && optMatchMatrix.saveEveryN > 0 && counter % optMatchMatrix.saveEveryN == 0) {
+                    saver.accept(schedules.get(0));
+                }
 
             }
         }
@@ -94,6 +98,7 @@ public class Optimizer {
     }
 
     public Schedule optimizeBoatSchedule(Schedule schedule, Consumer<Schedule> saver) {
+        schedule.resetAge();
         List<Schedule> schedules = new ArrayList<>();
         schedules.add(schedule);
         int counter = 0;
@@ -241,6 +246,7 @@ public class Optimizer {
             public void accept(Schedule schedule) {
                 if (outputValue != null) {
                     schedule.writeYaml(new File(outputValue));
+                    schedule.writeCSV(new File(outputValue.replace(".yml", "") + ".csv"));
                 }
                 if (outPdfValue != null) {
                     new PdfCreator(displayProps, scheduleProps, new File(outPdfValue)).create(schedule, new Random(optimizationProps.seed));

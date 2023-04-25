@@ -5,6 +5,11 @@ optMatchMatrix:
     swapTeams: 100
     merges: 100
     earlyStopping: 3000
+  - loops: 30000
+    individuals: 10
+    swapTeams: 10
+    merges: 10
+    earlyStopping: 3000
 optBoatUsage:
   - loops: 30000
     individuals: 500
@@ -13,5 +18,14 @@ optBoatUsage:
     weightChangeBetweenBoats: 30.0
     swapBoats: 100
     swapRaces: 100
+    earlyStopping: 3000
+    saveEveryN: 250
+  - loops: 30000
+    individuals: 10
+    weightStayOnBoat: 2.03
+    weightStayOnShuttle: 1.01
+    weightChangeBetweenBoats: 30.0
+    swapBoats: 10
+    swapRaces: 10
     earlyStopping: 3000
     saveEveryN: 250
