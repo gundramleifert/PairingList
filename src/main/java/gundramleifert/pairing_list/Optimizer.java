@@ -24,12 +24,12 @@ import static gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSch
 public class Optimizer {
     private ScheduleProps properties;
     private OptimizationProps optProps;
-    private Random r;
+    private Random random;
 
-    public void init(ScheduleProps properties, OptimizationProps optimizationProps) throws Exception {
+    public void init(ScheduleProps properties, OptimizationProps optimizationProps, Random random) {
         this.properties = properties;
         this.optProps = optimizationProps;
-        r = new Random(optProps.seed);
+        this.random = random;
 
     }
 
@@ -37,7 +37,7 @@ public class Optimizer {
         System.out.format("Score:%6.2f Age:%3d %s\n", scorer.score(schedule), schedule.getAge(), prefix);
     }
 
-    public Schedule optimizeMatchMatrix(Schedule schedule, Consumer<Schedule> saver) throws Exception {
+    public Schedule optimizeMatchMatrix(Schedule schedule, Consumer<Schedule> saver) {
         List<Schedule> schedules = new ArrayList<>();
         schedules.add(schedule);
         final CostCalculatorMatchMatrix scorer = new CostCalculatorMatchMatrix(properties);
@@ -45,18 +45,18 @@ public class Optimizer {
         for (OptimizationProps.OptMatchMatrix optMatchMatrix : optProps.optMatchMatrix) {
             for (int i = 0; i < optMatchMatrix.loops; i++) {
                 for (int j = 0; j < optMatchMatrix.swapTeams; j++) {
-                    Schedule mutation = schedules.get(r.nextInt(schedules.size()));
-                    mutation = MutationUtil.swapBetweenRaces(mutation, r);
+                    Schedule mutation = schedules.get(random.nextInt(schedules.size()));
+                    mutation = MutationUtil.swapBetweenRaces(mutation, random);
                     if (!schedules.contains(mutation)) {
                         schedules.add(mutation);
                     }
                 }
                 for (int j = 0; j < optMatchMatrix.merges; j++) {
-                    int idxFather = r.nextInt(schedules.size());
-                    int idxMother = (idxFather + 1 + r.nextInt(schedules.size() - 1)) % schedules.size();
+                    int idxFather = random.nextInt(schedules.size());
+                    int idxMother = (idxFather + 1 + random.nextInt(schedules.size() - 1)) % schedules.size();
                     Schedule father = schedules.get(idxFather);
                     Schedule mother = schedules.get(idxMother);
-                    Schedule mutation = MutationUtil.mutation(father, mother, r);
+                    Schedule mutation = MutationUtil.mutation(father, mother, random);
                     if (!schedules.contains(mutation)) {
                         schedules.add(mutation);
                     }
@@ -68,7 +68,7 @@ public class Optimizer {
                     }*/
                     schedules = schedules.subList(0, optMatchMatrix.individuals);
                 }
-                if (i == optMatchMatrix.loops - 1 || i % (optMatchMatrix.loops / 10) == 0) {
+                if (i == optMatchMatrix.loops - 1 || (optMatchMatrix.showEveryN > 0 && counter % optMatchMatrix.showEveryN == 0)) {
                     System.out.println("------------  " + i + "  -----------------------");
                     //System.out.println("best1:" + scorer1.score(schedules.get(0)));
                     printQuality("best", scorer, schedules.get(0));
@@ -86,9 +86,6 @@ public class Optimizer {
                     System.out.println("Early Stopping applied");
                     break;
                 }
-                if (saver != null && optMatchMatrix.saveEveryN > 0 && counter % optMatchMatrix.saveEveryN == 0) {
-                    saver.accept(schedules.get(0));
-                }
 
             }
         }
@@ -104,15 +101,15 @@ public class Optimizer {
             final CostCalculatorBoatSchedule scorer = new CostCalculatorBoatSchedule(properties, optBoatUsage);
             for (int i = 0; i < optBoatUsage.loops; i++) {
                 for (int j = 0; j < optBoatUsage.swapBoats; j++) {
-                    Schedule mutation = schedules.get(r.nextInt(schedules.size()));
-                    mutation = MutationUtil.swapBoats(mutation, r);
+                    Schedule mutation = schedules.get(random.nextInt(schedules.size()));
+                    mutation = MutationUtil.swapBoats(mutation, random);
                     if (!schedules.contains(mutation)) {
                         schedules.add(mutation);
                     }
                 }
                 for (int j = 0; j < optBoatUsage.swapRaces; j++) {
-                    Schedule mutation = schedules.get(r.nextInt(schedules.size()));
-                    mutation = MutationUtil.swapRaces(mutation, r);
+                    Schedule mutation = schedules.get(random.nextInt(schedules.size()));
+                    mutation = MutationUtil.swapRaces(mutation, random);
                     if (!schedules.contains(mutation)) {
                         schedules.add(mutation);
                     }
@@ -124,7 +121,7 @@ public class Optimizer {
                     }*/
                     schedules = schedules.subList(0, optBoatUsage.individuals);
                 }
-                if (i == optBoatUsage.loops - 1 || i % (optBoatUsage.loops / 10) == 0) {
+                if (i == optBoatUsage.loops - 1 || (optBoatUsage.saveEveryN > 0 && counter % optBoatUsage.saveEveryN == 0)) {
                     System.out.println("------------  " + i + "  -----------------------");
                     //System.out.println("best1:" + scorer1.score(schedules.get(0)));
                     printQuality("best", scorer, schedules.get(0));
@@ -139,7 +136,7 @@ public class Optimizer {
                         matchMatrix.add(flight);
                     }
                     int[] boatDistribution = matchMatrix.getBoatDistribution();
-                    Util.printCount(boatDistribution,false);
+                    Util.printCount(boatDistribution, false);
                     int[] ii = getInterFlightStat(schedules.get(0));
                     System.out.println(String.format("saved Shuttles: in habour: %d at sea: %d - boat changes: %d", ii[0], ii[1], ii[2]));
                 }
@@ -236,6 +233,7 @@ public class Optimizer {
         DisplayProps displayProps = DisplayProps.readYaml(displayConfigValue);
         String outputValue = cmd.getOptionValue(output);
         String outPdfValue = cmd.getOptionValue(outPdf);
+        Random random = new Random(optimizationProps.seed);
         class Saver implements Consumer<Schedule> {
 
             @Override
@@ -254,16 +252,16 @@ public class Optimizer {
 
         String inputValue = cmd.getOptionValue(input);
         Schedule schedule = inputValue == null ?
-                Util.getRandomSchedule(scheduleProps, new Random(optimizationProps.seed)) :
+                Util.getRandomSchedule(scheduleProps, random) :
                 Schedule.readYaml(new File(inputValue));
 
         Optimizer optimizer = new Optimizer();
-        optimizer.init(scheduleProps, optimizationProps);
-        schedule = optimizer.optimizeMatchMatrix(schedule,saver);
-        if (optimizationProps.optMatchMatrix.size() > 1 && optimizationProps.optMatchMatrix.get(0).loops > 0) {
-            schedule = Util.shuffleBoats(schedule, new Random(optimizationProps.seed));
+        optimizer.init(scheduleProps, optimizationProps, random);
+        schedule = optimizer.optimizeMatchMatrix(schedule, saver);
+        if (optimizationProps.optMatchMatrix.size() > 0 && optimizationProps.optMatchMatrix.get(0).loops > 0) {
+            schedule = Util.shuffleBoats(schedule, random);
         }
-        schedule = optimizer.optimizeBoatSchedule(schedule,saver);
+        schedule = optimizer.optimizeBoatSchedule(schedule, saver);
 
         saver.accept(schedule);
     }

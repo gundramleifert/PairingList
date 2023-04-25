@@ -73,7 +73,7 @@ public class DisplayProps {
     public float opacity_inactive = 0.5f;
 
     @JsonProperty
-    public float opacity_same_shuttle = 1.0f;
+    public float opacity_same_shuttle = 0.99f;
 
     @JsonProperty
     public Map<String, int[]> additional_colors = new HashMap<>();
@@ -119,6 +119,12 @@ public class DisplayProps {
         private DeviceRgbWithAlpha(float r, float g, float b, float a) {
             super(r, g, b);
             alpha = a;
+        }
+
+        public DeviceRgbWithAlpha darker() {
+            DeviceRgb deviceRgb = makeDarker(this);
+            float[] rgb = deviceRgb.getColorValue();
+            return DeviceRgbWithAlpha.fromArray(new float[]{rgb[0], rgb[1], rgb[2], alpha});
         }
 
     }

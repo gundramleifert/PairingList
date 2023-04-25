@@ -7,10 +7,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.*;
-import com.itextpdf.layout.element.AreaBreak;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import gundramleifert.pairing_list.configs.DisplayProps;
@@ -24,6 +21,7 @@ import lombok.SneakyThrows;
 
 import java.io.File;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class PdfCreator implements AutoCloseable {
@@ -120,9 +118,6 @@ public class PdfCreator implements AutoCloseable {
         Cell cell = new Cell(row, col)
                 .setPadding(0.0f)
                 .setFontSize(displayProps.fontsize);
-        if (row * col == 1) {
-            //cell.setMaxHeight(displayProps.cell_height);
-        }
         return cell;
     }
 
@@ -138,14 +133,31 @@ public class PdfCreator implements AutoCloseable {
         return getCell(text, 1, 1);
     }
 
+    private static void underlineText(Cell cell) {
+        cell.getChildren().forEach(iElement -> {
+            if (iElement instanceof Paragraph) {
+                ((Paragraph) iElement).setUnderline();
+            }
+        });
+    }
+    private static void boldText(Cell cell) {
+        cell.getChildren().forEach(iElement -> {
+            if (iElement instanceof Paragraph) {
+                ((Paragraph) iElement).setBold();
+            }
+        });
+    }
+
     private Cell getCell(String text, int index) {
         return getCell(text, index, 1.0f);
     }
 
     private Cell getCell(String text, int index, float opacity) {
+        return getCell(text,index>=0?bgColors[index]:null,opacity);
+    }
+    private Cell getCell(String text, DisplayProps.DeviceRgbWithAlpha bgColor, float opacity) {
         Cell cell = getCell(text);
-        if (index >= 0) {
-            DisplayProps.DeviceRgbWithAlpha bgColor = bgColors[index];
+        if (bgColor !=null) {
             float v = (1 - (1 - avg(bgColor)) * bgColor.alpha * opacity);
             DisplayProps.DeviceRgbWithAlpha fg = v > 0.3f ? DisplayProps.DeviceRgbWithAlpha.BLACK : DisplayProps.DeviceRgbWithAlpha.WHITE;
             cell.setBackgroundColor(bgColor, bgColor.alpha * opacity)
@@ -331,7 +343,7 @@ public class PdfCreator implements AutoCloseable {
         return this;
     }
 
-    private float getOpacity(byte teamCurrent, byte teamToHighlight, int currentIndex, Util.SameShuttle sameShuttles, boolean raceContainsEmphClub) {
+    private float getOpacity(byte teamCurrent, byte teamToHighlight, Util.SameShuttle sameShuttles) {
         if (teamToHighlight < 0) {
             return this.displayProps.opacity_default;
         }
@@ -347,6 +359,23 @@ public class PdfCreator implements AutoCloseable {
             }
         }
         return displayProps.opacity_inactive;
+    }
+    private boolean sameShuttle(byte teamCurrent, byte teamToHighlight, Util.SameShuttle sameShuttles) {
+        if (teamToHighlight < 0) {
+            return false;
+        }
+        if (teamCurrent == teamToHighlight) {
+            return true;
+        }
+        if (sameShuttles != null) {
+            if (!sameShuttles.boats.contains(teamToHighlight)) {
+                return false;
+            }
+            if (sameShuttles.boats.contains(teamCurrent)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @SneakyThrows
@@ -367,6 +396,8 @@ public class PdfCreator implements AutoCloseable {
         }
         int race = 1;
         String[] clubs = scheduleProps.teams;
+        DisplayProps.DeviceRgbWithAlpha LIGHT_GRAY = DisplayProps.DeviceRgbWithAlpha.fromArray(155);
+        DisplayProps.DeviceRgbWithAlpha DARK_GRAY = DisplayProps.DeviceRgbWithAlpha.fromArray(100);
         for (int flight = 0; flight < schedule.flights.length; flight++) {
             table.addCell(getCellSep(columnWidths.length, 1.0f));
             Flight f = schedule.flights[flight];
@@ -375,22 +406,24 @@ public class PdfCreator implements AutoCloseable {
                 table.addCell(getCell(String.valueOf(race++), -1));
                 Race r = f.races[i];
                 int col = 0;
-                boolean raceContainsEmphClub = false;
-                for (int j = 0; j < r.teams.length; j++) {
-                    if (r.teams[j] == teamIndex) {
-                        raceContainsEmphClub = true;
-                        break;
-                    }
-                }
                 for (; col < r.teams.length; col++) {
                     byte team = r.teams[col];
                     String teamName = clubs[team];
-                    float opacity = getOpacity(team,
-                            teamIndex,
-                            col,
-                            sameShuttles == null ? null : sameShuttles.get(r),
-                            raceContainsEmphClub);
-                    Cell cell = getCell(teamName, col, opacity);
+//                    float opacity = getOpacity(team,
+//                            teamIndex,
+//                            sameShuttles == null ? null : sameShuttles.get(r)
+//                    );
+                    boolean sameS = sameShuttles!=null && sameShuttle(team,teamIndex,sameShuttles.get(r));
+                    DisplayProps.DeviceRgbWithAlpha bg = team == teamIndex ? DARK_GRAY : sameS ? LIGHT_GRAY : null;
+                    Cell cell = getCell(teamName, bg, 1.0f);
+//                    if (sameS){
+//                        underlineText(cell);
+//                        boldText(cell);
+//                    }
+//                    if (opacity==displayProps.opacity_same_shuttle){
+//                        underlineText(cell);
+//                        cell.setBackgroundColor(bgColors[col]);
+//                    }
                     table.addCell(cell);
                 }
                 while (col < scheduleProps.numBoats) {
