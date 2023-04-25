@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-public class ScheduleProps {
-    public static ScheduleProps readYaml(String string) throws IOException, URISyntaxException {
+public class ScheduleConfig {
+    public static ScheduleConfig readYaml(String string) throws IOException, URISyntaxException {
         if (new File(string).exists()) {
             return readYaml(new File(string));
         }
@@ -25,16 +25,16 @@ public class ScheduleProps {
 
     }
 
-    public static ScheduleProps readYaml(final File file) throws IOException {
-        ScheduleProps scheduleProps;
+    public static ScheduleConfig readYaml(final File file) throws IOException {
+        ScheduleConfig scheduleConfig;
         ObjectMapper objectMapper = Yaml.dftMapper();
-        scheduleProps = objectMapper.readValue(file, ScheduleProps.class);
-        scheduleProps.init();
-        return scheduleProps;
+        scheduleConfig = objectMapper.readValue(file, ScheduleConfig.class);
+        scheduleConfig.init();
+        return scheduleConfig;
     }
 
-    public static void writeYaml(final File file, ScheduleProps scheduleProps) throws IOException {
-        Yaml.dftMapper().writeValue(file, scheduleProps);
+    public static void writeYaml(final File file, ScheduleConfig scheduleConfig) throws IOException {
+        Yaml.dftMapper().writeValue(file, scheduleConfig);
     }
 
     public void init() {
@@ -67,7 +67,7 @@ public class ScheduleProps {
         return ((numTeams + numBoats - 1) / numBoats);
     }
 
-    private static double calcAvg(ScheduleProps props) {
+    private static double calcAvg(ScheduleConfig props) {
         return props.flights * (((double) (props.numBoats - 1) / props.numTeams));
     }
 

@@ -14,8 +14,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DisplayProps {
-    public static DisplayProps readYaml(String string) throws IOException, URISyntaxException {
+public class DisplayConfig {
+    public static DisplayConfig readYaml(String string) throws IOException, URISyntaxException {
         if (new File(string).exists()) {
             return readYaml(new File(string));
         }
@@ -28,14 +28,14 @@ public class DisplayProps {
 
     }
 
-    public static DisplayProps readYaml(final File file) throws IOException {
-        DisplayProps scheduleProps;
+    public static DisplayConfig readYaml(final File file) throws IOException {
+        DisplayConfig scheduleProps;
         ObjectMapper objectMapper = Yaml.dftMapper();
-        scheduleProps = objectMapper.readValue(file, DisplayProps.class);
+        scheduleProps = objectMapper.readValue(file, DisplayConfig.class);
         return scheduleProps;
     }
 
-    public static void writeYaml(final File file, DisplayProps scheduleProps) throws IOException {
+    public static void writeYaml(final File file, DisplayConfig scheduleProps) throws IOException {
         Yaml.dftMapper().writeValue(file, scheduleProps);
     }
 

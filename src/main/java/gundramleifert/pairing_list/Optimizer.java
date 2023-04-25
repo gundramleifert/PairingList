@@ -1,8 +1,6 @@
 package gundramleifert.pairing_list;
 
-import gundramleifert.pairing_list.configs.DisplayProps;
-import gundramleifert.pairing_list.configs.OptimizationProps;
-import gundramleifert.pairing_list.configs.ScheduleProps;
+import gundramleifert.pairing_list.configs.*;
 import gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
 import gundramleifert.pairing_list.cost_calculators.CostCalculatorMatchMatrix;
 import gundramleifert.pairing_list.cost_calculators.ICostCalculator;
@@ -22,13 +20,13 @@ import java.util.function.Consumer;
 import static gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule.getInterFlightStat;
 
 public class Optimizer {
-    private ScheduleProps properties;
-    private OptimizationProps optProps;
+    private ScheduleConfig properties;
+    private OptimizationConfig optProps;
     private Random random;
 
-    public void init(ScheduleProps properties, OptimizationProps optimizationProps, Random random) {
+    public void init(ScheduleConfig properties, OptimizationConfig optimizationConfig, Random random) {
         this.properties = properties;
-        this.optProps = optimizationProps;
+        this.optProps = optimizationConfig;
         this.random = random;
 
     }
@@ -42,7 +40,7 @@ public class Optimizer {
         schedules.add(schedule);
         final CostCalculatorMatchMatrix scorer = new CostCalculatorMatchMatrix(properties);
         int counter = 0;
-        for (OptimizationProps.OptMatchMatrix optMatchMatrix : optProps.optMatchMatrix) {
+        for (OptMatchMatrixConfig optMatchMatrix : optProps.optMatchMatrix) {
             System.out.println(String.format("run with %s", optMatchMatrix));
             for (Schedule s : schedules) {
                 s.resetAge();
@@ -104,7 +102,7 @@ public class Optimizer {
         List<Schedule> schedules = new ArrayList<>();
         schedules.add(schedule);
         int counter = 0;
-        for (OptimizationProps.OptBoatUsage optBoatUsage : optProps.optBoatUsage) {
+        for (OptBoatConfig optBoatUsage : optProps.optBoatUsage) {
             System.out.println(String.format("run with %s", optBoatUsage));
             for (Schedule s : schedules) {
                 s.resetAge();
@@ -175,10 +173,11 @@ public class Optimizer {
                 "schedule_config",
                 true,
                 "the path to the yaml-file containing the schedule configuration");
-        scheduleConfig.setRequired(true);
+        scheduleConfig.setRequired(false);
         options.addOption(scheduleConfig);
 
         Option optimizationConfig = new Option(
+                "oc",
                 "opt",
                 true,
                 "the path to the yaml-file containing the schedule configuration. If not given, take default configuration");
@@ -186,16 +185,16 @@ public class Optimizer {
         options.addOption(optimizationConfig);
 
         Option displayConfig = new Option(
-                "d",
-                "display_config",
+                "dc",
+                "display",
                 true,
                 "the path to the yaml-file containing the display configuration for the pdf");
         displayConfig.setRequired(false);
         options.addOption(displayConfig);
 
         Option outPdf = new Option(
-                "p",
-                "out_pdf",
+                "plp",
+                "pairing_list_pdf",
                 true,
                 "if given, save the pdf to the given path");
         displayConfig.setRequired(false);
@@ -203,20 +202,27 @@ public class Optimizer {
 
 
         Option input = new Option(
-                "i",
-                "in",
+                "pli",
+                "pairing_list_in",
                 true,
                 "if given, start with this configuration (must fit to schedule configuration), otherwise use random.");
         input.setRequired(false);
         options.addOption(input);
 
-        Option output = new Option(
-                "o",
-                "out_schedule",
+        Option outYml = new Option(
+                "plo",
+                "pairing_list_out",
                 true,
                 "if given, save best schedule to this file as yaml-structure");
-        output.setRequired(false);
-        options.addOption(output);
+        outYml.setRequired(false);
+        options.addOption(outYml);
+        Option outCsv = new Option(
+                "plc",
+                "pairing_list_csv",
+                true,
+                "if given, save best schedule to this file as csv-structure");
+        outCsv.setRequired(false);
+        options.addOption(outCsv);
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
@@ -230,19 +236,20 @@ public class Optimizer {
             System.exit(1);
         }
 
-        String scheduleConfigValue = cmd.getOptionValue(scheduleConfig, null);
-        if (scheduleConfigValue == null) {
-            throw new ParseException("no schedule configuration given " + scheduleConfig);
-        }
-        ScheduleProps scheduleProps = ScheduleProps.readYaml(scheduleConfigValue);
+        String scheduleConfigValue = cmd.getOptionValue(scheduleConfig, "schedule_cfg.yml");
+        ScheduleConfig scheduleProps = ScheduleConfig.readYaml(scheduleConfigValue);
 
-        String optimizationConfigValue = cmd.getOptionValue(optimizationConfig, "optimization_properties_default.yml");
-        OptimizationProps optimizationProps = OptimizationProps.readYaml(optimizationConfigValue);
+        String optimizationConfigValue = cmd.getOptionValue(optimizationConfig, "opt_cfg.yml");
+        OptimizationConfig optimizationProps = OptimizationConfig.readYaml(optimizationConfigValue);
 
-        String displayConfigValue = cmd.getOptionValue(displayConfig, "display_properties_default.yml");
-        DisplayProps displayProps = DisplayProps.readYaml(displayConfigValue);
-        String outputValue = cmd.getOptionValue(output);
-        String outPdfValue = cmd.getOptionValue(outPdf);
+        String displayConfigValue = cmd.getOptionValue(displayConfig, "display_cfg.yml");
+        String outputValue = cmd.getOptionValue(outYml, "pairing_list.yml");
+        String outPdfValue = cmd.getOptionValue(outPdf, "pairing_list.pdf");
+        String outCsvValue = cmd.getOptionValue(outPdf, "pairing_list.csv");
+        String inputValue = cmd.getOptionValue(input, null);
+
+
+        DisplayConfig displayProps = DisplayConfig.readYaml(displayConfigValue);
         Random random = new Random(optimizationProps.seed);
         class Saver implements Consumer<Schedule> {
 
@@ -251,17 +258,19 @@ public class Optimizer {
             public void accept(Schedule schedule) {
                 if (outputValue != null) {
                     schedule.writeYaml(new File(outputValue));
-                    schedule.writeCSV(new File(outputValue.replace(".yml", "") + ".csv"));
+                }
+                if (outCsvValue != null) {
+                    schedule.writeCSV(new File(outCsvValue));
                 }
                 if (outPdfValue != null) {
-                    new PdfCreator(displayProps, scheduleProps, new File(outPdfValue)).create(schedule, new Random(optimizationProps.seed));
+                    new PdfCreator(displayProps, scheduleProps, new File(outPdfValue))
+                            .create(schedule, new Random(optimizationProps.seed));
                 }
 
             }
         }
         Saver saver = new Saver();
 
-        String inputValue = cmd.getOptionValue(input);
         Schedule schedule = inputValue == null ?
                 Util.getRandomSchedule(scheduleProps, random) :
                 Schedule.readYaml(new File(inputValue));

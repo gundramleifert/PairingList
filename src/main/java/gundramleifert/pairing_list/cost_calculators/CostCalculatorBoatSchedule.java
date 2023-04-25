@@ -1,11 +1,8 @@
 package gundramleifert.pairing_list.cost_calculators;
 
-import gundramleifert.pairing_list.types.BoatMatrix;
-import gundramleifert.pairing_list.configs.OptimizationProps;
-import gundramleifert.pairing_list.configs.ScheduleProps;
-import gundramleifert.pairing_list.types.Flight;
-import gundramleifert.pairing_list.types.Race;
-import gundramleifert.pairing_list.types.Schedule;
+import gundramleifert.pairing_list.configs.OptBoatConfig;
+import gundramleifert.pairing_list.types.*;
+import gundramleifert.pairing_list.configs.ScheduleConfig;
 
 import java.util.ArrayList;
 
@@ -13,21 +10,11 @@ import static gundramleifert.pairing_list.FlightWeight.getFlightWeight;
 
 public class CostCalculatorBoatSchedule implements ICostCalculator {
 
-    private ScheduleProps properties;
+    private ScheduleConfig properties;
     private double[] flightWeight;
-    private OptimizationProps.OptBoatUsage optBoatUsage;
+    private OptBoatConfig optBoatUsage;
 
-    public static class InterFlightStat {
-        public ArrayList<Byte> teamsChangeBoats = new ArrayList<>();
-        public ArrayList<Byte> teamsStayOnBoat = new ArrayList<>();
-        public ArrayList<Byte> teamsAtWaterAtLastRace = new ArrayList<>();
-        public ArrayList<Byte> teamsAtWaterAtFirstRace = new ArrayList<>();
-        public int shuttleLastRace;
-        public int shuttleFirstRace;
-        public int shuttleBetweenFlight;
-    }
-
-    public CostCalculatorBoatSchedule(ScheduleProps properties, OptimizationProps.OptBoatUsage optBoatUsage) {
+    public CostCalculatorBoatSchedule(ScheduleConfig properties, OptBoatConfig optBoatUsage) {
         this.properties = properties;
         flightWeight = getFlightWeight();
         this.optBoatUsage = optBoatUsage;

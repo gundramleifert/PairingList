@@ -1,9 +1,9 @@
 package gundramleifert.pairing_list;
 
-import gundramleifert.pairing_list.configs.ScheduleProps;
-import gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
+import gundramleifert.pairing_list.configs.ScheduleConfig;
 import gundramleifert.pairing_list.types.Flight;
 import gundramleifert.pairing_list.types.Race;
+import gundramleifert.pairing_list.types.SameShuttle;
 import gundramleifert.pairing_list.types.Schedule;
 
 import java.util.*;
@@ -43,7 +43,7 @@ public class Util {
         }
     }
 
-    public static void printCount(ScheduleProps props, Schedule schedule) {
+    public static void printCount(ScheduleConfig props, Schedule schedule) {
         int[] cnts = new int[schedule.flights.length + 1];
         Map<String, Integer> matchMatrix = getMatchMatrix(schedule);
         StringBuilder sb1 = new StringBuilder();
@@ -81,7 +81,7 @@ public class Util {
         System.out.println(sb.toString());
     }
 
-    public static void printMatchMatrix(ScheduleProps props, Schedule schedule) {
+    public static void printMatchMatrix(ScheduleConfig props, Schedule schedule) {
         MatchMatrix mm = new MatchMatrix(props.numTeams);
         for (Flight f : schedule.flights) {
             mm.add(f);
@@ -104,34 +104,8 @@ public class Util {
             System.out.println(sb.toString());
         }
     }
-    public static class SameShuttle{
-        public Race race;
-        public List<Byte> boats=new ArrayList<>(3);
 
-        public SameShuttle(Race race) {
-            this.race = race;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            SameShuttle that = (SameShuttle) o;
-
-            if (!race.equals(that.race)) return false;
-            return boats.equals(that.boats);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = race.hashCode();
-            result = 31 * result + boats.hashCode();
-            return result;
-        }
-    }
-
-    private static SameShuttle teamsOnSameShuttles(Race before, Race middle, Race after,Random random){
+    private static SameShuttle teamsOnSameShuttles(Race before, Race middle, Race after, Random random){
         SameShuttle sameShuttle = new SameShuttle(middle);
         for (int i = 0; i < before.teams.length; i++) {
             byte t1 = before.teams[i];
@@ -189,7 +163,7 @@ public class Util {
         return schedule;
     }
 
-    public static Schedule getRandomSchedule(ScheduleProps properties, Random random) {
+    public static Schedule getRandomSchedule(ScheduleConfig properties, Random random) {
         Flight[] flights = new Flight[properties.flights];
         for (int i = 0; i < properties.flights; i++) {
             Race[] races = new Race[properties.getRaces()];

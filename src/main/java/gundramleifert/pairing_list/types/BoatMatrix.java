@@ -1,14 +1,12 @@
 package gundramleifert.pairing_list.types;
 
-import gundramleifert.pairing_list.configs.ScheduleProps;
-import gundramleifert.pairing_list.types.Flight;
-import gundramleifert.pairing_list.types.Race;
+import gundramleifert.pairing_list.configs.ScheduleConfig;
 
 public class BoatMatrix {
     public byte[][] mat;
     public int flights;
 
-    public BoatMatrix(ScheduleProps properties) {
+    public BoatMatrix(ScheduleConfig properties) {
         mat = new byte[properties.boats.length][properties.teams.length];
     }
 
