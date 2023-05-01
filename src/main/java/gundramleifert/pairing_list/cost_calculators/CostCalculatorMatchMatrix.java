@@ -5,38 +5,46 @@ import gundramleifert.pairing_list.configs.ScheduleConfig;
 import gundramleifert.pairing_list.types.Flight;
 import gundramleifert.pairing_list.types.Schedule;
 
-import static gundramleifert.pairing_list.FlightWeight.getFlightWeight;
+public class CostCalculatorMatchMatrix {
 
-public class CostCalculatorMatchMatrix implements ICostCalculator {
+    private final ScheduleConfig properties;
+    private final MatchMatrix matchMatrixBase;
 
-    private ScheduleConfig properties;
-    private double[] flightWeight;
-
-    public CostCalculatorMatchMatrix(ScheduleConfig properties) {
+    public CostCalculatorMatchMatrix() {
+        this(null,null);
+    }
+    public CostCalculatorMatchMatrix(ScheduleConfig properties, MatchMatrix matchMatrixBase) {
         this.properties = properties;
-        flightWeight = getFlightWeight();
+        this.matchMatrixBase = matchMatrixBase;
+    }
+
+    public double scoreWithCache(Flight fligth) {
+        if (!fligth.scoreMap.containsKey(this)) {
+            fligth.scoreMap.put(this, score(fligth));
+        }
+        return fligth.scoreMap.get(this);
+    }
+
+    public double score(Flight flight) {
+        MatchMatrix mm = new MatchMatrix(matchMatrixBase);
+        mm.add(flight, false);
+        return score(mm);
+    }
+
+    public double score(MatchMatrix matchMatrix) {
+        double res = 0;
+        double avg = matchMatrix.avg();
+        for (int i = 0; i < matchMatrix.mat.length; i++) {
+            byte[] vec = matchMatrix.mat[i];
+            for (int j = 0; j < i; j++) {
+                double diff = vec[j] - avg;
+                res += Math.abs(diff * diff * diff);
+            }
+        }
+        return res;
     }
 
     public double score(Schedule schedule) {
-        double res = 0;
-        MatchMatrix matchMatrix = new MatchMatrix(properties.numTeams);
-        for (int flightIdx = 0; flightIdx < schedule.flights.length; flightIdx++) {
-            Flight flight = schedule.flights[flightIdx];
-            matchMatrix.add(flight);
-            //if (flightIdx<schedule.flights.length-1){
-            //    continue;
-            //}
-            double avg = matchMatrix.avg();
-            double resPart = 0;
-            for (byte[] vec : matchMatrix.mat) {
-                for (byte v : vec) {
-                    int diff = (int) (v - avg);
-                    resPart += diff * diff;
-                    //resPart +=(v - avg)*(v - avg);
-                }
-            }
-            res += resPart * flightWeight[flightIdx];
-        }
-        return res;
+        return score(schedule.matchMatrix);
     }
 }

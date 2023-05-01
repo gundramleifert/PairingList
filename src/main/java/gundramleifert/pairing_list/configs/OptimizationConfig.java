@@ -38,8 +38,7 @@ public class OptimizationConfig {
     @JsonProperty
     public List<OptBoatConfig> optBoatUsage;
     @JsonProperty
-    public List<OptMatchMatrixConfig> optMatchMatrix;
-
+    public OptMatchMatrixConfig optMatchMatrix;
 
     @JsonProperty
     public int seed;

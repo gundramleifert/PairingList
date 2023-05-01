@@ -6,13 +6,15 @@ public class OptMatchMatrixConfig extends OptConfig {
     @JsonProperty
     public int swapTeams;
     @JsonProperty
-    public int merges;
+    public int maxBranches = 1;
+
+//    @JsonProperty
+//    public int merges;
 
     @Override
     public String toString() {
         return "OptMatchMatrix{" +
                 "swapTeams=" + swapTeams +
-                ", merges=" + merges +
                 ", loops=" + loops +
                 ", individuals=" + individuals +
                 ", earlyStopping=" + earlyStopping +

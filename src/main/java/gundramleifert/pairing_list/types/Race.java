@@ -17,13 +17,10 @@ public class Race {
         teams = crews;
     }
 
-    public Race copy(int depth) {
-        if (depth > 1) {
-            byte[] r = new byte[teams.length];
-            System.arraycopy(teams, 0, r, 0, teams.length);
-            return new Race(r);
-        }
-        return new Race(teams);
+    public Race copy() {
+        byte[] r = new byte[teams.length];
+        System.arraycopy(teams, 0, r, 0, teams.length);
+        return new Race(r);
     }
 
     @Override

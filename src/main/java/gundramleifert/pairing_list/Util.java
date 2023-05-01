@@ -10,28 +10,17 @@ import java.util.*;
 
 
 public class Util {
-    public static Map<String, Integer> getMatchMatrix(Schedule schedule) {
-        Map<String, Integer> matches = new HashMap<>();
-        Flight[] flights = schedule.flights;
-        String pair;
-        for (Flight flight : flights) {
-            for (Race race : flight.races) {
-                byte[] teams = race.teams;
-                for (int i = 0; i < teams.length; i++) {
-                    byte team1 = teams[i];
-                    for (int j = 0; j < i; j++) {
-                        byte team2 = teams[j];
-                        if (team1 < team2) {
-                            pair = String.format("%d %d", team1, team2);
-                        } else {
-                            pair = String.format("%d %d", team2, team1);
-                        }
-                        matches.put(pair, matches.getOrDefault(pair, 0) + 1);
-                    }
-                }
-            }
+
+    public static MatchMatrix getMatchMatrix(Schedule schedule, int numTeams) {
+        return getMatchMatrix(schedule, schedule.size() - 1, numTeams);
+    }
+
+    public static MatchMatrix getMatchMatrix(Schedule schedule, int flight, int numTeams) {
+        MatchMatrix mm = new MatchMatrix(numTeams);
+        for (int i = 0; i <= flight; i++) {
+            mm.add(schedule.get(i));
         }
-        return matches;
+        return mm;
     }
 
     public static void shuffle(byte[] bytes, Random rnd) {
@@ -44,11 +33,14 @@ public class Util {
     }
 
     public static void printCount(ScheduleConfig props, Schedule schedule) {
-        int[] cnts = new int[schedule.flights.length + 1];
-        Map<String, Integer> matchMatrix = getMatchMatrix(schedule);
+        int[] cnts = new int[schedule.size() + 1];
+        MatchMatrix matchMatrix = schedule.matchMatrix;
         StringBuilder sb1 = new StringBuilder();
-        for (Integer value : matchMatrix.values()) {
-            cnts[value]++;
+        for (int i = 0; i < matchMatrix.mat.length; i++) {
+            byte[] vec = matchMatrix.mat[i];
+            for (int j = 0; j < i; j++) {
+                cnts[vec[j]]++;
+            }
         }
         int max_value = 1;
         for (int i = 0; i < cnts.length; i++) {
@@ -59,12 +51,13 @@ public class Util {
         StringBuilder sb = new StringBuilder();
         for (int j = 0; j <= max_value; j++) {
             sb1.append(String.format("%4d", j));
-            sb.append(String.format("%4d", cnts[j]));
+            sb.append(cnts[j] == 0 ? "    " : String.format("%4d", cnts[j] * 2));
         }
         System.out.println(sb1.toString());
         System.out.println(sb.toString());
     }
-    public static void printCount(int[] counts,boolean startAtOne) {
+
+    public static void printCount(int[] counts, boolean startAtOne) {
         int max_value = 1;
         for (int i = 0; i < counts.length; i++) {
             if (counts[i] > 0) {
@@ -74,18 +67,15 @@ public class Util {
         StringBuilder sb1 = new StringBuilder();
         StringBuilder sb = new StringBuilder();
         for (int j = 0; j <= max_value; j++) {
-            sb1.append(String.format("%4d", (startAtOne?j+1:j)));
-            sb.append(String.format("%4d", counts[j]));
+            sb1.append(String.format("%4d", (startAtOne ? j + 1 : j)));
+            sb.append(counts[j] == 0 ? "    " : String.format("%4d", counts[j]));
         }
         System.out.println(sb1.toString());
         System.out.println(sb.toString());
     }
 
     public static void printMatchMatrix(ScheduleConfig props, Schedule schedule) {
-        MatchMatrix mm = new MatchMatrix(props.numTeams);
-        for (Flight f : schedule.flights) {
-            mm.add(f);
-        }
+        MatchMatrix mm = schedule.matchMatrix;
         StringBuilder sb1 = new StringBuilder();
         sb1.append(String.format("%3s", "-"));
         for (int j = 0; j < props.bytes.length; j++) {
@@ -105,42 +95,42 @@ public class Util {
         }
     }
 
-    private static SameShuttle teamsOnSameShuttles(Race before, Race middle, Race after, Random random){
+    private static SameShuttle teamsOnSameShuttles(Race before, Race middle, Race after, Random random) {
         SameShuttle sameShuttle = new SameShuttle(middle);
         for (int i = 0; i < before.teams.length; i++) {
             byte t1 = before.teams[i];
             for (int j = 0; j < after.teams.length; j++) {
                 byte t2 = after.teams[j];
-                if (t1==t2){
+                if (t1 == t2) {
                     sameShuttle.boats.add(middle.teams[i]);
                 }
             }
         }
-        if (sameShuttle.boats.size()%2==1){
+        if (sameShuttle.boats.size() % 2 == 1) {
             sameShuttle.boats.remove(random.nextInt(sameShuttle.boats.size()));
         }
-        if (sameShuttle.boats.size()>0){
-           return sameShuttle;
+        if (sameShuttle.boats.size() > 0) {
+            return sameShuttle;
         }
         return null;
     }
 
-    public static Map<Race,SameShuttle> teamsOnSameShuttles(Schedule schedule, Random random){
-        Map<Race,SameShuttle> res = new HashMap<>();
-        for (int i = 1; i < schedule.flights.length; i++) {
-            Flight flight1 = schedule.flights[i - 1];
-            Flight flight2 = schedule.flights[i];
-            Race race1 = flight1.races[flight1.races.length-2];
-            Race race2 = flight1.races[flight1.races.length-1];
+    public static Map<Race, SameShuttle> teamsOnSameShuttles(Schedule schedule, Random random) {
+        Map<Race, SameShuttle> res = new HashMap<>();
+        for (int i = 1; i < schedule.size(); i++) {
+            Flight flight1 = schedule.get(i - 1);
+            Flight flight2 = schedule.get(i);
+            Race race1 = flight1.races[flight1.races.length - 2];
+            Race race2 = flight1.races[flight1.races.length - 1];
             Race race3 = flight2.races[0];
             Race race4 = flight2.races[1];
             SameShuttle sameShuttle1 = teamsOnSameShuttles(race1, race2, race3, random);
-            SameShuttle sameShuttle2 = teamsOnSameShuttles( race2, race3,race4, random);
-            if(sameShuttle1!=null){
-                res.put(race2,sameShuttle1);
+            SameShuttle sameShuttle2 = teamsOnSameShuttles(race2, race3, race4, random);
+            if (sameShuttle1 != null) {
+                res.put(race2, sameShuttle1);
             }
-            if(sameShuttle2!=null){
-                res.put(race3,sameShuttle2);
+            if (sameShuttle2 != null) {
+                res.put(race3, sameShuttle2);
             }
         }
         return res;
@@ -154,8 +144,9 @@ public class Util {
 
 
     public static Schedule shuffleBoats(Schedule schedule, Random random) {
-        schedule = schedule.copy(100);
-        for (Flight flight : schedule.flights) {
+        schedule = schedule.copy();
+        for (int i = 0; i < schedule.size(); i++) {
+            Flight flight = schedule.get(i);
             for (Race race : flight.races) {
                 shuffle(race.teams, random);
             }
@@ -163,27 +154,31 @@ public class Util {
         return schedule;
     }
 
-    public static Schedule getRandomSchedule(ScheduleConfig properties, Random random) {
-        Flight[] flights = new Flight[properties.flights];
-        for (int i = 0; i < properties.flights; i++) {
-            Race[] races = new Race[properties.getRaces()];
-            byte[] teams = properties.bytes;
-            Util.shuffle(teams, random);
-            int off = 0;
-            for (int j = races.length; j > 0; j--) {
-                int remaining = (teams.length - off) / j;
-                Race race = new Race(Util.copy(teams, off, remaining));
-                Arrays.sort(race.teams);
-                races[j - 1] = race;
-                off += race.teams.length;
-                if (off > properties.numTeams) {
-                    break;
-                }
+    public static Flight getRandomFlight(ScheduleConfig config, Random random) {
+        Race[] races = new Race[config.getRaces()];
+        byte[] teams = config.bytes;
+        Util.shuffle(teams, random);
+        int off = 0;
+        for (int j = races.length; j > 0; j--) {
+            int remaining = (teams.length - off) / j;
+            Race race = new Race(Util.copy(teams, off, remaining));
+            Arrays.sort(race.teams);
+            races[j - 1] = race;
+            off += race.teams.length;
+            if (off > config.numTeams) {
+                break;
             }
-            Arrays.sort(races, Comparator.comparingInt(race -> race.teams[0]));
-            flights[i] = new Flight(races);
         }
-        return new Schedule(flights);
+        Arrays.sort(races, Comparator.comparingInt(race -> race.teams[0]));
+        return new Flight(races);
+    }
+
+    public static Schedule getRandomSchedule(ScheduleConfig properties, Random random) {
+        Schedule schedule = new Schedule(properties.numTeams);
+        for (int i = 0; i < properties.flights; i++) {
+            schedule.add(getRandomFlight(properties, random));
+        }
+        return schedule;
 
     }
 

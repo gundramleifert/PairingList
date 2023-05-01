@@ -10,7 +10,6 @@ public class MatchMatrix {
     public byte[][] mat;
     int matches = 0;
     int races = 0;
-    int sum = 0;
     int flights = 0;
 
 
@@ -55,11 +54,12 @@ public class MatchMatrix {
         }
         this.matches = toCopy.matches;
         this.races = toCopy.races;
+        this.flights=toCopy.flights;
     }
 
     public void add(Flight flight, boolean sortBoats) {
         if (sortBoats) {
-            flight = flight.copy(100);
+            flight = flight.copy();
             for (Race race : flight.races) {
                 Arrays.sort(race.teams);
             }

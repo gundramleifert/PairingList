@@ -1,15 +1,18 @@
 seed: 1235
 optMatchMatrix:
-  - loops: 30000
-    individuals: 500
-    swapTeams: 100
-    merges: 100
-    earlyStopping: 3000
-  - loops: 30000
-    individuals: 10
-    swapTeams: 10
-    merges: 10
-    earlyStopping: 5000
+  loops: 5000
+#  individuals: 50
+#  swapTeams: 50
+  individuals: 100
+  swapTeams: 100
+  earlyStopping: 200
+  showEveryN: 500
+  maxBranches: 5
+#  - loops: 30000
+#    individuals: 10
+#    swapTeams: 10
+#    merges: 10
+#    earlyStopping: 5000
 optBoatUsage:
   - loops: 30000
     individuals: 500

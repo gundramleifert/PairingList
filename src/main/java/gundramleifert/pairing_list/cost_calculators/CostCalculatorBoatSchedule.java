@@ -39,10 +39,10 @@ public class CostCalculatorBoatSchedule implements ICostCalculator {
     public static int[] getInterFlightStat(Schedule schedule) {
         int shuttleAtHabour=0;
         int shuttleAtSea = 0;
-        int shuttlesEachRace = shuttlesPerTeams(schedule.flights[0].races[0].teams.length);
+        int shuttlesEachRace = shuttlesPerTeams(schedule.get(0).races[0].teams.length);
         int boatChanges = 0;
-        for (int i = 1; i < schedule.flights.length; i++) {
-            InterFlightStat interFlightStat = getInterFlightStat(schedule.flights[i - 1], schedule.flights[i]);
+        for (int i = 1; i < schedule.size(); i++) {
+            InterFlightStat interFlightStat = getInterFlightStat(schedule.get(i - 1), schedule.get(i));
             shuttleAtHabour +=(shuttlesEachRace-shuttlesPerTeams(interFlightStat.shuttleBetweenFlight));
             shuttleAtSea +=(shuttlesEachRace-shuttlesPerTeams(interFlightStat.shuttleFirstRace));
             shuttleAtSea +=(shuttlesEachRace-shuttlesPerTeams(interFlightStat.shuttleLastRace));
@@ -97,8 +97,8 @@ public class CostCalculatorBoatSchedule implements ICostCalculator {
         double res = 0;
         BoatMatrix matchMatrix = new BoatMatrix(properties);
         double resPart = 0;
-        for (int flightIdx = 0; flightIdx < schedule.flights.length; flightIdx++) {
-            Flight flight = schedule.flights[flightIdx];
+        for (int flightIdx = 0; flightIdx < schedule.size(); flightIdx++) {
+            Flight flight = schedule.get(flightIdx);
             matchMatrix.add(flight);
             double avg = matchMatrix.average();
             for (byte[] vec : matchMatrix.mat) {
@@ -108,7 +108,7 @@ public class CostCalculatorBoatSchedule implements ICostCalculator {
                 }
             }
             if (flightIdx > 0) {
-                InterFlightStat interFlightStat = getInterFlightStat(schedule.flights[flightIdx - 1], schedule.flights[flightIdx]);
+                InterFlightStat interFlightStat = getInterFlightStat(schedule.get(flightIdx - 1), schedule.get(flightIdx));
                 resPart += interFlightStat.teamsChangeBoats.size() * optBoatUsage.weightChangeBetweenBoats;
                 resPart += shuttlesPerTeams(interFlightStat.shuttleFirstRace) * optBoatUsage.weightStayOnShuttle;
                 resPart += shuttlesPerTeams(interFlightStat.shuttleLastRace) * optBoatUsage.weightStayOnShuttle;

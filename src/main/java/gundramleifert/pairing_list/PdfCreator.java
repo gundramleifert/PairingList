@@ -195,8 +195,8 @@ public class PdfCreator implements AutoCloseable {
         newPage(false);
         MatchMatrix matchMatrix = new MatchMatrix(scheduleConfig.numTeams);
         int[][] values = new int[scheduleConfig.flights][scheduleConfig.flights + 1];
-        for (int i = 0; i < schedule.flights.length; i++) {
-            Flight flight = schedule.flights[i];
+        for (int i = 0; i < schedule.size(); i++) {
+            Flight flight = schedule.get(i);
             matchMatrix.add(flight, sortBoats);
             int[] matchDistribution = matchMatrix.getMatchDistribution();
             for (int j = 0; j < matchDistribution.length; j++) {
@@ -273,8 +273,8 @@ public class PdfCreator implements AutoCloseable {
         newPage(false);
         BoatMatrix matchMatrix = new BoatMatrix(scheduleConfig);
         int[][] values = new int[scheduleConfig.flights][];
-        for (int flightIdx = 0; flightIdx < schedule.flights.length; flightIdx++) {
-            Flight flight = schedule.flights[flightIdx];
+        for (int flightIdx = 0; flightIdx < schedule.size(); flightIdx++) {
+            Flight flight = schedule.get(flightIdx);
             matchMatrix.add(flight);
             values[flightIdx] = matchMatrix.getBoatDistribution();
         }
@@ -325,9 +325,9 @@ public class PdfCreator implements AutoCloseable {
         Arrays.asList("At Flight", "On Boat", "On Water 1", "On Water 2", "Boatchange")
                 .forEach(s -> table.addCell(getCell(s)));
         table.addCell(getCellSep(5, 0.3f));
-        for (int i = 1; i < schedule.flights.length; i++) {
+        for (int i = 1; i < schedule.size(); i++) {
             InterFlightStat interFlightStat =
-                    CostCalculatorBoatSchedule.getInterFlightStat(schedule.flights[i - 1], schedule.flights[i]);
+                    CostCalculatorBoatSchedule.getInterFlightStat(schedule.get(i - 1), schedule.get(i));
             table.addCell(getCell(String.format("%d -> %d", i, i + 1)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsStayOnBoat)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsAtWaterAtLastRace)));
@@ -394,9 +394,9 @@ public class PdfCreator implements AutoCloseable {
         String[] clubs = scheduleConfig.teams;
         DisplayConfig.DeviceRgbWithAlpha LIGHT_GRAY = DisplayConfig.DeviceRgbWithAlpha.fromArray(155);
         DisplayConfig.DeviceRgbWithAlpha DARK_GRAY = DisplayConfig.DeviceRgbWithAlpha.fromArray(100);
-        for (int flight = 0; flight < schedule.flights.length; flight++) {
+        for (int flight = 0; flight < schedule.size(); flight++) {
             table.addCell(getCellSep(columnWidths.length, 1.0f));
-            Flight f = schedule.flights[flight];
+            Flight f = schedule.get(flight);
             table.addCell(getCellSpan(String.valueOf(flight + 1), f.races.length));
             for (int i = 0; i < f.races.length; i++) {
                 table.addCell(getCell(String.valueOf(race++), -1));
