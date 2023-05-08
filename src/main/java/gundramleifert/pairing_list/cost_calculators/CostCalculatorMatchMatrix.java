@@ -5,30 +5,15 @@ import gundramleifert.pairing_list.configs.ScheduleConfig;
 import gundramleifert.pairing_list.types.Flight;
 import gundramleifert.pairing_list.types.Schedule;
 
-public class CostCalculatorMatchMatrix {
+public class CostCalculatorMatchMatrix implements ICostCalculator{
 
     private final ScheduleConfig properties;
-    private final MatchMatrix matchMatrixBase;
 
     public CostCalculatorMatchMatrix() {
-        this(null,null);
+        this(null);
     }
-    public CostCalculatorMatchMatrix(ScheduleConfig properties, MatchMatrix matchMatrixBase) {
+    public CostCalculatorMatchMatrix(ScheduleConfig properties) {
         this.properties = properties;
-        this.matchMatrixBase = matchMatrixBase;
-    }
-
-    public double scoreWithCache(Flight fligth) {
-        if (!fligth.scoreMap.containsKey(this)) {
-            fligth.scoreMap.put(this, score(fligth));
-        }
-        return fligth.scoreMap.get(this);
-    }
-
-    public double score(Flight flight) {
-        MatchMatrix mm = new MatchMatrix(matchMatrixBase);
-        mm.add(flight, false);
-        return score(mm);
     }
 
     public double score(MatchMatrix matchMatrix) {
@@ -45,6 +30,6 @@ public class CostCalculatorMatchMatrix {
     }
 
     public double score(Schedule schedule) {
-        return score(schedule.matchMatrix);
+        return score(schedule.getMatchMatrix());
     }
 }

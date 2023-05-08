@@ -3,6 +3,7 @@ package gundramleifert.pairing_list.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gundramleifert.pairing_list.MatchMatrix;
+import gundramleifert.pairing_list.Util;
 import gundramleifert.pairing_list.Yaml;
 import lombok.SneakyThrows;
 
@@ -21,7 +22,9 @@ public class Schedule {
     @JsonProperty
     private List<Flight> flights = new ArrayList<>();
 
-    public MatchMatrix matchMatrix;
+    private MatchMatrix matchMatrix;
+
+    private Schedule base;
 
 
     private Schedule() {
@@ -32,13 +35,23 @@ public class Schedule {
         this.matchMatrix = new MatchMatrix(numTeams);
     }
 
-    public void add(Flight flight) {
-        this.flights.add(flight);
-        this.matchMatrix.add(flight);
+    public Schedule(Schedule base, Flight flight){
+        this.base=base;
+        flights.add(flight);
     }
 
-    public void set(int index,Flight flight){
-        flights.set(index,flight);
+//    public void setBase(Schedule schedule) {
+//        this.base = schedule;
+//    }
+
+    public void add(Flight flight) {
+        this.flights.add(flight);
+        this.getMatchMatrix().add(flight);
+    }
+
+    public void set(int index, Flight flight) {
+        flights.set(index, flight);
+        throw new RuntimeException("not able with current matchmatrix-calculation");
     }
 
     @Override
@@ -70,24 +83,23 @@ public class Schedule {
         generation = 0;
     }
 
-
-    public Schedule(List<Flight> flights, MatchMatrix matchMatrix) {
-        this.flights = flights;
-        this.matchMatrix = matchMatrix;
+    public MatchMatrix getMatchMatrix() {
+        if (matchMatrix == null) {
+            matchMatrix = new MatchMatrix(base.getMatchMatrix());
+            matchMatrix.add(flights.get(flights.size() - 1));
+        }
+        return matchMatrix;
     }
 
-    public void verify() {
-        for (Flight flight : this.flights) {
-            for (Race race : flight.races) {
-                for (int i = 0; i < race.teams.length; i++) {
-                    for (int i1 = i + 1; i1 < race.teams.length; i1++) {
-                        if (race.teams[i] == race.teams[i1]) {
-                            throw new RuntimeException("oha");
-                        }
-                    }
-                }
-            }
-        }
+
+
+
+    public Schedule(MatchMatrix mm, Flight flight) {
+        this.base = null;
+        this.matchMatrix = mm;
+        this.matchMatrix.add(flight);
+        this.flights = new ArrayList<>(1);
+        this.flights.add(flight);
     }
 
     public Flight get(int i) {
@@ -99,15 +111,11 @@ public class Schedule {
     }
 
     public Schedule copy() {
-        List<Flight> flights = new ArrayList<>(this.flights.size());
-        for (int i = 0; i < this.flights.size(); i++) {
-            Flight flight = this.flights.get(i);
-            if (flight == null) {
-                break;
-            }
-            flights.add(flight.copy());
+        if (base == null) {
+            //flat
+            return new Schedule(matchMatrix, flights.get(0).copy());
         }
-        return new Schedule(flights, new MatchMatrix(this.matchMatrix));
+        return new Schedule(base, flights.get(flights.size() - 1).copy());
     }
 
     public static Schedule readYaml(final File file) throws IOException {

@@ -26,6 +26,18 @@ public class MutationUtil {
         // NO sort!!
         return res;
     }
+    public static void swapBoats(Flight flight, Random random) {
+        int races = flight.races.length;
+        int r_idx = random.nextInt(races);
+        Race r = flight.races[r_idx];
+        int boats = r.teams.length;
+        int b_idx1 = random.nextInt(boats);
+        int b_idx2 = (b_idx1 + 1 + random.nextInt(boats - 1)) % boats;
+        byte boat = r.teams[b_idx1];
+        r.teams[b_idx1] = r.teams[b_idx2];
+        r.teams[b_idx2] = boat;
+        // NO sort!!
+    }
 
     public static Schedule swapRaces(Schedule schedule, Random random) {
         Schedule res = schedule.copy();
@@ -39,13 +51,8 @@ public class MutationUtil {
         return res;
     }
 
-    public static Schedule swapBetweenRaces(Schedule schedule, Random random) {
-        int f_idx = random.nextInt(schedule.size());
-        return swapBetweenRaces(schedule, f_idx, random);
-    }
-
-    public static Flight swapBetweenRaces(Flight f, Random random) {
-        f = f.copy();
+    public static void swapBetweenRaces(Schedule schedule, Random random) {
+        Flight f = schedule.get(schedule.size() - 1);
         int races = f.races.length;
         int r1_idx = random.nextInt(races);
         int r2_idx = (r1_idx + 1 + random.nextInt(races - 1)) % races;
@@ -59,15 +66,14 @@ public class MutationUtil {
         Arrays.sort(r1.teams);
         Arrays.sort(r2.teams);
         Arrays.sort(f.races, Comparator.comparingInt(race -> race.teams[0]));
-        return f;
     }
 
-    public static Schedule swapBetweenRaces(Schedule schedule, int flightIndex, Random random) {
-        Schedule res = schedule.copy();
-        Flight f = res.get(flightIndex);
-        f = swapBetweenRaces(f, random);
-        res.set(flightIndex,f);
-        return res;
-    }
+//    public static Schedule swapBetweenRaces(Schedule schedule, int flightIndex, Random random) {
+//        Schedule res = schedule.copy();
+//        Flight f = res.get(flightIndex);
+//        f = swapBetweenRaces(f, random);
+//        res.set(flightIndex,f);
+//        return res;
+//    }
 
 }

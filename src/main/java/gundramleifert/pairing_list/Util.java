@@ -12,7 +12,7 @@ import java.util.*;
 public class Util {
 
     public static MatchMatrix getMatchMatrix(Schedule schedule, int numTeams) {
-        return getMatchMatrix(schedule, schedule.size() - 1, numTeams);
+        return getMatchMatrix(schedule,schedule.size()-1, numTeams);
     }
 
     public static MatchMatrix getMatchMatrix(Schedule schedule, int flight, int numTeams) {
@@ -34,7 +34,7 @@ public class Util {
 
     public static void printCount(ScheduleConfig props, Schedule schedule) {
         int[] cnts = new int[schedule.size() + 1];
-        MatchMatrix matchMatrix = schedule.matchMatrix;
+        MatchMatrix matchMatrix = schedule.getMatchMatrix();
         StringBuilder sb1 = new StringBuilder();
         for (int i = 0; i < matchMatrix.mat.length; i++) {
             byte[] vec = matchMatrix.mat[i];
@@ -75,7 +75,7 @@ public class Util {
     }
 
     public static void printMatchMatrix(ScheduleConfig props, Schedule schedule) {
-        MatchMatrix mm = schedule.matchMatrix;
+        MatchMatrix mm = schedule.getMatchMatrix();
         StringBuilder sb1 = new StringBuilder();
         sb1.append(String.format("%3s", "-"));
         for (int j = 0; j < props.bytes.length; j++) {
@@ -171,6 +171,17 @@ public class Util {
         }
         Arrays.sort(races, Comparator.comparingInt(race -> race.teams[0]));
         return new Flight(races);
+    }
+
+    public static void shuffleTeams(Flight flight, Random random) {
+        for (Race race : flight.races){
+            Util.shuffle(race.teams,random);
+        }
+    }
+    public static Flight copyFlightAndShuffleTeams(Flight flight, Random random) {
+        flight = flight.copy();
+        shuffleTeams(flight,random);
+        return flight;
     }
 
     public static Schedule getRandomSchedule(ScheduleConfig properties, Random random) {

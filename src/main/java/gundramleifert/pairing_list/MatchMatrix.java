@@ -54,7 +54,7 @@ public class MatchMatrix {
         }
         this.matches = toCopy.matches;
         this.races = toCopy.races;
-        this.flights=toCopy.flights;
+        this.flights = toCopy.flights;
     }
 
     public void add(Flight flight, boolean sortBoats) {
@@ -73,7 +73,13 @@ public class MatchMatrix {
             for (int idxLower = 0; idxLower < r.teams.length; idxLower++) {
                 byte teamLower = r.teams[idxLower];
                 for (int idxHigher = idxLower + 1; idxHigher < r.teams.length; idxHigher++) {
-                    mat[r.teams[idxHigher]][teamLower]++;
+                    final byte teamHigher = r.teams[idxHigher];
+                    if (teamHigher > teamLower) {
+                        mat[teamHigher][teamLower]++;
+                    } else {
+                        mat[teamLower][teamHigher]++;
+                    }
+
                 }
             }
         }
