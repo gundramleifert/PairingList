@@ -442,10 +442,10 @@ public class Optimizer {
         Optimizer optimizer = new Optimizer();
         optimizer.init(scheduleProps, optimizationProps, random);
         schedule = optimizer.optimizeMatchMatrix(saver);
-        if (optimizationProps.optMatchMatrix.loops > 0) {
-            schedule = Util.shuffleBoats(schedule, random);
-        }
-        schedule = optimizer.optimizeBoatSchedule(schedule, saver);
+//        if (optimizationProps.optMatchMatrix.loops > 0) {
+//            schedule = Util.shuffleBoats(schedule, random);
+//        }
+//        schedule = optimizer.optimizeBoatSchedule(schedule, saver);
 
         saver.accept(schedule);
     }
