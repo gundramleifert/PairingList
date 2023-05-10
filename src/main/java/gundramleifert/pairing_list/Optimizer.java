@@ -69,9 +69,9 @@ public class Optimizer {
                 schedules = schedules.subList(0, optMatchMatrix.individuals);
             }
             if (i == optMatchMatrix.loops - 1 || (optMatchMatrix.showEveryN > 0 && counter % optMatchMatrix.showEveryN == 0)) {
-                System.out.println("------------  " + i + "  -----------------------");
-                //System.out.println("best1:" + scorer1.score(schedules.get(0)));
-                printQuality(scorer, schedules);
+//                System.out.println("------------  " + i + "  -----------------------");
+//                //System.out.println("best1:" + scorer1.score(schedules.get(0)));
+//                printQuality(scorer, schedules);
                 //Util.printMatchMatrix(properties, schedules.get(0));
 //                Util.printCount(properties, copy);
 //            }
@@ -101,33 +101,40 @@ public class Optimizer {
 
     private List<Schedule> getBestFlight4Boats(Schedule best, Random random, Consumer<Schedule> saver) {
         List<Schedule> schedules = new ArrayList<>();
-        for (int i = 0; i < optProps.optBoatUsage.get(0).individuals; i++) {
+        OptBoatConfig optBoatUsage = optProps.optBoatUsage;
+        for (int i = 0; i < optBoatUsage.individuals; i++) {
             Schedule copy = best.copy();
-            Util.shuffleTeams(best.get(best.size()-1),random);
+            Util.shuffleTeams(best.get(best.size() - 1), random);
             schedules.add(copy);
         }
         int counter = 0;
-        final CostCalculatorBoatSchedule scorer = new CostCalculatorBoatSchedule(properties, optProps.optBoatUsage.get(0));
-        OptMatchMatrixConfig optMatchMatrix = optProps.optMatchMatrix;
-        for (int i = 0; i < optMatchMatrix.loops; i++) {
-            for (int j = 0; j < optMatchMatrix.swapTeams; j++) {
+        final CostCalculatorBoatSchedule scorer = new CostCalculatorBoatSchedule(properties, optBoatUsage);
+        for (int i = 0; i < optBoatUsage.loops; i++) {
+            for (int j = 0; j < optBoatUsage.swapBoats; j++) {
                 Schedule mutation = schedules.get(random.nextInt(schedules.size())).copy();
-                MutationUtil.swapBoats(mutation, random);
+                MutationUtil.swapBoats(mutation, properties,random);
+                if (!schedules.contains(mutation)) {
+                    schedules.add(mutation);
+                }
+            }
+            for (int j = 0; j < optBoatUsage.swapRaces; j++) {
+                Schedule mutation = schedules.get(random.nextInt(schedules.size())).copy();
+                MutationUtil.swapRaces(mutation, properties,random);
                 if (!schedules.contains(mutation)) {
                     schedules.add(mutation);
                 }
             }
             schedules.sort(Comparator.comparingDouble(scorer::scoreWithCache));
-            if (schedules.size() > optMatchMatrix.individuals) {
+            if (schedules.size() > optBoatUsage.individuals) {
                    /* for (Schedule schedule : schedules.subList(individuals, schedules.size())) {
                         hashes.remove(Integer.valueOf(schedule.hashCode()));
                     }*/
-                schedules = schedules.subList(0, optMatchMatrix.individuals);
+                schedules = schedules.subList(0, optBoatUsage.individuals);
             }
-            if (i == optMatchMatrix.loops - 1 || (optMatchMatrix.showEveryN > 0 && counter % optMatchMatrix.showEveryN == 0)) {
-                System.out.println("------------  " + i + "  -----------------------");
-                //System.out.println("best1:" + scorer1.score(schedules.get(0)));
-                printQuality(scorer, schedules);
+            if (i == optBoatUsage.loops - 1 || (optBoatUsage.showEveryN > 0 && counter % optBoatUsage.showEveryN == 0)) {
+//                System.out.println("------------  " + i + "  -----------------------");
+//                //System.out.println("best1:" + scorer1.score(schedules.get(0)));
+//                printQuality(scorer, schedules);
                 //Util.printMatchMatrix(properties, schedules.get(0));
 //                Schedule copy = schedule.copy();
 //                copy.add(schedules.get(0));
@@ -137,11 +144,11 @@ public class Optimizer {
                     s.getOlder();
                 }
                 counter++;
-                if (optMatchMatrix.earlyStopping > 0 && schedules.get(0).getAge() >= optMatchMatrix.earlyStopping) {
+                if (optBoatUsage.earlyStopping > 0 && schedules.get(0).getAge() >= optBoatUsage.earlyStopping) {
                     System.out.println("Early Stopping applied");
                     break;
                 }
-                if (saver != null && optMatchMatrix.saveEveryN > 0 && counter % optMatchMatrix.saveEveryN == 0) {
+                if (saver != null && optBoatUsage.saveEveryN > 0 && counter % optBoatUsage.saveEveryN == 0) {
                     saver.accept(schedules.get(0));
                 }
 
@@ -161,11 +168,11 @@ public class Optimizer {
 
         Set<Schedule> schedulesBest = new LinkedHashSet<>();
         Flight flight0 = Util.getRandomFlight(properties, random);
-        Schedule startSchedule = new Schedule(properties.numTeams);
+        Schedule startSchedule = new Schedule(properties);
         startSchedule.add(flight0);
         schedulesBest.add(startSchedule);
         for (int f = 1; f < this.properties.flights; f++) {
-            System.out.println(String.format("Flight %d:", f + 1));
+            System.out.println(String.format("###### Flight %d ######", f + 1));
             Set<Schedule> nextSchedules = new LinkedHashSet<>();
             for (Schedule schedule : schedulesBest) {
                 List<Schedule> bestFlights = getBestFlights(schedule, random, saver);
@@ -187,36 +194,38 @@ public class Optimizer {
                 Collections.shuffle(collect, random);
                 schedulesBest = new LinkedHashSet<>(collect.subList(0, optProps.optMatchMatrix.maxBranches));
             }
-            System.out.println("best so far:");
-            for (Schedule s : schedulesBest) {
-                int[] matchDistribution = s.getMatchMatrix().getMatchDistribution();
-                Util.printCount(matchDistribution, false);
-            }
-            for (Schedule schedule : schedulesBest) {
-                List<Schedule> bestFlights = getBestFlight4Boats(schedule, random, saver);
-               nextSchedules.addAll(bestFlights);
-            }
-            CostCalculatorBoatSchedule ccb = new CostCalculatorBoatSchedule(properties,optProps.optBoatUsage.get(0));
-            Schedule minb = nextSchedules
-                    .stream()
-                    .min(Comparator.comparingDouble(ccb::score))
-                    .orElseThrow(() -> new RuntimeException("empty schedules"));
-            double costMinB = ccb.score(minb);
-            schedulesBest = nextSchedules
-                    .stream()
-                    .filter(schedule -> Math.abs(ccb.score(schedule) - costMinB) < 1e-5)
-                    .collect(Collectors.toSet());
-            System.out.println(String.format("found %d best schedules for flight %d", schedulesBest.size(), f + 1));
-            if (schedulesBest.size() > optProps.optMatchMatrix.maxBranches) {
-                List<Schedule> collect = new ArrayList<>(schedulesBest);
-                Collections.shuffle(collect, random);
-                schedulesBest = new LinkedHashSet<>(collect.subList(0, optProps.optMatchMatrix.maxBranches));
-            }
-            System.out.println("best so far:");
-            for (Schedule s : schedulesBest) {
-                int[] matchDistribution = s.getMatchMatrix().getMatchDistribution();
-                Util.printCount(matchDistribution, false);
-            }
+            System.out.println("Schedule after MatchOpt:");
+            Schedule scheduleAfterMatchOpt = schedulesBest.stream().findFirst().get();
+            Util.printCount(scheduleAfterMatchOpt.getMatchMatrix().getMatchDistribution(), false);
+//            Util.printCount(scheduleAfterMatchOpt.getBoatMatrix().getBoatDistribution(), false);
+//            int[] ii = getInterFlightStat(scheduleAfterMatchOpt);
+//            System.out.println(String.format("saved Shuttles: in habour: %d at sea: %d - boat changes: %d", ii[0], ii[1], ii[2]));
+//            for (Schedule schedule : schedulesBest) {
+//                List<Schedule> bestFlights = getBestFlight4Boats(schedule, random, saver);
+//                nextSchedules.addAll(bestFlights);
+//            }
+//            CostCalculatorBoatSchedule ccb = new CostCalculatorBoatSchedule(properties, optProps.optBoatUsage);
+//            Schedule minb = nextSchedules
+//                    .stream()
+//                    .min(Comparator.comparingDouble(ccb::score))
+//                    .orElseThrow(() -> new RuntimeException("empty schedules"));
+//            double costMinB = ccb.score(minb);
+//            schedulesBest = nextSchedules
+//                    .stream()
+//                    .filter(schedule -> Math.abs(ccb.score(schedule) - costMinB) < 1e-5)
+//                    .collect(Collectors.toSet());
+//            System.out.println(String.format("found %d best schedules for flight %d", schedulesBest.size(), f + 1));
+//            if (schedulesBest.size() > optProps.optMatchMatrix.maxBranches) {
+//                List<Schedule> collect = new ArrayList<>(schedulesBest);
+//                Collections.shuffle(collect, random);
+//                schedulesBest = new LinkedHashSet<>(collect.subList(0, optProps.optMatchMatrix.maxBranches));
+//            }
+//            System.out.println("Schedule after BoatOpt:");
+//            Schedule scheduleAfterBoatOpt = schedulesBest.stream().findFirst().get();
+//            Util.printCount(scheduleAfterBoatOpt.getMatchMatrix().getMatchDistribution(), false);
+//            Util.printCount(scheduleAfterBoatOpt.getBoatMatrix().getBoatDistribution(), false);
+//            ii = getInterFlightStat(scheduleAfterBoatOpt);
+//            System.out.println(String.format("saved Shuttles: in habour: %d at sea: %d - boat changes: %d", ii[0], ii[1], ii[2]));
 
         }
         return schedulesBest.stream().findFirst().orElseThrow(() -> new RuntimeException("empty list"));
@@ -264,65 +273,69 @@ public class Optimizer {
 
     public Schedule optimizeBoatSchedule(Schedule schedule, Consumer<Schedule> saver) {
         List<Schedule> schedules = new ArrayList<>();
-        schedules.add(schedule);
+        OptBoatConfig optBoatUsage = optProps.optBoatUsage;
+        for (int i = 0; i < optBoatUsage.individuals; i++) {
+            Schedule copy = schedule.copy();
+            Util.shuffleBoats(copy, random);
+            schedules.add(copy);
+        }
         int counter = 0;
-        for (OptBoatConfig optBoatUsage : optProps.optBoatUsage) {
-            System.out.println(String.format("run with %s", optBoatUsage));
-            for (Schedule s : schedules) {
-                s.resetAge();
+        System.out.println(String.format("run with %s", optBoatUsage));
+        for (Schedule s : schedules) {
+            s.resetAge();
+        }
+        final CostCalculatorBoatSchedule scorer = new CostCalculatorBoatSchedule(properties, optBoatUsage);
+        for (int i = 0; i < optBoatUsage.loops; i++) {
+            for (int j = 0; j < optBoatUsage.swapBoats; j++) {
+                Schedule mutation = schedules.get(random.nextInt(schedules.size()));
+                mutation = MutationUtil.swapBoats(mutation,properties, random);
+                if (!schedules.contains(mutation)) {
+                    schedules.add(mutation);
+                }
             }
-            final CostCalculatorBoatSchedule scorer = new CostCalculatorBoatSchedule(properties, optBoatUsage);
-            for (int i = 0; i < optBoatUsage.loops; i++) {
-                for (int j = 0; j < optBoatUsage.swapBoats; j++) {
-                    Schedule mutation = schedules.get(random.nextInt(schedules.size()));
-                    mutation = MutationUtil.swapBoats(mutation, random);
-                    if (!schedules.contains(mutation)) {
-                        schedules.add(mutation);
-                    }
+            for (int j = 0; j < optBoatUsage.swapRaces; j++) {
+                Schedule mutation = schedules.get(random.nextInt(schedules.size()));
+                mutation = MutationUtil.swapRaces(mutation,properties, random);
+                if (!schedules.contains(mutation)) {
+                    schedules.add(mutation);
                 }
-                for (int j = 0; j < optBoatUsage.swapRaces; j++) {
-                    Schedule mutation = schedules.get(random.nextInt(schedules.size()));
-                    mutation = MutationUtil.swapRaces(mutation, random);
-                    if (!schedules.contains(mutation)) {
-                        schedules.add(mutation);
-                    }
-                }
-                schedules.sort(Comparator.comparingDouble(scorer::scoreWithCache));
-                if (schedules.size() > optBoatUsage.individuals) {
+            }
+            schedules.sort(Comparator.comparingDouble(scorer::score));
+            if (schedules.size() > optBoatUsage.individuals) {
                    /* for (Schedule schedule : schedules.subList(individuals, schedules.size())) {
                         hashes.remove(Integer.valueOf(schedule.hashCode()));
                     }*/
-                    schedules = schedules.subList(0, optBoatUsage.individuals);
+                schedules = schedules.subList(0, optBoatUsage.individuals);
+            }
+            if (i == optBoatUsage.loops - 1 || (optBoatUsage.saveEveryN > 0 && counter % optBoatUsage.saveEveryN == 0)) {
+//                    System.out.println("------------  " + i + "  -----------------------");
+//                    //System.out.println("best1:" + scorer1.score(schedules.get(0)));
+//                    printQuality("best", scorer, schedules.get(0));
+////                    printQuality("middle", scorer, schedules.get(schedules.size() / 2));
+//                    printQuality("worst", scorer, schedules.get(schedules.size() - 1));
+                //System.out.println(saveFuel.score(properties, schedules.get(0)));
+                //Util.printMatchMatrix(properties, schedules.get(0));
+                BoatMatrix matchMatrix = new BoatMatrix(properties);
+                for (int flightIdx = 0; flightIdx < schedule.size(); flightIdx++) {
+                    Flight flight = schedule.get(flightIdx);
+                    matchMatrix.add(flight);
                 }
-                if (i == optBoatUsage.loops - 1 || (optBoatUsage.saveEveryN > 0 && counter % optBoatUsage.saveEveryN == 0)) {
-                    System.out.println("------------  " + i + "  -----------------------");
-                    //System.out.println("best1:" + scorer1.score(schedules.get(0)));
-                    printQuality("best", scorer, schedules.get(0));
-//                    printQuality("middle", scorer, schedules.get(schedules.size() / 2));
-                    printQuality("worst", scorer, schedules.get(schedules.size() - 1));
-                    //System.out.println(saveFuel.score(properties, schedules.get(0)));
-                    //Util.printMatchMatrix(properties, schedules.get(0));
-                    BoatMatrix matchMatrix = new BoatMatrix(properties);
-                    for (int flightIdx = 0; flightIdx < schedule.size(); flightIdx++) {
-                        Flight flight = schedule.get(flightIdx);
-                        matchMatrix.add(flight);
-                    }
-                    int[] boatDistribution = matchMatrix.getBoatDistribution();
-                    Util.printCount(boatDistribution, false);
-                    int[] ii = getInterFlightStat(schedules.get(0));
-                    System.out.println(String.format("saved Shuttles: in habour: %d at sea: %d - boat changes: %d", ii[0], ii[1], ii[2]));
-                }
-                for (Schedule s : schedules) {
-                    s.getOlder();
-                }
-                counter++;
-                if (optBoatUsage.earlyStopping > 0 && schedules.get(0).getAge() >= optBoatUsage.earlyStopping) {
-                    System.out.println("Early Stopping applied");
-                    break;
-                }
-                if (saver != null && optBoatUsage.saveEveryN > 0 && counter % optBoatUsage.saveEveryN == 0) {
-                    saver.accept(schedules.get(0));
-                }
+                int[] boatDistribution = matchMatrix.getBoatDistribution();
+                Util.printCount(boatDistribution, false);
+                int[] ii = getInterFlightStat(schedules.get(0));
+                System.out.println(String.format("costs = %.3f .. %.3f", scorer.score(schedules.get(0)), scorer.score(schedules.get(schedules.size() - 1))));
+                System.out.println(String.format("saved Shuttles: in habour: %d at sea: %d - boat changes: %d", ii[0], ii[1], ii[2]));
+            }
+            for (Schedule s : schedules) {
+                s.getOlder();
+            }
+            counter++;
+            if (optBoatUsage.earlyStopping > 0 && schedules.get(0).getAge() >= optBoatUsage.earlyStopping) {
+                System.out.println("Early Stopping applied");
+                break;
+            }
+            if (saver != null && optBoatUsage.saveEveryN > 0 && counter % optBoatUsage.saveEveryN == 0) {
+                saver.accept(schedules.get(0));
             }
         }
         return schedules.get(0);
@@ -442,10 +455,10 @@ public class Optimizer {
         Optimizer optimizer = new Optimizer();
         optimizer.init(scheduleProps, optimizationProps, random);
         schedule = optimizer.optimizeMatchMatrix(saver);
-//        if (optimizationProps.optMatchMatrix.loops > 0) {
-//            schedule = Util.shuffleBoats(schedule, random);
-//        }
-//        schedule = optimizer.optimizeBoatSchedule(schedule, saver);
+        if (optimizationProps.optBoatUsage.loops > 0) {
+            schedule = Util.shuffleBoats(schedule, random);
+        }
+        schedule = optimizer.optimizeBoatSchedule(schedule, saver);
 
         saver.accept(schedule);
     }

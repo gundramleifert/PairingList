@@ -272,13 +272,13 @@ public class PdfCreator implements AutoCloseable {
     public PdfCreator createBoatDistribution(Schedule schedule) {
         newPage(false);
         BoatMatrix matchMatrix = new BoatMatrix(scheduleConfig);
-        int[][] values = new int[scheduleConfig.flights][];
+        int[][] values = new int[schedule.size()][];
         for (int flightIdx = 0; flightIdx < schedule.size(); flightIdx++) {
             Flight flight = schedule.get(flightIdx);
             matchMatrix.add(flight);
             values[flightIdx] = matchMatrix.getBoatDistribution();
         }
-        int[] matchDistribution = values[scheduleConfig.flights - 1];
+        int[] matchDistribution = values[schedule.size() - 1];
         int columns = 0;
         for (int i = 0; i < matchDistribution.length; i++) {
             if (matchDistribution[i] > 0) {

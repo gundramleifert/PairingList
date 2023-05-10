@@ -11,12 +11,10 @@ import static gundramleifert.pairing_list.FlightWeight.getFlightWeight;
 public class CostCalculatorBoatSchedule implements ICostCalculator {
 
     private ScheduleConfig properties;
-    private double[] flightWeight;
     private OptBoatConfig optBoatUsage;
 
     public CostCalculatorBoatSchedule(ScheduleConfig properties, OptBoatConfig optBoatUsage) {
         this.properties = properties;
-        flightWeight = getFlightWeight();
         this.optBoatUsage = optBoatUsage;
     }
 
@@ -115,8 +113,10 @@ public class CostCalculatorBoatSchedule implements ICostCalculator {
                 resPart += shuttlesPerTeams(interFlightStat.shuttleBetweenFlight) * optBoatUsage.weightStayOnBoat;
             }
 
-            res += resPart * flightWeight[flightIdx];
+            res += resPart;
         }
         return res;
     }
 }
+
+

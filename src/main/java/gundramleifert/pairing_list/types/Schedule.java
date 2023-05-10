@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gundramleifert.pairing_list.MatchMatrix;
 import gundramleifert.pairing_list.Util;
 import gundramleifert.pairing_list.Yaml;
+import gundramleifert.pairing_list.configs.ScheduleConfig;
 import lombok.SneakyThrows;
 
 import java.io.BufferedWriter;
@@ -23,6 +24,7 @@ public class Schedule {
     private List<Flight> flights = new ArrayList<>();
 
     private MatchMatrix matchMatrix;
+    private BoatMatrix boatMatrix;
 
     private Schedule base;
 
@@ -30,14 +32,22 @@ public class Schedule {
     private Schedule() {
     }
 
-    public Schedule(int numTeams) {
+    public Schedule(ScheduleConfig config) {
         this();
-        this.matchMatrix = new MatchMatrix(numTeams);
+        this.matchMatrix = new MatchMatrix(config.numTeams);
+        this.boatMatrix = new BoatMatrix(config);
     }
 
-    public Schedule(Schedule base, Flight flight){
-        this.base=base;
+    public Schedule(Schedule base, Flight flight) {
+        this.base = base;
+        if (base != null) {
+            flights.addAll(base.flights);
+        }
         flights.add(flight);
+    }
+
+    public Flight lastFlight() {
+        return flights.get(flights.size() - 1);
     }
 
 //    public void setBase(Schedule schedule) {
@@ -47,6 +57,7 @@ public class Schedule {
     public void add(Flight flight) {
         this.flights.add(flight);
         this.getMatchMatrix().add(flight);
+        this.getBoatMatrix().add(flight);
     }
 
     public void set(int index, Flight flight) {
@@ -91,7 +102,13 @@ public class Schedule {
         return matchMatrix;
     }
 
-
+    public BoatMatrix getBoatMatrix() {
+        if (boatMatrix == null) {
+            boatMatrix = new BoatMatrix(base.getBoatMatrix());
+            boatMatrix.add(flights.get(flights.size() - 1));
+        }
+        return boatMatrix;
+    }
 
 
     public Schedule(MatchMatrix mm, Flight flight) {
@@ -115,7 +132,33 @@ public class Schedule {
             //flat
             return new Schedule(matchMatrix, flights.get(0).copy());
         }
-        return new Schedule(base, flights.get(flights.size() - 1).copy());
+        return new Schedule(base, lastFlight().copy());
+    }
+
+    public Schedule copy(int firstFlightToChange, ScheduleConfig config, Flight flight) {
+        Schedule scheduleToCopy = this;
+        LinkedList<Flight> flightsToAdd = new LinkedList<>();
+        while (scheduleToCopy != null && scheduleToCopy.size() > firstFlightToChange) {
+            flightsToAdd.addFirst(scheduleToCopy.lastFlight());
+            scheduleToCopy = scheduleToCopy.base;
+        }
+        if (scheduleToCopy == null) {
+            scheduleToCopy = new Schedule(config);
+        } else {
+            if (scheduleToCopy.base == null) {
+                Flight flight1 = scheduleToCopy.lastFlight();
+                scheduleToCopy = new Schedule(config);
+                scheduleToCopy.add(flight1);
+            } else {
+                scheduleToCopy = scheduleToCopy.copy();
+            }
+        }
+        flightsToAdd.removeFirst();
+        scheduleToCopy.add(flight);
+        for (Flight f : flightsToAdd) {
+            scheduleToCopy.add(f);
+        }
+        return scheduleToCopy;
     }
 
     public static Schedule readYaml(final File file) throws IOException {

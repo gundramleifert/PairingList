@@ -1,5 +1,6 @@
 package gundramleifert.pairing_list.types;
 
+import gundramleifert.pairing_list.MatchMatrix;
 import gundramleifert.pairing_list.configs.ScheduleConfig;
 
 public class BoatMatrix {
@@ -10,8 +11,18 @@ public class BoatMatrix {
         mat = new byte[properties.boats.length][properties.teams.length];
     }
 
+    public BoatMatrix(BoatMatrix toCopy) {
+        byte[][] srcMat = toCopy.mat;
+        int len = srcMat[0].length;
+        this.mat = new byte[srcMat.length][len];
+        for (int i = 0; i < srcMat.length; i++) {
+            System.arraycopy(srcMat[i], 0, this.mat[i], 0, len);
+        }
+        this.flights = toCopy.flights;
+    }
+
     public int[] getBoatDistribution() {
-        int[] res = new int[flights+1];
+        int[] res = new int[flights + 1];
         for (byte[] vec : mat) {
             for (byte e : vec) {
                 res[e]++;
