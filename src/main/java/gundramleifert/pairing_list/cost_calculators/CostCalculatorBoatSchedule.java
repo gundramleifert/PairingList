@@ -35,18 +35,18 @@ public class CostCalculatorBoatSchedule implements ICostCalculator {
     }
 
     public static int[] getInterFlightStat(Schedule schedule) {
-        int shuttleAtHabour=0;
+        int shuttleAtHabour = 0;
         int shuttleAtSea = 0;
         int shuttlesEachRace = shuttlesPerTeams(schedule.get(0).races[0].teams.length);
         int boatChanges = 0;
         for (int i = 1; i < schedule.size(); i++) {
             InterFlightStat interFlightStat = getInterFlightStat(schedule.get(i - 1), schedule.get(i));
-            shuttleAtHabour +=(shuttlesEachRace-shuttlesPerTeams(interFlightStat.shuttleBetweenFlight));
-            shuttleAtSea +=(shuttlesEachRace-shuttlesPerTeams(interFlightStat.shuttleFirstRace));
-            shuttleAtSea +=(shuttlesEachRace-shuttlesPerTeams(interFlightStat.shuttleLastRace));
+            shuttleAtHabour += (shuttlesEachRace - shuttlesPerTeams(interFlightStat.shuttleBetweenFlight));
+            shuttleAtSea += (shuttlesEachRace - shuttlesPerTeams(interFlightStat.shuttleFirstRace));
+            shuttleAtSea += (shuttlesEachRace - shuttlesPerTeams(interFlightStat.shuttleLastRace));
             boatChanges += interFlightStat.teamsChangeBoats.size();
         }
-        return new int[]{shuttleAtHabour,shuttleAtSea,boatChanges};
+        return new int[]{shuttleAtHabour, shuttleAtSea, boatChanges};
     }
 
     public static InterFlightStat getInterFlightStat(Flight before, Flight after) {
@@ -108,9 +108,9 @@ public class CostCalculatorBoatSchedule implements ICostCalculator {
             if (flightIdx > 0) {
                 InterFlightStat interFlightStat = getInterFlightStat(schedule.get(flightIdx - 1), schedule.get(flightIdx));
                 resPart += interFlightStat.teamsChangeBoats.size() * optBoatUsage.weightChangeBetweenBoats;
-                resPart += shuttlesPerTeams(interFlightStat.shuttleFirstRace) * optBoatUsage.weightStayOnShuttle;
-                resPart += shuttlesPerTeams(interFlightStat.shuttleLastRace) * optBoatUsage.weightStayOnShuttle;
-                resPart += shuttlesPerTeams(interFlightStat.shuttleBetweenFlight) * optBoatUsage.weightStayOnBoat;
+                resPart += (shuttlesPerTeams(interFlightStat.shuttleFirstRace) + 0.01 * interFlightStat.shuttleFirstRace) * optBoatUsage.weightStayOnShuttle;
+                resPart += (shuttlesPerTeams(interFlightStat.shuttleLastRace) + 0.01 * interFlightStat.shuttleFirstRace) * optBoatUsage.weightStayOnShuttle;
+                resPart += (shuttlesPerTeams(interFlightStat.shuttleBetweenFlight) + 0.01 * interFlightStat.shuttleBetweenFlight) * optBoatUsage.weightStayOnBoat;
             }
 
             res += resPart;

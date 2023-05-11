@@ -16,6 +16,9 @@ import java.util.*;
 
 
 public class Schedule {
+
+
+    public static ScheduleConfig SCHEDULE_CONFIG = null;
     private int hash = 0;
     private int generation = 0;
     public HashMap<Object, Double> scoreMap = new HashMap<>(2);
@@ -29,13 +32,9 @@ public class Schedule {
     private Schedule base;
 
 
-    private Schedule() {
-    }
-
-    public Schedule(ScheduleConfig config) {
-        this();
-        this.matchMatrix = new MatchMatrix(config.numTeams);
-        this.boatMatrix = new BoatMatrix(config);
+    public Schedule() {
+        this.matchMatrix = new MatchMatrix(SCHEDULE_CONFIG.numTeams);
+        this.boatMatrix = new BoatMatrix(SCHEDULE_CONFIG);
     }
 
     public Schedule(Schedule base, Flight flight) {
@@ -135,7 +134,27 @@ public class Schedule {
         return new Schedule(base, lastFlight().copy());
     }
 
-    public Schedule copy(int firstFlightToChange, ScheduleConfig config, Flight flight) {
+    public Schedule deepCopy(int index, Flight flight){
+        Schedule schedule = new Schedule();
+        schedule.base=this.base;
+        ArrayList<Flight> fs = new ArrayList<>(this.flights);
+        fs.set(index,flight);
+        for (Flight f : fs) {
+            schedule.add(f);
+        }
+        return schedule;
+    }
+    public Schedule deepCopy(){
+        Schedule schedule = new Schedule();
+        schedule.base=this.base;
+        ArrayList<Flight> fs = new ArrayList<>(this.flights);
+        for (Flight f : fs) {
+            schedule.add(f.copy());
+        }
+        return schedule;
+    }
+
+    public Schedule copy(int firstFlightToChange, Flight flight) {
         Schedule scheduleToCopy = this;
         LinkedList<Flight> flightsToAdd = new LinkedList<>();
         while (scheduleToCopy != null && scheduleToCopy.size() > firstFlightToChange) {
@@ -143,11 +162,11 @@ public class Schedule {
             scheduleToCopy = scheduleToCopy.base;
         }
         if (scheduleToCopy == null) {
-            scheduleToCopy = new Schedule(config);
+            scheduleToCopy = new Schedule();
         } else {
             if (scheduleToCopy.base == null) {
                 Flight flight1 = scheduleToCopy.lastFlight();
-                scheduleToCopy = new Schedule(config);
+                scheduleToCopy = new Schedule();
                 scheduleToCopy.add(flight1);
             } else {
                 scheduleToCopy = scheduleToCopy.copy();
@@ -161,7 +180,8 @@ public class Schedule {
         return scheduleToCopy;
     }
 
-    public static Schedule readYaml(final File file) throws IOException {
+    public static Schedule readYaml(final File file,ScheduleConfig config) throws IOException {
+        Schedule.SCHEDULE_CONFIG=config;
         return Yaml.dftMapper().readValue(file, Schedule.class);
     }
 

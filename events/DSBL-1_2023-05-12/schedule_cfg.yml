@@ -1,28 +1,28 @@
-flights: 8
+flights: 16
 title: "Pairing List - 1. Segel-Bundesliga - Berlin"
 teams:
-- HSK
-- WSVG
-- KNS
-- ISK
-- RCB
-- SVT
-- CVL
-- RCO
-- TS
-- BYC
-- NRV
 - ASVW
+- BYC (BE)
+- BYCÜ
+- CYC
+- DYC
+- FSC
+- HSC
+- KYC (BW)
+- MSC
 - MYC
+- NRV
+- RSN
+- SSC
+- SMCÜ
+- SV03
+- VSAW
+- WVH
 - WYC
-- VSaW
-- FCSP
-- YCB
-- KYC
 boats:
 - HELLBLAU
-- SCHWARZ
+- GRAU
 - ROT
+- GRUEN
 - WEISS
 - LILA
-- SCHWARZ

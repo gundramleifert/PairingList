@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class MutationUtil {
 
-    public static Schedule swapBoats(Schedule schedule, ScheduleConfig config, Random random) {
+    public static Schedule swapBoats(Schedule schedule, Random random) {
         int f_idx = random.nextInt(schedule.size());
         Flight f = schedule.get(f_idx).copy();
         int races = f.races.length;
@@ -23,12 +23,27 @@ public class MutationUtil {
         byte boat = r.teams[b_idx1];
         r.teams[b_idx1] = r.teams[b_idx2];
         r.teams[b_idx2] = boat;
-        Schedule res = schedule.copy(f_idx,config, f);
+        Schedule res = schedule.copy(f_idx, f);
         // NO sort!!
         return res;
     }
+    public static Schedule swapBoatsDeepCopy(Schedule schedule, Random random) {
+        int f_idx = random.nextInt(schedule.size());
+        Flight f = schedule.get(f_idx).copy();
+        int races = f.races.length;
+        int r_idx = random.nextInt(races);
+        Race r = f.races[r_idx];
+        int boats = r.teams.length;
+        int b_idx1 = random.nextInt(boats);
+        int b_idx2 = (b_idx1 + 1 + random.nextInt(boats - 1)) % boats;
+        byte boat = r.teams[b_idx1];
+        r.teams[b_idx1] = r.teams[b_idx2];
+        r.teams[b_idx2] = boat;
+        // NO sort!!
+        return schedule.deepCopy(f_idx,f);
+    }
 
-    public static Schedule swapRaces(Schedule schedule, ScheduleConfig config, Random random) {
+    public static Schedule swapRaces(Schedule schedule, Random random) {
         int f_idx = random.nextInt(schedule.size());
         Flight f = schedule.get(f_idx).copy();
         int races = f.races.length;
@@ -37,8 +52,19 @@ public class MutationUtil {
         Race race = f.races[r1_idx];
         f.races[r1_idx] = f.races[r2_idx];
         f.races[r2_idx] = race;
-        Schedule res = schedule.copy(f_idx,config, f);
+        Schedule res = schedule.copy(f_idx, f);
         return res;
+    }
+    public static Schedule swapRacesDeepCopy(Schedule schedule, Random random) {
+        int f_idx = random.nextInt(schedule.size());
+        Flight f = schedule.get(f_idx).copy();
+        int races = f.races.length;
+        int r1_idx = random.nextInt(races);
+        int r2_idx = (r1_idx + 1 + random.nextInt(races - 1)) % races;
+        Race race = f.races[r1_idx];
+        f.races[r1_idx] = f.races[r2_idx];
+        f.races[r2_idx] = race;
+        return schedule.deepCopy(f_idx,f);
     }
 
     public static void swapBetweenRaces(Schedule schedule, Random random) {

@@ -6,9 +6,10 @@ show_boat_stat: true
 show_schuttle_stat: true
 teamwise_list: true
 additional_colors:
-  "HELLBLAU": [54, 166, 216]
-  "SCHWARZ": [0]
-  "ROT": [229, 9, 71]
-  "WEISS": [255]
-  "LILA": [130, 64, 145]
-  "GRAU": [135, 140, 140]
+  "HELLBLAU": [ 54, 166, 216 ]
+  "SCHWARZ": [ 0 ]
+  "ROT": [ 229, 9, 71 ]
+  "WEISS": [ 255 ]
+  "LILA": [ 130, 64, 145 ]
+  "GRUEN": [ 0, 163, 26 ]
+  "GRAU": [ 135, 140, 140 ]
