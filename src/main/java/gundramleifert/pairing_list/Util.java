@@ -185,7 +185,7 @@ public class Util {
     }
 
     public static Schedule getRandomSchedule(ScheduleConfig properties, Random random) {
-        Schedule schedule = new Schedule();
+        Schedule schedule = new Schedule(properties);
         for (int i = 0; i < properties.flights; i++) {
             schedule.add(getRandomFlight(properties, random));
         }

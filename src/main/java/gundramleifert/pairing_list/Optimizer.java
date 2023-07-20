@@ -168,7 +168,7 @@ public class Optimizer {
 
         Set<Schedule> schedulesBest = new LinkedHashSet<>();
         Flight flight0 = Util.getRandomFlight(properties, random);
-        Schedule startSchedule = new Schedule();
+        Schedule startSchedule = new Schedule(properties);
         startSchedule.add(flight0);
         schedulesBest.add(startSchedule);
         for (int f = 1; f < this.properties.flights; f++) {
@@ -432,9 +432,10 @@ public class Optimizer {
             }
         }
         Saver saver = new Saver();
-        Schedule schedule = inputValue == null ?
-                Util.getRandomSchedule(scheduleProps, random) :
-                Schedule.readYaml(new File(inputValue), scheduleProps);
+        Schedule schedule = null;
+//        schedule = inputValue == null ?
+//                Util.getRandomSchedule(scheduleProps, random) :
+//                Schedule.readYaml(new File(inputValue), scheduleProps);
 
         Optimizer optimizer = new Optimizer();
         optimizer.init(scheduleProps, optimizationProps, random);

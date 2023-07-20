@@ -18,7 +18,6 @@ import java.util.*;
 public class Schedule {
 
 
-    public static ScheduleConfig SCHEDULE_CONFIG = null;
     private int hash = 0;
     private int generation = 0;
     public HashMap<Object, Double> scoreMap = new HashMap<>(2);
@@ -31,15 +30,18 @@ public class Schedule {
 
     private Schedule base;
 
+    private ScheduleConfig config=null;
 
-    public Schedule() {
-        this.matchMatrix = new MatchMatrix(SCHEDULE_CONFIG.numTeams);
-        this.boatMatrix = new BoatMatrix(SCHEDULE_CONFIG);
+    public Schedule(ScheduleConfig config) {
+        this.config=config;
+        this.matchMatrix = new MatchMatrix(config.numTeams);
+        this.boatMatrix = new BoatMatrix(config);
     }
 
     public Schedule(Schedule base, Flight flight) {
         this.base = base;
         if (base != null) {
+            this.config = this.base.config;
             flights.addAll(base.flights);
         }
         flights.add(flight);
@@ -134,19 +136,20 @@ public class Schedule {
         return new Schedule(base, lastFlight().copy());
     }
 
-    public Schedule deepCopy(int index, Flight flight){
-        Schedule schedule = new Schedule();
-        schedule.base=this.base;
+    public Schedule deepCopy(int index, Flight flight) {
+        Schedule schedule = new Schedule(this.config);
+        schedule.base = this.base;
         ArrayList<Flight> fs = new ArrayList<>(this.flights);
-        fs.set(index,flight);
+        fs.set(index, flight);
         for (Flight f : fs) {
             schedule.add(f);
         }
         return schedule;
     }
-    public Schedule deepCopy(){
-        Schedule schedule = new Schedule();
-        schedule.base=this.base;
+
+    public Schedule deepCopy() {
+        Schedule schedule = new Schedule(this.config);
+        schedule.base = this.base;
         ArrayList<Flight> fs = new ArrayList<>(this.flights);
         for (Flight f : fs) {
             schedule.add(f.copy());
@@ -162,11 +165,11 @@ public class Schedule {
             scheduleToCopy = scheduleToCopy.base;
         }
         if (scheduleToCopy == null) {
-            scheduleToCopy = new Schedule();
+            scheduleToCopy = new Schedule(this.config);
         } else {
             if (scheduleToCopy.base == null) {
                 Flight flight1 = scheduleToCopy.lastFlight();
-                scheduleToCopy = new Schedule();
+                scheduleToCopy = new Schedule(this.config);
                 scheduleToCopy.add(flight1);
             } else {
                 scheduleToCopy = scheduleToCopy.copy();
@@ -180,16 +183,19 @@ public class Schedule {
         return scheduleToCopy;
     }
 
-    public static Schedule readYaml(final File file,ScheduleConfig config) throws IOException {
-        Schedule.SCHEDULE_CONFIG=config;
+    public static Schedule readYaml(final File file, ScheduleConfig config) throws IOException {
+        System.out.println("AATTTENTION: CONFIG IS IGNORED");
         return Yaml.dftMapper().readValue(file, Schedule.class);
     }
 
-    public void writeYaml(final File file) throws IOException {
-        Yaml.dftMapper().writeValue(file, this);
+    public void writeYaml(final File file) {
+        try {
+            Yaml.dftMapper().writeValue(file, this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @SneakyThrows
     public void writeCSV(final File file) {
         StringBuilder sb = new StringBuilder();
         int boats = 0;
@@ -200,7 +206,7 @@ public class Schedule {
                 countRace++;
                 Race race = flight.races[j];
                 boats = Math.max(boats, race.teams.length);
-                sb.append(countRace).append(";").append(j + 1).append(";");
+                sb.append(countRace).append(";").append(i + 1).append(";");
                 for (int k = 0; k < race.teams.length; k++) {
                     byte team = race.teams[k];
                     sb.append(team + 1).append(";");
@@ -214,8 +220,13 @@ public class Schedule {
             header.append(";Boat ").append(i + 1);
         }
         header.append("\n");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        writer.write(header + sb.toString());
-        writer.close();
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(file));
+            writer.write(header + sb.toString());
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

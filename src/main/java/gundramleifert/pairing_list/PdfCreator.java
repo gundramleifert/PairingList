@@ -16,6 +16,7 @@ import gundramleifert.pairing_list.types.*;
 import lombok.SneakyThrows;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,9 +88,13 @@ public class PdfCreator implements AutoCloseable {
         this.outFile = outFile;
     }
 
-    @SneakyThrows
     public void init() {
-        PdfWriter writer = new PdfWriter(this.outFile);
+        PdfWriter writer = null;
+        try {
+            writer = new PdfWriter(this.outFile);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         this.doc = new Document(new PdfDocument(writer));
         doc.setBottomMargin(10.0f);
         doc.setTopMargin(10.0f);
@@ -246,7 +251,6 @@ public class PdfCreator implements AutoCloseable {
                 .collect(Collectors.joining(", "));
     }
 
-    @SneakyThrows
     public void create(Schedule schedule, Random random) {
         init();
         if (displayConfig.show_match_stat) {
