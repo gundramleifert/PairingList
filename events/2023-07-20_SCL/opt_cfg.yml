@@ -1,6 +1,6 @@
 seed: 1235
 optMatchMatrix:
-  loops: 100
+  loops: 4000
   #  individuals: 50
   #  swapTeams: 50
   individuals: 500
