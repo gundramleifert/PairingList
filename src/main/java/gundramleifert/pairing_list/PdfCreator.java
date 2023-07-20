@@ -251,15 +251,11 @@ public class PdfCreator implements AutoCloseable {
                 .collect(Collectors.joining(", "));
     }
 
-    public void create(Schedule schedule, Random random) {
+    public void create(Schedule schedule, Random random,boolean debug) {
         init();
-        if (displayConfig.show_match_stat) {
+        if (debug) {
             createScheduleDistribution(schedule, true);
-        }
-        if (displayConfig.show_boat_stat) {
             createBoatDistribution(schedule);
-        }
-        if (displayConfig.show_schuttle_stat) {
             createShuttleDistribution(schedule);
         }
         createSchedule(schedule, (byte) -1, null);

@@ -426,7 +426,10 @@ public class Optimizer {
                 }
                 if (outPdfValue != null) {
                     new PdfCreator(displayProps, scheduleProps, new File(outPdfValue))
-                            .create(schedule, new Random(optimizationProps.seed));
+                            .create(schedule, new Random(optimizationProps.seed), false);
+                    File fileDebug = new File(outPdfValue.replace(".pdf", "_debug.pdf"));
+                    new PdfCreator(displayProps, scheduleProps, fileDebug)
+                            .create(schedule, new Random(optimizationProps.seed), true);
                 }
 
             }

@@ -49,15 +49,6 @@ public class DisplayConfig {
     public float width = 600f;
 
     @JsonProperty
-    public boolean show_match_stat = false;
-
-    @JsonProperty
-    public boolean show_boat_stat = false;
-
-    @JsonProperty
-    public boolean show_schuttle_stat = false;
-
-    @JsonProperty
     public boolean teamwise_list = false;
 
     @JsonProperty
