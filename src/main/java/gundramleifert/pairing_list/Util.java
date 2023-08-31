@@ -11,12 +11,12 @@ import java.util.*;
 
 public class Util {
 
-    public static MatchMatrix getMatchMatrix(Schedule schedule, int numTeams) {
-        return getMatchMatrix(schedule,schedule.size()-1, numTeams);
+    public static MatchMatrix getMatchMatrix(Schedule schedule, int numTeams,int numBoats) {
+        return getMatchMatrix(schedule,schedule.size()-1, numTeams,numBoats);
     }
 
-    public static MatchMatrix getMatchMatrix(Schedule schedule, int flight, int numTeams) {
-        MatchMatrix mm = new MatchMatrix(numTeams);
+    public static MatchMatrix getMatchMatrix(Schedule schedule, int flight, int numTeams,int numBoats) {
+        MatchMatrix mm = new MatchMatrix(numTeams,numBoats);
         for (int i = 0; i <= flight; i++) {
             mm.add(schedule.get(i));
         }

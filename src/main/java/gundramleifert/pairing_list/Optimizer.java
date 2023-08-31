@@ -51,7 +51,7 @@ public class Optimizer {
             schedules.add(new Schedule(base, Util.getRandomFlight(properties, random)));
         }
         int counter = 0;
-        final CostCalculatorMatchMatrix scorer = new CostCalculatorMatchMatrix(properties);
+        final CostCalculatorMatchMatrix scorer = new CostCalculatorMatchMatrix(properties,optProps.optMatchMatrix);
         OptMatchMatrixConfig optMatchMatrix = optProps.optMatchMatrix;
         for (int i = 0; i < optMatchMatrix.loops; i++) {
             for (int j = 0; j < optMatchMatrix.swapTeams; j++) {
@@ -178,7 +178,7 @@ public class Optimizer {
                 List<Schedule> bestFlights = getBestFlights(schedule, random, saver);
                 nextSchedules.addAll(bestFlights);
             }
-            CostCalculatorMatchMatrix cc = new CostCalculatorMatchMatrix();
+            CostCalculatorMatchMatrix cc = new CostCalculatorMatchMatrix(properties,optProps.optMatchMatrix);
             Schedule min = nextSchedules
                     .stream()
                     .min(Comparator.comparingDouble(cc::score))

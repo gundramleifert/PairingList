@@ -12,12 +12,18 @@ public class MatchMatrix {
     int races = 0;
     int flights = 0;
 
+    int boats;
 
-    public MatchMatrix(int teams) {
+    public byte[] lowerParticipants;
+
+
+    public MatchMatrix(int teams, int boats) {
         this.mat = new byte[teams][];
         for (int i = 0; i < teams; i++) {
             this.mat[i] = new byte[i];
         }
+        lowerParticipants = new byte[teams];
+        this.boats = boats;
     }
 
     public int[] getMatchDistribution() {
@@ -42,6 +48,13 @@ public class MatchMatrix {
         }
         return sum / cnt;
     }
+    public double avgLowerParticipants() {
+        double sum = 0;
+        for (int i = 0; i < this.lowerParticipants.length; i++) {
+            sum+=this.lowerParticipants[i];
+        }
+        return sum / this.lowerParticipants.length;
+    }
 
     public MatchMatrix(MatchMatrix toCopy) {
         byte[][] srcMat = toCopy.mat;
@@ -52,9 +65,12 @@ public class MatchMatrix {
             this.mat[i] = tgt;
             System.arraycopy(src, 0, tgt, 0, src.length);
         }
+        this.lowerParticipants = new byte[toCopy.lowerParticipants.length];
+        System.arraycopy(toCopy.lowerParticipants,0,toCopy.lowerParticipants,0,lowerParticipants.length);
         this.matches = toCopy.matches;
         this.races = toCopy.races;
         this.flights = toCopy.flights;
+        this.boats = toCopy.boats;
     }
 
     public void add(Flight flight, boolean sortBoats) {
@@ -80,6 +96,11 @@ public class MatchMatrix {
                         mat[teamLower][teamHigher]++;
                     }
 
+                }
+            }
+            if (r.teams.length < this.boats) {
+                for (byte t : r.teams) {
+                    this.lowerParticipants[t]++;
                 }
             }
         }

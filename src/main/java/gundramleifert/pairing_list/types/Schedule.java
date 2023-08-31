@@ -34,7 +34,7 @@ public class Schedule {
 
     public Schedule(ScheduleConfig config) {
         this.config=config;
-        this.matchMatrix = new MatchMatrix(config.numTeams);
+        this.matchMatrix = new MatchMatrix(config.numTeams,config.numBoats);
         this.boatMatrix = new BoatMatrix(config);
     }
 

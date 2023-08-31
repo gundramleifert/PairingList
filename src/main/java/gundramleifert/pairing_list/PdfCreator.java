@@ -198,7 +198,7 @@ public class PdfCreator implements AutoCloseable {
 
     public PdfCreator createScheduleDistribution(Schedule schedule, boolean sortBoats) {
         newPage(false);
-        MatchMatrix matchMatrix = new MatchMatrix(scheduleConfig.numTeams);
+        MatchMatrix matchMatrix = new MatchMatrix(scheduleConfig.numTeams,scheduleConfig.numBoats);
         int[][] values = new int[scheduleConfig.flights][scheduleConfig.flights + 1];
         for (int i = 0; i < schedule.size(); i++) {
             Flight flight = schedule.get(i);

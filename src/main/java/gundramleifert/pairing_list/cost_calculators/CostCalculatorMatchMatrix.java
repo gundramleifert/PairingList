@@ -1,19 +1,23 @@
 package gundramleifert.pairing_list.cost_calculators;
 
 import gundramleifert.pairing_list.MatchMatrix;
+import gundramleifert.pairing_list.configs.OptMatchMatrixConfig;
 import gundramleifert.pairing_list.configs.ScheduleConfig;
 import gundramleifert.pairing_list.types.Flight;
 import gundramleifert.pairing_list.types.Schedule;
 
-public class CostCalculatorMatchMatrix implements ICostCalculator{
+public class CostCalculatorMatchMatrix implements ICostCalculator {
 
     private final ScheduleConfig properties;
+    private final OptMatchMatrixConfig optConfig;
 
     public CostCalculatorMatchMatrix() {
-        this(null);
+        this(null, null);
     }
-    public CostCalculatorMatchMatrix(ScheduleConfig properties) {
+
+    public CostCalculatorMatchMatrix(ScheduleConfig properties, OptMatchMatrixConfig optConfig) {
         this.properties = properties;
+        this.optConfig = optConfig;
     }
 
     public double score(MatchMatrix matchMatrix) {
@@ -25,6 +29,15 @@ public class CostCalculatorMatchMatrix implements ICostCalculator{
                 double diff = vec[j] - avg;
                 res += Math.abs(diff * diff * diff);
             }
+        }
+        double v = matchMatrix.avgLowerParticipants();
+        if (v > 0.0) {
+            double res2 = 0;
+            for (int i = 0; i < matchMatrix.lowerParticipants.length; i++) {
+                double diff = v - matchMatrix.lowerParticipants[i];
+                res2 += Math.abs(diff * diff * diff);
+            }
+            res += res2 * optConfig.factorLessParticipants;
         }
         return res;
     }

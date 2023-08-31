@@ -7,6 +7,8 @@ public class OptMatchMatrixConfig extends OptConfig {
     public int swapTeams;
     @JsonProperty
     public int maxBranches = 1;
+    @JsonProperty
+    public double factorLessParticipants=0.5;
 
 //    @JsonProperty
 //    public int merges;
