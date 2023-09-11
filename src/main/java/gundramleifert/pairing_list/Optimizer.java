@@ -51,8 +51,9 @@ public class Optimizer {
             schedules.add(new Schedule(base, Util.getRandomFlight(properties, random)));
         }
         int counter = 0;
-        final CostCalculatorMatchMatrix scorer = new CostCalculatorMatchMatrix(properties,optProps.optMatchMatrix);
+        final CostCalculatorMatchMatrix scorer = new CostCalculatorMatchMatrix(properties, optProps.optMatchMatrix);
         OptMatchMatrixConfig optMatchMatrix = optProps.optMatchMatrix;
+
         for (int i = 0; i < optMatchMatrix.loops; i++) {
             for (int j = 0; j < optMatchMatrix.swapTeams; j++) {
                 Schedule mutation = schedules.get(random.nextInt(schedules.size())).copy();
@@ -84,6 +85,7 @@ public class Optimizer {
                     break;
                 }
                 if (saver != null && optMatchMatrix.saveEveryN > 0 && counter % optMatchMatrix.saveEveryN == 0) {
+                    Util.printCount(schedules.get(0).getMatchMatrix().getMatchDistribution(), false);
                     saver.accept(schedules.get(0));
                 }
 
@@ -178,7 +180,7 @@ public class Optimizer {
                 List<Schedule> bestFlights = getBestFlights(schedule, random, saver);
                 nextSchedules.addAll(bestFlights);
             }
-            CostCalculatorMatchMatrix cc = new CostCalculatorMatchMatrix(properties,optProps.optMatchMatrix);
+            CostCalculatorMatchMatrix cc = new CostCalculatorMatchMatrix(properties, optProps.optMatchMatrix);
             Schedule min = nextSchedules
                     .stream()
                     .min(Comparator.comparingDouble(cc::score))
@@ -195,7 +197,7 @@ public class Optimizer {
                 schedulesBest = new LinkedHashSet<>(collect.subList(0, optProps.optMatchMatrix.maxBranches));
             }
             System.out.println("Schedule after MatchOpt:");
-            Schedule scheduleAfterMatchOpt = schedulesBest.stream().findFirst().get();
+            Schedule scheduleAfterMatchOpt = schedulesBest.stream().findFirst().orElseThrow(() -> new RuntimeException("empty list"));
             Util.printCount(scheduleAfterMatchOpt.getMatchMatrix().getMatchDistribution(), false);
 
         }
