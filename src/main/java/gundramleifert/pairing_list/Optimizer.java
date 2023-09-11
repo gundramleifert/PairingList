@@ -314,7 +314,7 @@ public class Optimizer {
             double worst = scorer.score(schedules.get(schedules.size() - 1));
 
             if (Math.abs(best - worst) < 1e-5) {
-                System.out.println("best and worst are the same - no better solution can be esxpected - save and break!");
+                System.out.println("best and worst are the same - no better solution can be expected - save and break!");
                 if (saver != null) {
                     System.out.println("save!");
                     saver.accept(schedules.get(0));
