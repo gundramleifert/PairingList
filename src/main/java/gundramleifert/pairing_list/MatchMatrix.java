@@ -66,7 +66,11 @@ public class MatchMatrix {
             System.arraycopy(src, 0, tgt, 0, src.length);
         }
         this.lowerParticipants = new byte[toCopy.lowerParticipants.length];
-        System.arraycopy(toCopy.lowerParticipants,0,toCopy.lowerParticipants,0,lowerParticipants.length);
+        System.arraycopy(toCopy.lowerParticipants,
+                0,
+                lowerParticipants,
+                0,
+                lowerParticipants.length);
         this.matches = toCopy.matches;
         this.races = toCopy.races;
         this.flights = toCopy.flights;

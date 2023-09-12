@@ -1,7 +1,6 @@
 flights: 16
 title: "Pairing List - 2. Segel-Bundesliga - Konstanz"
 teams:
-- YCM
 - BYC (BA)
 - BSC
 - BOH-YC
@@ -19,6 +18,7 @@ teams:
 - SVW
 - SVI
 - WYD
+- YCM
 boats:
 - SCHWARZ
 - GRAU
