@@ -12,8 +12,6 @@ public class Flight {
 
     private int generation = 0;
 
-    public HashMap<Object, Double> scoreMap = new HashMap<>(2);
-
     public Flight(){}
     public Flight(Race[] races) {
         this.races = races;

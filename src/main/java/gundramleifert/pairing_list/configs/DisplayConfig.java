@@ -67,6 +67,9 @@ public class DisplayConfig {
     public float opacity_same_shuttle = 0.99f;
 
     @JsonProperty
+    public String headercolor_default = "WHITE";
+
+    @JsonProperty
     public Map<String, int[]> additional_colors = new HashMap<>();
 
 

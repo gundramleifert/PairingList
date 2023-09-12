@@ -1,0 +1,23 @@
+fontsize: 6
+tablewidth: 600
+factor_flight_race_width: 0.5
+show_match_stat: true
+show_boat_stat: true
+show_schuttle_stat: true
+teamwise_list: true
+headercolor_default: "LIGHT_GRAY"
+additional_colors:
+  "BLUE": [ 14, 0, 196 ]
+  "TURQUOISE": [ 2,229,255 ]
+  "GREEN": [ 4, 196, 29 ]
+  "RED": [ 226,2,2 ]
+  "PINK": [ 255, 96, 239 ]
+  "YELLOW": [ 239, 223, 00 ]
+  "WHITE": [ 255, 255, 255 ]
+  "BLACK": [ 0, 0, 0 ]
+  "LIGHTBLUE": [ 173, 216, 230 ]
+  "DARKBLUE": [ 0, 0, 139 ]
+  "GREY": [ 174, 170, 170 ]
+  "LIGHTGREEN": [ 144, 238, 144 ]
+  "PURPLE": [ 68, 52, 154 ]
+  "ORANGE": [ 255, 83, 0 ]

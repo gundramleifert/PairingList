@@ -296,7 +296,7 @@ public class Optimizer {
                 }
                 int[] boatDistribution = matchMatrix.getBoatDistribution();
                 Util.printCount(boatDistribution, false);
-                int[] ii = getInterFlightStat(schedules.get(0));
+                int[] ii = getInterFlightStat(schedules.get(0),properties.numTeams);
                 double best = scorer.score(schedules.get(0));
                 double worst = scorer.score(schedules.get(schedules.size() - 1));
                 System.out.println(String.format("costs = %.3f .. %.3f", best, worst));

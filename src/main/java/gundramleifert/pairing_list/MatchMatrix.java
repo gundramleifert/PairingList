@@ -94,6 +94,9 @@ public class MatchMatrix {
                 byte teamLower = r.teams[idxLower];
                 for (int idxHigher = idxLower + 1; idxHigher < r.teams.length; idxHigher++) {
                     final byte teamHigher = r.teams[idxHigher];
+                    if (teamHigher>=mat.length ||teamLower>=mat.length){
+                        continue;
+                    }
                     if (teamHigher > teamLower) {
                         mat[teamHigher][teamLower]++;
                     } else {
@@ -102,9 +105,10 @@ public class MatchMatrix {
 
                 }
             }
-            if (r.teams.length < this.boats) {
+            if (r.hasLowerParticipants(mat.length)) {
                 for (byte t : r.teams) {
-                    this.lowerParticipants[t]++;
+                    if (t<lowerParticipants.length)
+                        this.lowerParticipants[t]++;
                 }
             }
         }

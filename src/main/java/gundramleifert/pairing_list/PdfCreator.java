@@ -9,6 +9,7 @@ import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
+import gundramleifert.pairing_list.configs.BoatConfig;
 import gundramleifert.pairing_list.configs.DisplayConfig;
 import gundramleifert.pairing_list.configs.ScheduleConfig;
 import gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
@@ -98,15 +99,18 @@ public class PdfCreator implements AutoCloseable {
         this.doc = new Document(new PdfDocument(writer));
         doc.setBottomMargin(10.0f);
         doc.setTopMargin(10.0f);
-        String[] colors = scheduleConfig.boats;
-        this.fgColors = new DisplayConfig.DeviceRgbWithAlpha[colors.length];
-        this.bgColors = new DisplayConfig.DeviceRgbWithAlpha[colors.length];
+        BoatConfig[] boats = scheduleConfig.boats;
+        this.fgColors = new DisplayConfig.DeviceRgbWithAlpha[boats.length];
+        this.bgColors = new DisplayConfig.DeviceRgbWithAlpha[boats.length];
         colorMap = createColorMap(displayConfig);
-        for (int i = 0; i < colors.length; i++) {
-            DisplayConfig.DeviceRgbWithAlpha color = colorMap.getOrDefault(colors[i].toUpperCase(), null);
+        for (int i = 0; i < boats.length; i++) {
+            String color_bg = boats[i].color;
+            if (color_bg==null)
+                color_bg=displayConfig.headercolor_default;
+            DisplayConfig.DeviceRgbWithAlpha color = colorMap.get(color_bg.toUpperCase());
             if (color == null) {
                 throw new RuntimeException(String.format("cannot interpret key `%s` - choose one of %s",
-                        colors[i],
+                        color_bg,
                         String.join(",", colorMap.keySet())));
             }
             bgColors[i] = color;
@@ -141,6 +145,7 @@ public class PdfCreator implements AutoCloseable {
             }
         });
     }
+
     private static void boldText(Cell cell) {
         cell.getChildren().forEach(iElement -> {
             if (iElement instanceof Paragraph) {
@@ -154,11 +159,12 @@ public class PdfCreator implements AutoCloseable {
     }
 
     private Cell getCell(String text, int index, float opacity) {
-        return getCell(text,index>=0?bgColors[index]:null,opacity);
+        return getCell(text, index >= 0 ? bgColors[index] : null, opacity);
     }
+
     private Cell getCell(String text, DisplayConfig.DeviceRgbWithAlpha bgColor, float opacity) {
         Cell cell = getCell(text);
-        if (bgColor !=null) {
+        if (bgColor != null) {
             float v = (1 - (1 - avg(bgColor)) * bgColor.alpha * opacity);
             DisplayConfig.DeviceRgbWithAlpha fg = v > 0.3f ? DisplayConfig.DeviceRgbWithAlpha.BLACK : DisplayConfig.DeviceRgbWithAlpha.WHITE;
             cell.setBackgroundColor(bgColor, bgColor.alpha * opacity)
@@ -198,7 +204,7 @@ public class PdfCreator implements AutoCloseable {
 
     public PdfCreator createScheduleDistribution(Schedule schedule, boolean sortBoats) {
         newPage(false);
-        MatchMatrix matchMatrix = new MatchMatrix(scheduleConfig.numTeams,scheduleConfig.numBoats);
+        MatchMatrix matchMatrix = new MatchMatrix(scheduleConfig.numTeams, scheduleConfig.numBoats);
         int[][] values = new int[scheduleConfig.flights][scheduleConfig.flights + 1];
         for (int i = 0; i < schedule.size(); i++) {
             Flight flight = schedule.get(i);
@@ -251,7 +257,7 @@ public class PdfCreator implements AutoCloseable {
                 .collect(Collectors.joining(", "));
     }
 
-    public void create(Schedule schedule, Random random,boolean debug) {
+    public void create(Schedule schedule, Random random, boolean debug) {
         init();
         if (debug) {
             createScheduleDistribution(schedule, true);
@@ -327,7 +333,7 @@ public class PdfCreator implements AutoCloseable {
         table.addCell(getCellSep(5, 0.3f));
         for (int i = 1; i < schedule.size(); i++) {
             InterFlightStat interFlightStat =
-                    CostCalculatorBoatSchedule.getInterFlightStat(schedule.get(i - 1), schedule.get(i));
+                    CostCalculatorBoatSchedule.getInterFlightStat(schedule.get(i - 1), schedule.get(i),scheduleConfig.numTeams);
             table.addCell(getCell(String.format("%d -> %d", i, i + 1)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsStayOnBoat)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsAtWaterAtLastRace)));
@@ -356,6 +362,7 @@ public class PdfCreator implements AutoCloseable {
         }
         return displayConfig.opacity_inactive;
     }
+
     private boolean sameShuttle(byte teamCurrent, byte teamToHighlight, SameShuttle sameShuttles) {
         if (teamToHighlight < 0) {
             return false;
@@ -387,8 +394,13 @@ public class PdfCreator implements AutoCloseable {
         Table table = new Table(columnWidths);
         table.addCell(getCell("Flight", -1));
         table.addCell(getCell("Race", -1));
+        int default_index = 1;
         for (int i = 0; i < scheduleConfig.numBoats; i++) {
-            table.addCell(getCell(String.format("Boat %d", i + 1), i));
+            String name = this.scheduleConfig.boats[i].name;
+            if(name==null || name.equals("")){
+                name = String.format("Boat %d", default_index++);
+            }
+            table.addCell(getCell(name, i));
         }
         int race = 1;
         String[] clubs = scheduleConfig.teams;
@@ -409,7 +421,7 @@ public class PdfCreator implements AutoCloseable {
 //                            teamIndex,
 //                            sameShuttles == null ? null : sameShuttles.get(r)
 //                    );
-                    boolean sameS = sameShuttles!=null && sameShuttle(team,teamIndex,sameShuttles.get(r));
+                    boolean sameS = sameShuttles != null && sameShuttle(team, teamIndex, sameShuttles.get(r));
                     DisplayConfig.DeviceRgbWithAlpha bg = team == teamIndex ? DARK_GRAY : sameS ? LIGHT_GRAY : null;
                     Cell cell = getCell(teamName, bg, 1.0f);
 //                    if (sameS){

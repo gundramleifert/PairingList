@@ -10,7 +10,22 @@ public class Race {
     public byte[] teams;
 
     public Race(){
+    }
 
+    public boolean hasLowerParticipants(int anzTeams){
+        for (int i = 0; i < teams.length; i++) {
+            if (teams[i]>=anzTeams)
+                return true;
+        }
+        return false;
+    }
+    public int numParticipants(int anzTeams){
+        int cnt = 0;
+        for (int i = 0; i < teams.length; i++) {
+            if (teams[i]<anzTeams)
+                cnt++;
+        }
+        return cnt;
     }
 
     public Race(byte[] crews) {

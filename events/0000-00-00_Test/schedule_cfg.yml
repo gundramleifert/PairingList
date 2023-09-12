@@ -1,0 +1,21 @@
+flights: 6
+title: "Pairing List - Test Event"
+teams:
+  - ASVW
+  - ASVzR
+  - WSC
+  - RSC92
+  - MYC
+  - RoYC
+  - SSVzR
+  - SVT
+  - MYCR
+
+boats:
+  - color: DARKBLUE
+    name: Tick
+  - color: RED
+    name: Trick
+  - name: Track
+  - {}
+  - color: PINK

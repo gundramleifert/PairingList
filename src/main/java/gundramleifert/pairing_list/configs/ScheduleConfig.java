@@ -40,6 +40,15 @@ public class ScheduleConfig {
     public void init() {
         this.numBoats = boats.length;
         this.numTeams = teams.length;
+        if (this.getRaces()*numBoats!=teams.length){
+            //expand with no-shows
+            String[] teams_new = new String[getRaces() * numBoats];
+            System.arraycopy(teams,0,teams_new,0,teams.length);
+            for (int i = teams.length; i < teams_new.length; i++) {
+                teams_new[i]="";
+            }
+            this.teams=teams_new;
+        }
         this.bytes = toByteArray();
     }
 
@@ -53,27 +62,21 @@ public class ScheduleConfig {
     public String[] teams;
 
     @JsonProperty
-    public String[] boats;
+    public BoatConfig[] boats;
 
     public int numBoats;
     public int numTeams;
-    public float width = 600f;
 
     public byte[] bytes;
 
-    public double avg = calcAvg(this);
 
     public int getRaces() {
         return ((numTeams + numBoats - 1) / numBoats);
     }
 
-    private static double calcAvg(ScheduleConfig props) {
-        return props.flights * (((double) (props.numBoats - 1) / props.numTeams));
-    }
-
     private byte[] toByteArray() {
-        byte[] res = new byte[numTeams];
-        for (int i = 0; i < numTeams; i++) {
+        byte[] res = new byte[teams.length];
+        for (int i = 0; i < teams.length; i++) {
             res[i] = (byte) i;
         }
         return res;
