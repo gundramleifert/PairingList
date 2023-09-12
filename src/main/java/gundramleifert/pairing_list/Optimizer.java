@@ -409,8 +409,17 @@ public class Optimizer {
         String outPdfValue = cmd.getOptionValue(outPdf, "pairing_list.pdf");
         String outCsvValue = cmd.getOptionValue(outPdf, "pairing_list.csv");
         String inputValue = cmd.getOptionValue(input, null);
-
-
+        if (inputValue!=null && optimizationProps.optBoatUsage.loops+optimizationProps.optMatchMatrix.loops>0){
+            throw new RuntimeException("loaded schedule but optimizations are activated");
+        }
+        Schedule schedule = null;
+        if (inputValue!=null){
+            schedule = Schedule.readYaml(new File(inputValue),null);
+            System.out.println("shuffle teams");
+            List<String> teams = Arrays.asList(scheduleProps.teams);
+            Collections.shuffle(teams,new Random(optimizationProps.seed));
+            scheduleProps.teams = teams.toArray(new String[0]);
+        }
         DisplayConfig displayProps = DisplayConfig.readYaml(displayConfigValue);
         Random random = new Random(optimizationProps.seed);
         class Saver implements Consumer<Schedule> {
@@ -435,19 +444,18 @@ public class Optimizer {
             }
         }
         Saver saver = new Saver();
-        Schedule schedule = null;
 //        schedule = inputValue == null ?
 //                Util.getRandomSchedule(scheduleProps, random) :
 //                Schedule.readYaml(new File(inputValue), scheduleProps);
-
-        Optimizer optimizer = new Optimizer();
-        optimizer.init(scheduleProps, optimizationProps, random);
-        schedule = optimizer.optimizeMatchMatrix(saver);
-        if (optimizationProps.optBoatUsage.loops > 0) {
-            schedule = Util.shuffleBoats(schedule, random);
+        if (schedule==null) {
+            Optimizer optimizer = new Optimizer();
+            optimizer.init(scheduleProps, optimizationProps, random);
+            schedule = optimizer.optimizeMatchMatrix(saver);
+            if (optimizationProps.optBoatUsage.loops > 0) {
+                schedule = Util.shuffleBoats(schedule, random);
+            }
+            schedule = optimizer.optimizeBoatSchedule(schedule, saver);
         }
-        schedule = optimizer.optimizeBoatSchedule(schedule, saver);
-
         saver.accept(schedule);
     }
 }
