@@ -30,12 +30,15 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: go to test
-      run: |
-        cd events/0000-00-00_Test
-        ls -la
-        ls -la ../ || true
-        ls -la ../.. || true
-        ls -la ../../target || true
+      run: cd events/0000-00-00_Test
+    - name: ll .
+      run: ls -la
+    - name: ll ..
+      run: ls -la ../ || true
+    - name: ll ../..
+      run: ls -la ../.. || true
+    - name: ll ../../target
+      run: ls -la ../../target || true
     - name: run test
-      run: java -jar ../../target/pairing-list-1.0-SNAPSHOT.jar
+      run: java -cp ../../target/pairing-list-1.0-SNAPSHOT.jar
 
