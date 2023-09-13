@@ -1,3 +1,4 @@
+name: Individual
 on:
   workflow_dispatch:
     inputs:
