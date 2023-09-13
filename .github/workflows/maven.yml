@@ -45,12 +45,13 @@ jobs:
       run: |
         cd events/0000-00-00_Test
         ls -la ../../target || true
-    - name: run test jar
-      run: |
-        cd events/0000-00-00_Test
-        java -cp ../../target/pairing-list-1.0-SNAPSHOT-jar-with-dependencies.jar || true
     - name: run test cp
       run: |
         cd events/0000-00-00_Test
         java -cp ../../target/pairing-list-1.0-SNAPSHOT-jar-with-dependencies.jar gundramleifert.pairing_list.Optimizer
+    - name: upload results
+      uses: actions/upload-artifact@v3
+      with:
+        name: results
+        path: events/0000-00-00_Test/*.*
 
