@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Test
 
 on:
   push:
@@ -29,23 +29,7 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-    - name: go to test
-      run: cd events/0000-00-00_Test
-    - name: ll .
-      run: ls -la
-    - name: ll ..
-      run: |
-        cd events/0000-00-00_Test
-        ls -la ../ || true
-    - name: ll ../..
-      run: |
-        cd events/0000-00-00_Test
-        ls -la ../.. || true
-    - name: ll ../../target
-      run: |
-        cd events/0000-00-00_Test
-        ls -la ../../target || true
-    - name: run test cp
+    - name: run test
       run: |
         cd events/0000-00-00_Test
         java -cp ../../target/pairing-list-1.0-SNAPSHOT-jar-with-dependencies.jar gundramleifert.pairing_list.Optimizer
