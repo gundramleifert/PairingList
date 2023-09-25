@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class OptBoatConfig extends OptConfig {
 
+    private OptBoatConfig() {
+    }
+
     @JsonProperty
     public int swapBoats;
     @JsonProperty
