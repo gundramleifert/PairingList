@@ -9,10 +9,10 @@ optMatchMatrix:
 
 optBoatUsage:
   loops: 20000
-  individuals: 1000
+  individuals: 2000
   weightStayOnBoat: 2.03
   weightStayOnShuttle: 1.01
-  weightChangeBetweenBoats: 10.0
+  weightChangeBetweenBoats: 20.1
   swapBoats: 400
   swapRaces: 200
   earlyStopping: 1000
