@@ -1,0 +1,30 @@
+flights: 12
+title: "Pairing List - DSL-Pokal - Hamburg"
+teams:
+- BSC
+- SCSZ
+- NRV
+- MSC
+- SVWu
+- BYCÜ
+- CYCM
+- ASV-HH
+- NRV (Junioren)
+- BAT
+- SCTB
+- YCM
+- anBord
+- SVI
+- EnSFr
+
+boats:
+- color: GRUEN
+  name: Boot 4
+- color: WEISS
+  name: Boot 5
+- color: LILA
+  name: Boot 6
+- color: GRAU
+  name: Boot 8
+- color: BLAU
+  name: Boot 9
