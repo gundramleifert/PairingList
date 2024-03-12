@@ -67,7 +67,7 @@ public class Optimizer {
                    /* for (Schedule schedule : schedules.subList(individuals, schedules.size())) {
                         hashes.remove(Integer.valueOf(schedule.hashCode()));
                     }*/
-                schedules = schedules.subList(0, optMatchMatrix.individuals);
+                schedules = new ArrayList<>(schedules.subList(0, optMatchMatrix.individuals));
             }
             if (i == optMatchMatrix.loops - 1 || (optMatchMatrix.showEveryN > 0 && counter % optMatchMatrix.showEveryN == 0)) {
 //                System.out.println("------------  " + i + "  -----------------------");
@@ -131,7 +131,7 @@ public class Optimizer {
                    /* for (Schedule schedule : schedules.subList(individuals, schedules.size())) {
                         hashes.remove(Integer.valueOf(schedule.hashCode()));
                     }*/
-                schedules = schedules.subList(0, optBoatUsage.individuals);
+                schedules = new ArrayList<>(schedules.subList(0, optBoatUsage.individuals));
             }
             if (i == optBoatUsage.loops - 1 || (optBoatUsage.showEveryN > 0 && counter % optBoatUsage.showEveryN == 0)) {
 //                System.out.println("------------  " + i + "  -----------------------");
@@ -183,7 +183,7 @@ public class Optimizer {
             CostCalculatorMatchMatrix cc = new CostCalculatorMatchMatrix(properties, optProps.optMatchMatrix);
             Schedule min = nextSchedules
                     .stream()
-                    .min(Comparator.comparingDouble(cc::score))
+                    .min(Comparator.comparingDouble(cc::scoreWithCache))
                     .orElseThrow(() -> new RuntimeException("empty schedules"));
             double costMin = cc.score(min);
             schedulesBest = nextSchedules
@@ -210,23 +210,23 @@ public class Optimizer {
         for (int f = 1; f < this.properties.flights; f++) {
             System.out.println(String.format("Flight %d:", f + 1));
             Set<Schedule> nextSchedules = new LinkedHashSet<>();
-            for (Schedule schedule : schedulesBest) {
-//                List<Flight> bestFlights = getBestFlight4Boats(schedule, f, random, saver);
-//                for (int j = 0; j < bestFlights.size(); j++) {
-//                    Schedule scheduleNew = schedule.copy();
-//                    scheduleNew.add(bestFlights.get(j));
-//                    nextSchedules.add(scheduleNew);
-//                }
-            }
+//            for (Schedule schedule : schedulesBest) {
+////                List<Flight> bestFlights = getBestFlight4Boats(schedule, f, random, saver);
+////                for (int j = 0; j < bestFlights.size(); j++) {
+////                    Schedule scheduleNew = schedule.copy();
+////                    scheduleNew.add(bestFlights.get(j));
+////                    nextSchedules.add(scheduleNew);
+////                }
+//            }
             CostCalculatorMatchMatrix cc = new CostCalculatorMatchMatrix();
             Schedule min = nextSchedules
                     .stream()
-                    .min(Comparator.comparingDouble(cc::score))
+                    .min(Comparator.comparingDouble(cc::scoreWithCache))
                     .orElseThrow(() -> new RuntimeException("empty schedules"));
             double costMin = cc.score(min);
             schedulesBest = nextSchedules
                     .stream()
-                    .filter(schedule -> Math.abs(cc.score(schedule) - costMin) < 1e-5)
+                    .filter(schedule -> Math.abs(cc.scoreWithCache(schedule) - costMin) < 1e-5)
                     .collect(Collectors.toSet());
             System.out.println(String.format("found %d best schedules for flight %d", schedulesBest.size(), f + 1));
             if (schedulesBest.size() > optProps.optMatchMatrix.maxBranches) {
@@ -273,12 +273,12 @@ public class Optimizer {
                     schedules.add(mutation);
                 }
             }
-            schedules.sort(Comparator.comparingDouble(scorer::score));
+            schedules.sort(Comparator.comparingDouble(scorer::scoreWithCache));
             if (schedules.size() > optBoatUsage.individuals) {
                    /* for (Schedule schedule : schedules.subList(individuals, schedules.size())) {
                         hashes.remove(Integer.valueOf(schedule.hashCode()));
                     }*/
-                schedules = schedules.subList(0, optBoatUsage.individuals);
+                schedules = new ArrayList<>(schedules.subList(0, optBoatUsage.individuals));
             }
             if (i == optBoatUsage.loops - 1 || (optBoatUsage.saveEveryN > 0 && counter % optBoatUsage.saveEveryN == 0)) {
 //                    System.out.println("------------  " + i + "  -----------------------");
