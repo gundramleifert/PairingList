@@ -253,8 +253,9 @@ public class PdfCreator implements AutoCloseable {
     private static String toString(String[] teams, List<Byte> lst) {
         return lst
                 .stream()
-                .map(aByte -> teams[aByte])
-                .collect(Collectors.joining(", "));
+                .map(aByte -> teams[aByte].trim())
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.joining(" | "));
     }
 
     public void create(Schedule schedule, Random random, boolean debug) {
