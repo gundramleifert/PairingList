@@ -51,24 +51,28 @@ public class PdfCreator implements AutoCloseable {
     private static Map<String, DisplayConfig.DeviceRgbWithAlpha> defaultColorMap() {
         HashMap<String, DisplayConfig.DeviceRgbWithAlpha> res = new HashMap<>();
         res.put("BLACK", DisplayConfig.DeviceRgbWithAlpha.fromArray(0));
-        res.put("BLUE", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 0, 255));
-        res.put("CYAN", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 255, 255));
         res.put("DARK_GRAY", DisplayConfig.DeviceRgbWithAlpha.fromArray(64));
         res.put("GRAY", DisplayConfig.DeviceRgbWithAlpha.fromArray(128));
-        res.put("GREEN", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 255, 0));
         res.put("LIGHT_GRAY", DisplayConfig.DeviceRgbWithAlpha.fromArray(192));
+        res.put("WHITE", DisplayConfig.DeviceRgbWithAlpha.fromArray(255));
+        res.put("BLUE", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 0, 255));
+        res.put("CYAN", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 255, 255));
+        res.put("GREEN", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 255, 0));
         res.put("MAGENTA", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 0, 255));
-        res.put("ORANGE", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 200, 0));
-        res.put("PINK", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 175, 175));
+        res.put("ORANGE", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 153, 0));
+        res.put("PINK", DisplayConfig.DeviceRgbWithAlpha.fromArray(195, 44, 195));
+        res.put("LILA", DisplayConfig.DeviceRgbWithAlpha.fromArray(195, 44, 195));
         res.put("RED", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 0, 0));
         res.put("YELLOW", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 255, 0));
-        res.put("WHITE", DisplayConfig.DeviceRgbWithAlpha.fromArray(255));
-//        res.put("HELLBLAU", DisplayProps.DeviceRgbWithAlpha.fromArray(54,166,216));
-//        res.put("SCHWARZ", DisplayProps.DeviceRgbWithAlpha.fromArray(0));
-//        res.put("ROT", DisplayProps.DeviceRgbWithAlpha.fromArray(229,9,71));
-//        res.put("WEISS", DisplayProps.DeviceRgbWithAlpha.fromArray(255));
-//        res.put("LILA", DisplayProps.DeviceRgbWithAlpha.fromArray(130,64,145));
-//        res.put("GRAU", DisplayProps.DeviceRgbWithAlpha.fromArray(135,140,140));
+        res.put("HELLBLAU", DisplayConfig.DeviceRgbWithAlpha.fromArray(54, 167, 226));
+
+        res.put("GRUEN",res.get("GREEN"));
+        res.put("GREY",res.get("GRAY"));
+        res.put("GRAU",res.get("GRAY"));
+        res.put("SCHWARZ",res.get("BLACK"));
+        res.put("WEISS", res.get("WHITE"));
+        res.put("BLAU", res.get("BLUE"));
+        res.put("ROT", res.get("RED"));
         return res;
     }
 
@@ -258,19 +262,19 @@ public class PdfCreator implements AutoCloseable {
                 .collect(Collectors.joining(" | "));
     }
 
-    public void create(Schedule schedule, Random random, boolean debug) {
+    public void create(Schedule schedule,String title, Random random, boolean debug) {
         init();
         if (debug) {
             createScheduleDistribution(schedule, true);
             createBoatDistribution(schedule);
             createShuttleDistribution(schedule);
         }
-        createSchedule(schedule, (byte) -1, null);
+        createSchedule(schedule, title,(byte) -1, null);
         if (displayConfig.teamwise_list) {
             Map<Race, SameShuttle> sameShuttles = Util.teamsOnSameShuttles(schedule, random);
 
             for (byte i = 0; i < scheduleConfig.teams.length; i++) {
-                createSchedule(schedule, i, sameShuttles);
+                createSchedule(schedule,title, i, sameShuttles);
             }
         }
         close();
@@ -385,6 +389,7 @@ public class PdfCreator implements AutoCloseable {
     @SneakyThrows
     public PdfCreator createSchedule(
             Schedule schedule,
+            String title,
             byte teamIndex,
             Map<Race, SameShuttle> sameShuttles) {
         newPage(false);
@@ -441,7 +446,7 @@ public class PdfCreator implements AutoCloseable {
                 }
             }
         }
-        doc.add(new Paragraph(scheduleConfig.title)
+        doc.add(new Paragraph(title)
                 .setFontSize(displayConfig.fontsize * 2)
                 .setTextAlignment(TextAlignment.CENTER)
         );

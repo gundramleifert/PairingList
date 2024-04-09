@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 public class ScheduleConfig {
   public static ScheduleConfig readYaml(String string) throws IOException, URISyntaxException {
@@ -55,7 +56,7 @@ public class ScheduleConfig {
 
 
   @JsonProperty
-  public String title;
+  public String[] titles;
 
   @JsonProperty
   public int flights;
