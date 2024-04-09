@@ -1,0 +1,35 @@
+flights: 16
+titles:
+  - "Pairing List - SAILING Champions League - Qualifier 2 - Berlin"
+teams:
+  - UYCAs
+  - BuYC
+  - UYWC
+  - KAS
+  - ESF
+  - NJK
+  - BYC1
+  - BYC2
+  - NRV
+  - MSC
+  - RRZV M&R
+  - WSVG
+  - LS
+  - RCNT
+  - BT
+  - SCSTä
+  - KSSS
+  - Sweden
+  - SUSC
+  - RTYC
+boats:
+  - color: HELLBLAU
+  - color: GRUEN
+  - color: BLAU
+  - color: SCHWARZ
+  - color: WEISS
+  - color: ORANGE
+  - color: LILA
+#  - color: GRAY
+
+
