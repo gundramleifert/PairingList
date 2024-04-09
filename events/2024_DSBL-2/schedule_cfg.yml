@@ -1,0 +1,33 @@
+flights: 16
+titles:
+  - "Pairing List - 2. Segel-Bundesliga - VSaW"
+  - "Pairing List - 2. Segel-Bundesliga - ASVW"
+  - "Pairing List - 2. Segel-Bundesliga - Camp24/7"
+  - "Pairing List - 2. Segel-Bundesliga - MYC"
+  - "Pairing List - 2. Segel-Bundesliga - BYC"
+teams:
+  - ASVH
+  - PYC
+  - YCM
+  - LYC
+  - BSC
+  - CYCM
+  - ETUF
+  - SCV
+  - KaR
+  - BOH-YC
+  - ENSFR
+  - HSC
+  - LSV
+  - SCSZ
+  - SVWu
+  - WSW
+  - WYD
+  - Buc Sailing
+boats:
+- color: LILA
+- color: GRAY
+- color: RED
+- color: GREEN
+- color: WHITE
+- color: BLUE

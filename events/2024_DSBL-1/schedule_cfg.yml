@@ -1,0 +1,33 @@
+flights: 16
+titles:
+  - "Pairing List - 1. Segel-Bundesliga - VSaW"
+  - "Pairing List - 1. Segel-Bundesliga - ASVW"
+  - "Pairing List - 1. Segel-Bundesliga - Camp24/7"
+  - "Pairing List - 1. Segel-Bundesliga - MYC"
+  - "Pairing List - 1. Segel-Bundesliga - BYC"
+teams:
+  - VSaW
+  - DYC
+  - KoYC
+  - SV03
+  - FSC
+  - ASVW
+  - BYC
+  - BYCÜ
+  - JSC
+  - SVI
+  - RSN
+  - BaYC
+  - SMCÜ
+  - MYC
+  - NRV
+  - KYC
+  - MSC
+  - WYC
+boats:
+- color: HELLBLAU
+- color: GREEN
+- color: BLUE
+- color: BLACK
+- color: GRAY
+- color: ORANGE
