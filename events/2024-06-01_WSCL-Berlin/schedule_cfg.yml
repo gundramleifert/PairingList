@@ -1,0 +1,39 @@
+flights: 16
+titles:
+  - "Pairing List - Women Sailing Champions League - Berlin"
+teams:
+  - Team Salt
+  - ASVW
+  - BYC
+  - NRV
+  - MYC
+  - MSC
+  - ESF
+  - NJK
+  - APCC
+  - GGR
+  - OKZO
+  - ZSC
+  - CVL
+  - RCO
+  - GKSS
+  - KSSS
+  - LTSC
+  - DSS
+  - SCM
+  - CNA
+  - RTYC
+  - VSaW
+  - WSVG
+  - TBI
+  - UYCA
+boats:
+- color: HELLBLAU
+- color: GRUEN
+- color: BLAU
+- color: BLACK
+- color: WHITE
+- color: ORANGE
+- color: LILA
+- color: GRAU
+- color: RED
