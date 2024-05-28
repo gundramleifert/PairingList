@@ -52,19 +52,19 @@ public class PdfCreator implements AutoCloseable {
         HashMap<String, DisplayConfig.DeviceRgbWithAlpha> res = new HashMap<>();
         res.put("BLACK", DisplayConfig.DeviceRgbWithAlpha.fromArray(0));
         res.put("DARK_GRAY", DisplayConfig.DeviceRgbWithAlpha.fromArray(64));
-        res.put("GRAY", DisplayConfig.DeviceRgbWithAlpha.fromArray(128));
+        res.put("GRAY", DisplayConfig.DeviceRgbWithAlpha.fromArray(102));
         res.put("LIGHT_GRAY", DisplayConfig.DeviceRgbWithAlpha.fromArray(192));
         res.put("WHITE", DisplayConfig.DeviceRgbWithAlpha.fromArray(255));
         res.put("BLUE", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 0, 255));
         res.put("CYAN", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 255, 255));
-        res.put("GREEN", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 255, 0));
+        res.put("GREEN", DisplayConfig.DeviceRgbWithAlpha.fromArray(106, 168, 79));
         res.put("MAGENTA", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 0, 255));
         res.put("ORANGE", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 153, 0));
         res.put("PINK", DisplayConfig.DeviceRgbWithAlpha.fromArray(195, 44, 195));
         res.put("LILA", DisplayConfig.DeviceRgbWithAlpha.fromArray(195, 44, 195));
         res.put("RED", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 0, 0));
         res.put("YELLOW", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 255, 0));
-        res.put("HELLBLAU", DisplayConfig.DeviceRgbWithAlpha.fromArray(54, 167, 226));
+        res.put("HELLBLAU", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 167, 226));
 
         res.put("GRUEN",res.get("GREEN"));
         res.put("GREY",res.get("GRAY"));
