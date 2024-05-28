@@ -58,14 +58,14 @@ public class PdfCreator implements AutoCloseable {
         res.put("BLUE", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 0, 255));
         res.put("CYAN", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 255, 255));
         res.put("GREEN", DisplayConfig.DeviceRgbWithAlpha.fromArray(106, 168, 79));
-        res.put("MAGENTA", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 0, 255));
         res.put("ORANGE", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 153, 0));
         res.put("PINK", DisplayConfig.DeviceRgbWithAlpha.fromArray(195, 44, 195));
-        res.put("LILA", DisplayConfig.DeviceRgbWithAlpha.fromArray(195, 44, 195));
         res.put("RED", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 0, 0));
         res.put("YELLOW", DisplayConfig.DeviceRgbWithAlpha.fromArray(255, 255, 0));
         res.put("HELLBLAU", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 167, 226));
 
+        res.put("GELB",res.get("YELLOW"));
+        res.put("LILA",res.get("PINK"));
         res.put("GRUEN",res.get("GREEN"));
         res.put("GREY",res.get("GRAY"));
         res.put("GRAU",res.get("GRAY"));
