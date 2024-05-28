@@ -1,8 +1,8 @@
 flights: 16
 titles:
-  - "Pairing List - Women Sailing Champions League - Berlin"
+  - "Pairing List - Women SAILING Champions League - Berlin"
 teams:
-  - Team Salt
+  - ASK
   - NRV
   - BYC
   - ASVW
@@ -25,7 +25,7 @@ teams:
   - RTYC
   - VSaW
   - WSVG
-  - TBI
+  - TS
   - UYCA
 boats:
 - color: HELLBLAU
