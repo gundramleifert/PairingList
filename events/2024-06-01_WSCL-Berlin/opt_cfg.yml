@@ -6,6 +6,7 @@ optMatchMatrix:
   earlyStopping: 500
   maxBranches: 1
   saveEveryN: 250
+  factorTeamMissing: 50.01
 
 optBoatUsage:
   loops: 20000
