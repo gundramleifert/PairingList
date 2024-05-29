@@ -70,6 +70,9 @@ public class DisplayConfig {
     public String headercolor_default = "WHITE";
 
     @JsonProperty
+    public String name_empty_boat = "empty boat";
+
+    @JsonProperty
     public Map<String, int[]> additional_colors = new HashMap<>();
 
 

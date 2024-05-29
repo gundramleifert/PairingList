@@ -10,7 +10,7 @@ public class OptMatchMatrixConfig extends OptConfig {
     @JsonProperty
     public double factorLessParticipants=3.01;
     @JsonProperty
-    public double factorTeamMissing =10.01;
+    public double factorTeamMissing =20.01;
 
 //    @JsonProperty
 //    public int merges;

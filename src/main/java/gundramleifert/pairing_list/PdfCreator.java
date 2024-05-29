@@ -423,6 +423,9 @@ public class PdfCreator implements AutoCloseable {
                 for (; col < r.teams.length; col++) {
                     byte team = r.teams[col];
                     String teamName = clubs[team];
+                    if (teamName.isEmpty()){
+                      teamName = this.displayConfig.name_empty_boat;
+                    }
 //                    float opacity = getOpacity(team,
 //                            teamIndex,
 //                            sameShuttles == null ? null : sameShuttles.get(r)
