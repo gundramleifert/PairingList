@@ -1,0 +1,25 @@
+flights: 24
+titles:
+  - "Pairing List - 2024 Sailing League Regatta - San Francisco"
+teams:
+  - StFYC
+  - SFYC
+  - SDYC
+  - RYC
+  - NYYC
+  - SBYC
+  - EYC
+  - NHYC
+#  - StFYC (Jr)
+#  - EYC (Jr)
+#  - MPYC
+#  - MPYC (Jr)
+boats:
+- color: WHITE
+  name: boat 2
+- color: WHITE
+  name: boat 3
+- color: WHITE
+  name: boat 5
+- color: WHITE
+  name: boat 7
