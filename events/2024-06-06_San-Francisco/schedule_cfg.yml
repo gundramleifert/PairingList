@@ -9,17 +9,17 @@ teams:
   - NYYC
   - SBYC
   - EYC
-  - NHYC
+  - StFYC (JR)
 #  - StFYC (Jr)
 #  - EYC (Jr)
 #  - MPYC
 #  - MPYC (Jr)
 boats:
-- color: WHITE
+- color: LIGHT_GREY
   name: boat 2
-- color: WHITE
+- color: LIGHT_GREY
   name: boat 3
-- color: WHITE
+- color: LIGHT_GREY
   name: boat 5
-- color: WHITE
+- color: LIGHT_GREY
   name: boat 7
