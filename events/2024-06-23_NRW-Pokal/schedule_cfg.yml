@@ -1,0 +1,21 @@
+flights: 7
+titles:
+  - "Pairing Liste - NRW SchulCup 2024 - Möhnesee"
+teams:
+  - Keppel
+  - Fabri
+  - Lessing
+  - Rivius 1
+  - Rivius 2
+  - Langerf
+  - Inda
+  - Archi 1
+  - Archi 2
+  - Marien
+  - Bonhoeff
+  - Hellweg
+boats:
+- color: BLACK
+- color: LIGHTBLUE
+- color: DARKBLUE
+- color: GREEN
