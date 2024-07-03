@@ -1,0 +1,32 @@
+flights: 16
+titles:
+  - "Pairing List - SAILING Champions League - Qualifier 3 - Warnemünde"
+teams:
+  - SCM
+  - MSF
+  - MYC
+  - SV03
+  - ASVW
+  - KNZ&RV
+  - AS
+  - TS
+  - RCB
+  - HJBK
+  - YCCh
+  - CNA
+  - YCS
+  - Wsva
+  - DSK
+  - JSC
+  - RS280
+boats:
+  - color: HELLBLAU
+  - color: GRUEN
+  - color: BLAU
+  - color: SCHWARZ
+  - color: WEISS
+  - color: ORANGE
+#  - color: LILA
+#  - color: GRAY
+
+
