@@ -410,7 +410,10 @@ public class PdfCreator implements AutoCloseable {
         }
         int race = 1;
         String[] clubs = scheduleConfig.teams;
-        DisplayConfig.DeviceRgbWithAlpha LIGHT_GRAY = DisplayConfig.DeviceRgbWithAlpha.fromArray(155);
+        DisplayConfig.DeviceRgbWithAlpha LIGHT_GRAY = null;
+        if (displayConfig.same_boat_color!=null && displayConfig.same_boat_color.length>1){
+          LIGHT_GRAY = DisplayConfig.DeviceRgbWithAlpha.fromArray(displayConfig.same_boat_color);
+        }
         DisplayConfig.DeviceRgbWithAlpha DARK_GRAY = DisplayConfig.DeviceRgbWithAlpha.fromArray(100);
         for (int flight = 0; flight < schedule.size(); flight++) {
             table.addCell(getCellSep(columnWidths.length, 1.0f));

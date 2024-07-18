@@ -73,6 +73,9 @@ public class DisplayConfig {
     public String name_empty_boat = "empty boat";
 
     @JsonProperty
+    public int[] same_boat_color = null;
+
+    @JsonProperty
     public Map<String, int[]> additional_colors = new HashMap<>();
 
 
