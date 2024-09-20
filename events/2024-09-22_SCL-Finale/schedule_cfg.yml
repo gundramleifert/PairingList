@@ -1,0 +1,35 @@
+flights: 16
+titles:
+  - "Pairing List - SAILING Champions League - Final - Vilamoura"
+teams:
+  - RPAYC
+  - BYC
+  - KDY
+  - NJK
+  - ESF
+  - ÅSS
+  - APPC
+  - YCCh
+  - ASVW
+  - SV03
+  - NRV
+  - JSC
+  - WSVG
+  - ÅS
+  - GSF
+  - TYC
+  - OYC
+  - YKPD
+  - RCO
+  - SVKr
+  - BT
+  - SCStä
+  - KSSS
+  - RYC
+boats:
+- color: HELLBLAU
+- color: GREEN
+- color: BLUE
+- color: BLACK
+- color: GRAY
+- color: ORANGE
