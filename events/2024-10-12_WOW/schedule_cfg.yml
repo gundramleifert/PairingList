@@ -1,0 +1,27 @@
+flights: 15
+titles:
+  - "Pairing List - Women on Water (WoW): DTYC Ladies Race"
+teams:
+  - SVWU
+  - HSC
+  - RVG
+  - MYC
+  - WYC
+  - DTYC 1
+  - DTYC 2
+  - VSAW
+  - KYC
+
+boats:
+  - color: LILA
+    name: Boat 7
+  - color: GRAY
+    name: Boat 8
+  - color: RED
+    name: Boat 9
+  - color: GREEN
+    name: Boat 10
+  - color: WHITE
+    name: Boat 11
+#  - color: BLUE
+#    name: Boat 12
