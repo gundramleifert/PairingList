@@ -1,0 +1,56 @@
+flights: 12
+titles:
+  - "Pairing List - DSL-Pokal"
+teams:
+  - LYC J
+  - SCV J
+  - SRC
+  - WsW
+  - BYC J
+  - CYCM
+  - FYC
+  - BuSC
+  - NRV
+  - SHM
+  - YCBG J
+  - AB
+  - DSC J
+  - NRV J
+  - KYC 1 J
+  - KYC 2 J
+  - LSV J
+  - MRSV
+  - MSC
+  - MSC J
+  - SHM J
+  - SLSV J
+  - TSC J
+  - VSaW J
+  - WYD J
+  - YCM J
+
+boats:
+  - color: HELLBLAU
+    name: Boat 1
+  - color: GREEN
+    name: Boat 2
+  - color: BLUE
+    name: Boat 3
+  - color: BLACK
+    name: Boat 4
+  - color: GRAY
+    name: Boat 5
+  - color: ORANGE
+    name: Boat 6
+#  - color: LILA
+#    name: Boat 7
+#  - color: GRAY
+#    name: Boat 8
+  - color: RED
+    name: Boat 7
+  - color: BLUE
+    name: Boat 8
+  - color: YELLOW
+    name: Boat 9
+#  - color: WHITE
+#    name: Boat 10
