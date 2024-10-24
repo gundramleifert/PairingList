@@ -1,5 +1,6 @@
 flights: 6
-title: "Pairing List - Test Event"
+titles:
+  - "Pairing List - Test Event"
 teams:
   - ASVW
   - ASVzR
