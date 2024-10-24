@@ -76,6 +76,9 @@ public class DisplayConfig {
     public int[] same_boat_color = null;
 
     @JsonProperty
+    public boolean junior_bold = false;
+
+    @JsonProperty
     public Map<String, int[]> additional_colors = new HashMap<>();
 
 

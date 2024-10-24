@@ -1,33 +1,34 @@
 flights: 12
 titles:
-  - "Pairing List - DSL-Pokal"
+  - "Pairing List - DSL-Pokal Möhnesee"
 teams:
-  - LYC J
-  - SCV J
-  - SRC
-  - WsW
-  - BYC J
-  - CYCM
-  - FYC
-  - BuSC
-  - NRV
-  - SHM
-  - YCBG J
-  - AB
-  - DSC J
-  - NRV J
-  - KYC 1 J
-  - KYC 2 J
-  - LSV J
-  - MRSV
-  - MSC
-  - MSC J
-  - SHM J
-  - SLSV J
-  - TSC J
-  - VSaW J
-  - WYD J
-  - YCM J
+  - LYC (J)
+  - SCV (J)
+  - SRC (S)
+  - WsW (S)
+  - BYC (J)
+  - CYCM (S)
+  - FYC (S)
+  - BuSC (S)
+  - NRV (S)
+  - SHM (S)
+  - YCBG (J)
+  - AB (S)
+  - DSC (J)
+  - NRV (J)
+  - KYC (J)
+  - YCL (J)
+  - LSV (J)
+  - MRSV (J)
+  - MSC (S)
+  - MSC (J)
+  - SHM (J)
+  - SLSV (J)
+  - TSC (J)
+  - VSaW (J)
+  - WYD (J)
+  - YCM (J)
+  - BSC (J)
 
 boats:
   - color: HELLBLAU
@@ -52,5 +53,5 @@ boats:
     name: Boat 8
   - color: YELLOW
     name: Boat 9
-  - color: WHITE
-    name: Boat 10
+#  - color: WHITE
+#    name: Boat 10
