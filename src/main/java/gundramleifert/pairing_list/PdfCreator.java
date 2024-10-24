@@ -436,9 +436,6 @@ public class PdfCreator implements AutoCloseable {
                     boolean sameS = sameShuttles != null && sameShuttle(team, teamIndex, sameShuttles.get(r));
                     DisplayConfig.DeviceRgbWithAlpha bg = team == teamIndex ? DARK_GRAY : sameS ? LIGHT_GRAY : null;
                     Cell cell = getCell(teamName, bg, 1.0f);
-                    if(teamName.contains("(J)")&&displayConfig.junior_bold){
-                        boldText(cell);
-                    }
 //                    if (sameS){
 //                        underlineText(cell);
 //                        boldText(cell);
