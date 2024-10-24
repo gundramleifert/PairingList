@@ -11,8 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: copy file
+      - name: save schedule configuration
         run: echo '${{ github.event.inputs.schedule_config }}'>events/0000-00-00_Test/schedule_cfg.yml
+      - name: print schedule configuration
+        run: cat events/0000-00-00_Test/schedule_cfg.yml
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -21,13 +23,13 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
-      - name: run test
+      - name: optimize schedule
         run: |
           cd events/0000-00-00_Test
           java -cp ../../target/pairing-list-1.0-SNAPSHOT-jar-with-dependencies.jar gundramleifert.pairing_list.Optimizer
-      - name: upload results
+      - name: upload schedule
         uses: actions/upload-artifact@v3
         with:
           name: results
-          path: events/2024-10-20_DSL-Pokal/*.*
+          path: events/0000-00-00_Test/*.*
 
