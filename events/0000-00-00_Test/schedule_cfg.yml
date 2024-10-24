@@ -12,7 +12,7 @@ teams:
   - MYCR
 
 boats:
-  - color: DARKBLUE
+  - color: PINK
     name: Tick
   - color: RED
     name: Trick
