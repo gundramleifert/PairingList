@@ -3,6 +3,7 @@ package gundramleifert.pairing_list;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceGray;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfDocumentInfo;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.*;
@@ -97,6 +98,9 @@ public class PdfCreator implements AutoCloseable {
     }
 
     public void init() {
+        init(null);
+    }
+    public void init(String title) {
         PdfWriter writer = null;
         try {
             writer = new PdfWriter(this.outFile);
@@ -104,6 +108,18 @@ public class PdfCreator implements AutoCloseable {
             throw new RuntimeException(e);
         }
         this.doc = new Document(new PdfDocument(writer));
+        PdfDocumentInfo documentInfo = doc.getPdfDocument().getDocumentInfo();
+        if (title!=null){
+            documentInfo.setTitle(title);
+        }
+        String creator = "https://github.com/gundramleifert/PairingList";
+        String cwd = new File(".").getAbsoluteFile().getParent().toString();
+        if (cwd.contains("PairingList")&&!cwd.contains("Test")){
+            creator = creator.replace("PairingList",cwd.substring(cwd.indexOf("PairingList")));
+        }
+        documentInfo.setCreator(creator);
+        documentInfo.setAuthor("Gundram Leifert");
+        documentInfo.setSubject("Pairing List");
         doc.setBottomMargin(10.0f);
         doc.setTopMargin(10.0f);
         BoatConfig[] boats = scheduleConfig.boats;
