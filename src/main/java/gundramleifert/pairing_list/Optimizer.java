@@ -424,41 +424,7 @@ public class Optimizer {
     }
     DisplayConfig displayProps = DisplayConfig.readYaml(displayConfigValue);
     Random random = new Random(optimizationProps.seed);
-    class Saver implements Consumer<Schedule> {
-
-      @Override
-      @SneakyThrows
-      public void accept(Schedule schedule) {
-        if (outputValue != null) {
-          schedule.writeYaml(new File(outputValue));
-        }
-        if (outCsvValue != null) {
-          schedule.writeCSV(new File(outCsvValue));
-        }
-        if (outPdfValue != null) {
-          for (int i = 0; i < scheduleProps.titles.length; i++) {
-            String outNamePdf = scheduleProps.titles.length == 1 ? outPdfValue : outPdfValue.replace(".pdf", "_" + i + ".pdf");
-            String title = scheduleProps.titles[i];
-            // rotate all teams by one
-            if (i > 0) {
-              String[] teams = scheduleProps.teams;
-              String remember = teams[0];
-              for (int j = 0; j < teams.length - 1; j++) {
-                teams[j] = teams[j + 1];
-              }
-              teams[teams.length - 1] = remember;
-            }
-            new PdfCreator(displayProps, scheduleProps, new File(outNamePdf))
-                    .create(schedule, title, new Random(optimizationProps.seed), false);
-            File fileDebug = new File(outNamePdf.replace(".pdf", "_debug.pdf"));
-            new PdfCreator(displayProps, scheduleProps, fileDebug)
-                    .create(schedule, title, new Random(optimizationProps.seed), true);
-          }
-        }
-
-      }
-    }
-    Saver saver = new Saver();
+    Saver saver = new Saver(outPdfValue, displayProps,scheduleProps);
 //        schedule = inputValue == null ?
 //                Util.getRandomSchedule(scheduleProps, random) :
 //                Schedule.readYaml(new File(inputValue), scheduleProps);
