@@ -1,0 +1,39 @@
+flights: 16
+titles:
+  - "Pairing List - 2. Segel-Bundesliga - Kiel Schilksee"
+  - "Pairing List - 2. Segel-Bundesliga - Kiel Segelcamp"
+  - "Pairing List - 2. Segel-Bundesliga - BYC"
+  - "Pairing List - 2. Segel-Bundesliga - PYC"
+  - "Pairing List - 2. Segel-Bundesliga - BYC/SV03"
+teams:
+  - BOH-YC
+  - BuSC
+  - CYCM
+  - ENSFR
+  - ETUF
+  - FSC
+  - FYC
+  - LSV
+  - LYC
+  - MRSV
+  - RSN
+  - SHM
+  - SCR
+  - SCV
+  - SVWu
+  - TSC
+  - WsW
+  - WYC
+boats:
+- color: LIGHTBLUE
+  name: Boat 7
+- color: GREEN
+  name: Boat 8
+- color: DARKBLUE
+  name: Boat 9
+- color: BLACK
+  name: Boat 10
+- color: GRAY
+  name: Boat 11
+- color: ORANGE
+  name: Boat 12
