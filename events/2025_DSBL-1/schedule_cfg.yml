@@ -1,0 +1,34 @@
+flights: 16
+titles:
+  - "Pairing List - 1. Segel-Bundesliga - Kiel Schilksee"
+  - "Pairing List - 1. Segel-Bundesliga - Kiel Segelcamp 1"
+  - "Pairing List - 1. Segel-Bundesliga - Kiel Segelcamp 2"
+  - "Pairing List - 1. Segel-Bundesliga - BYC"
+  - "Pairing List - 1. Segel-Bundesliga - PYC"
+  - "Pairing List - 1. Segel-Bundesliga - BYC/SV03"
+teams:
+  - ASVW
+  - BYC (BA)
+  - BYC (BER)
+  - BSC
+  - BYCÜ
+  - DYC
+  - YSC
+  - KYC (BW)
+  - KYC (SH)
+  - KaR
+  - MSC
+  - MYC
+  - NRV
+  - PYC
+  - SMCÜ
+  - SVI
+  - SV03
+  - VSaW
+boats:
+- color: BLACK
+- color: GREEN
+- color: BLUE
+- color: RED
+- color: GRAY
+- color: ORANGE
