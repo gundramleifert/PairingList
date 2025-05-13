@@ -3,6 +3,7 @@ package gundramleifert.pairing_list.configs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import gundramleifert.pairing_list.Optimizer;
 import gundramleifert.pairing_list.Yaml;
@@ -49,6 +50,9 @@ public class DisplayConfig {
     public float width = 600f;
 
     @JsonProperty
+    public boolean landscape = false;
+
+    @JsonProperty
     public boolean teamwise_list = false;
 
     @JsonProperty
@@ -77,6 +81,9 @@ public class DisplayConfig {
 
     @JsonProperty
     public boolean junior_bold = false;
+
+    @JsonProperty
+    public String font = StandardFonts.HELVETICA;
 
     @JsonProperty
     public Map<String, int[]> additional_colors = new HashMap<>();

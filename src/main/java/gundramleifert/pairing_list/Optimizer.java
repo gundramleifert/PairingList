@@ -424,7 +424,7 @@ public class Optimizer {
     }
     DisplayConfig displayProps = DisplayConfig.readYaml(displayConfigValue);
     Random random = new Random(optimizationProps.seed);
-    Saver saver = new Saver(outPdfValue, displayProps,scheduleProps);
+    Saver saver = new Saver(outPdfValue,outputValue,outCsvValue, displayProps,scheduleProps);
 //        schedule = inputValue == null ?
 //                Util.getRandomSchedule(scheduleProps, random) :
 //                Schedule.readYaml(new File(inputValue), scheduleProps);

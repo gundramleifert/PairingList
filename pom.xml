@@ -26,7 +26,7 @@
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>kernel</artifactId>
-            <version>7.2.3</version>
+            <version>8.0.4</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

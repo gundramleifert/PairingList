@@ -1,7 +1,13 @@
 package gundramleifert.pairing_list;
 
+import com.itextpdf.io.font.FontProgram;
+import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceGray;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDictionary;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfDocumentInfo;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -17,8 +23,10 @@ import gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
 import gundramleifert.pairing_list.types.*;
 import lombok.SneakyThrows;
 
+import javax.swing.text.StyleConstants;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +41,7 @@ public class PdfCreator implements AutoCloseable {
     private Map<String, DisplayConfig.DeviceRgbWithAlpha> colorMap;
     private DisplayConfig.DeviceRgbWithAlpha[] fgColors;
     private DisplayConfig.DeviceRgbWithAlpha[] bgColors;
+    private PdfFont font;
 
     private static Map<String, DisplayConfig.DeviceRgbWithAlpha> createColorMap(DisplayConfig displayConfig) {
         Map<String, DisplayConfig.DeviceRgbWithAlpha> res = defaultColorMap();
@@ -101,13 +110,22 @@ public class PdfCreator implements AutoCloseable {
         init(null);
     }
     public void init(String title) {
+        try {
+            font =  PdfFontFactory.createFont(displayConfig.font);
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("cannot find font '%s'", displayConfig.font),e);
+        }
         PdfWriter writer = null;
         try {
             writer = new PdfWriter(this.outFile);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        this.doc = new Document(new PdfDocument(writer));
+        PageSize pageSize = PageSize.A4;
+        if (displayConfig.landscape){
+            pageSize=pageSize.rotate();
+        }
+        this.doc = new Document(new PdfDocument(writer),pageSize);
         PdfDocumentInfo documentInfo = doc.getPdfDocument().getDocumentInfo();
         if (title!=null){
             documentInfo.setTitle(title);
@@ -151,7 +169,7 @@ public class PdfCreator implements AutoCloseable {
 
     private Cell getCell(String text, int row, int col) {
         return getDft(row, col)
-                .add(new Paragraph(text))
+                .add(new Paragraph(new Text(text).setFont(font)))
                 .setPadding(0.0f)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
@@ -204,7 +222,7 @@ public class PdfCreator implements AutoCloseable {
 
     private Cell getCellSpan(String text, int rowspan) {
         return getDft(rowspan, 1)
-                .add(new Paragraph(text))
+                .add(new Paragraph(new Text(text).setFont(font)))
                 .setTextAlignment(TextAlignment.CENTER)
                 //.setBorderBottom(new DoubleBorder(1.0f))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE);
@@ -471,12 +489,12 @@ public class PdfCreator implements AutoCloseable {
                 }
             }
         }
-        doc.add(new Paragraph(title)
+        doc.add(new Paragraph(new Text(title).setFont(font))
                 .setFontSize(displayConfig.fontsize * 2)
                 .setTextAlignment(TextAlignment.CENTER)
         );
         if (teamIndex >= 0) {
-            doc.add(new Paragraph(scheduleConfig.teams[teamIndex])
+            doc.add(new Paragraph(new Text(scheduleConfig.teams[teamIndex]).setFont(font))
                     .setFontSize(displayConfig.fontsize * 1.5f)
                     .setTextAlignment(TextAlignment.CENTER)
             );

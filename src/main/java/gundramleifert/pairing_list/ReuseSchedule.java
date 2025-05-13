@@ -47,6 +47,22 @@ public class ReuseSchedule {
     displayConfig.setRequired(false);
     options.addOption(outPdf);
 
+    Option outYml = new Option(
+            "plo",
+            "pairing_list_out",
+            true,
+            "if given, save best schedule to this file as yaml-structure");
+    outYml.setRequired(false);
+    options.addOption(outYml);
+
+
+    Option outCsv = new Option(
+            "plc",
+            "pairing_list_csv",
+            true,
+            "if given, save best schedule to this file as csv-structure");
+    outCsv.setRequired(false);
+    options.addOption(outCsv);
 
     Option input = new Option(
             "pli",
@@ -72,6 +88,8 @@ public class ReuseSchedule {
 
     String displayConfigValue = cmd.getOptionValue(displayConfig, "display_cfg.yml");
     String outPdfValue = cmd.getOptionValue(outPdf, "pairing_list.pdf");
+    String outYmlValue = cmd.getOptionValue(outYml, "pairing_list.yml");
+    String outCsvValue = cmd.getOptionValue(outCsv, "pairing_list.csv");
     String inputValue = cmd.getOptionValue(input, "pairing_list.yml");
     Schedule schedule = Schedule.readYaml(new File(inputValue), null);
     if (schedule.size()!=scheduleProps.flights){
@@ -93,7 +111,7 @@ public class ReuseSchedule {
 //      Collections.shuffle(teams, new Random(optimizationProps.seed));
 //      scheduleProps.teams = teams.toArray(new String[0]);
     DisplayConfig displayProps = DisplayConfig.readYaml(displayConfigValue);
-    Saver saver = new Saver(outPdfValue, displayProps,scheduleProps);
+    Saver saver = new Saver(outPdfValue,outYmlValue,outCsvValue, displayProps,scheduleProps);
     saver.accept(schedule);
   }
 }
