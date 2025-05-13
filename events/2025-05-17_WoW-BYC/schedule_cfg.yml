@@ -1,0 +1,34 @@
+flights: 12
+titles:
+  - "Pairing List - Woman on Water - BYC"
+teams:
+  - BAVARIA
+  - Boddensprotten
+  - Lotte
+  - Seehaserl 🐰
+  - Südseeperlen
+  - BYC Gesinen
+  - BYC GoSailing Ladies
+  - BYC Goldelsen
+  - Die Fiven
+  - Genni Girls
+  - HSC Froolüü
+  - Kieler Yacht-Club
+  - Münchner Yacht-Club
+  - Team Jasy
+  - Team YLVA
+  - VSaW Ladies
+  - Voice of Itzehoe
+boats:
+- color: GRAY
+  name: Boat 1
+- color: GRAY
+  name: Boat 2
+- color: GRAY
+  name: Boat 3
+- color: GRAY
+  name: Boat 4
+- color: GRAY
+  name: Boat 5
+- color: GRAY
+  name: Boat 6
