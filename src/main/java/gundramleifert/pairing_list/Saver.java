@@ -40,8 +40,8 @@ public class Saver implements Consumer<Schedule> {
             for (int i = 0; i < titles.length; i++) {
                 String outNamePdf = titles.length == 1 ? outPdfValue : outPdfValue.replace(".pdf", "_" + i + ".pdf");
                 String title = titles[i];
-                String[] teamsIntern = new String[scheduleProps.teams.length];
-                System.arraycopy(scheduleProps.teams,0,teamsIntern,0,teamsIntern.length);
+                String[] teamsIntern = scheduleProps.teams;
+                // System.arraycopy(scheduleProps.teams,0,teamsIntern,0,teamsIntern.length);
                 // rotate all teams by one
                 if (i > 0) {
                     String remember = teamsIntern[0];
@@ -55,7 +55,7 @@ public class Saver implements Consumer<Schedule> {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                ;
+
                 new PdfCreator(displayProps, scheduleProps, new File(outNamePdf))
                         .create(schedule, title, new Random(1234), false);
                 File fileDebug = new File(outNamePdf.replace(".pdf", "_debug.pdf"));
