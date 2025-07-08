@@ -29,13 +29,11 @@ import java.util.stream.Collectors;
 
 public class PdfCreator implements AutoCloseable {
 
-    private DisplayConfig displayConfig;
-    private ScheduleConfig scheduleConfig;
-    private File outFile;
+    private final DisplayConfig displayConfig;
+    private final ScheduleConfig scheduleConfig;
+    private final File outFile;
     private Document doc;
     private boolean isEmptyPage = true;
-    private Map<String, DisplayConfig.DeviceRgbWithAlpha> colorMap;
-    private DisplayConfig.DeviceRgbWithAlpha[] fgColors;
     private DisplayConfig.DeviceRgbWithAlpha[] bgColors;
     private PdfFont font;
 
@@ -88,8 +86,8 @@ public class PdfCreator implements AutoCloseable {
     private static float avg(DisplayConfig.DeviceRgbWithAlpha color) {
         float[] f = color.getColorValue();
         float res = 0;
-        for (int i = 0; i < f.length; i++) {
-            res += f[i];
+        for (float v : f) {
+            res += v;
         }
         return res / f.length;
     }
@@ -112,7 +110,7 @@ public class PdfCreator implements AutoCloseable {
         } catch (IOException e) {
             throw new RuntimeException(String.format("cannot find font '%s'", displayConfig.font), e);
         }
-        PdfWriter writer = null;
+        PdfWriter writer;
         try {
             writer = new PdfWriter(this.outFile);
         } catch (FileNotFoundException e) {
@@ -128,7 +126,7 @@ public class PdfCreator implements AutoCloseable {
             documentInfo.setTitle(title);
         }
         String creator = "https://github.com/gundramleifert/PairingList";
-        String cwd = new File(".").getAbsoluteFile().getParent().toString();
+        String cwd = new File(".").getAbsoluteFile().getParent();
         if (cwd.contains("PairingList") && !cwd.contains("Test")) {
             creator = creator.replace("PairingList", cwd.substring(cwd.indexOf("PairingList")));
         }
@@ -138,9 +136,8 @@ public class PdfCreator implements AutoCloseable {
         doc.setBottomMargin(10.0f);
         doc.setTopMargin(10.0f);
         BoatConfig[] boats = scheduleConfig.boats;
-        this.fgColors = new DisplayConfig.DeviceRgbWithAlpha[boats.length];
         this.bgColors = new DisplayConfig.DeviceRgbWithAlpha[boats.length];
-        colorMap = createColorMap(displayConfig);
+        Map<String, DisplayConfig.DeviceRgbWithAlpha> colorMap = createColorMap(displayConfig);
         for (int i = 0; i < boats.length; i++) {
             String color_bg = boats[i].color;
             if (color_bg == null)
@@ -152,18 +149,16 @@ public class PdfCreator implements AutoCloseable {
                         String.join(",", colorMap.keySet())));
             }
             bgColors[i] = color;
-            fgColors[i] = avg(color) > 0.5 ? DisplayConfig.DeviceRgbWithAlpha.BLACK : DisplayConfig.DeviceRgbWithAlpha.WHITE;
         }
     }
 
 
     private Cell getDft(int row, int col) {
-        Cell cell = new Cell(row, col)
+        return new Cell(row, col)
                 .setPadding(0.0f)
                 .setFontSize(displayConfig.fontsize);
-        return cell;
     }
-
+    
     private Cell getCell(String text, int row, int col) {
         return getDft(row, col)
                 .add(new Paragraph(new Text(text).setFont(font)))
@@ -204,7 +199,7 @@ public class PdfCreator implements AutoCloseable {
         Cell cell = getCell(text);
         if (bgColor != null) {
             float v = (1 - (1 - avg(bgColor)) * bgColor.alpha * opacity);
-            DisplayConfig.DeviceRgbWithAlpha fg = v > 0.3f ? DisplayConfig.DeviceRgbWithAlpha.BLACK : DisplayConfig.DeviceRgbWithAlpha.WHITE;
+            DisplayConfig.DeviceRgbWithAlpha fg = v > 0.5f ? DisplayConfig.DeviceRgbWithAlpha.BLACK : DisplayConfig.DeviceRgbWithAlpha.WHITE;
             cell.setBackgroundColor(bgColor, bgColor.alpha * opacity)
                     .setFontColor(fg);
         }
@@ -248,9 +243,7 @@ public class PdfCreator implements AutoCloseable {
             Flight flight = schedule.get(i);
             matchMatrix.add(flight, sortBoats);
             int[] matchDistribution = matchMatrix.getMatchDistribution();
-            for (int j = 0; j < matchDistribution.length; j++) {
-                values[i][j] = matchDistribution[j];
-            }
+            System.arraycopy(matchDistribution, 0, values[i], 0, matchDistribution.length);
         }
         int[] matchDistribution = matchMatrix.getMatchDistribution();
         int columns = 0;
@@ -437,7 +430,7 @@ public class PdfCreator implements AutoCloseable {
         int default_index = 1;
         for (int i = 0; i < scheduleConfig.numBoats; i++) {
             String name = this.scheduleConfig.boats[i].name;
-            if (name == null || name.equals("")) {
+            if (name == null || name.isEmpty()) {
                 name = String.format("Boat %d", default_index++);
             }
             table.addCell(getCell(name, i));
