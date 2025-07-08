@@ -155,7 +155,7 @@ public class PdfCreator implements AutoCloseable {
                         String.join(",", colorMap.keySet())));
             }
             bgColors[i] = color;
-            fgColors[i] = avg(color) > 0.3 ? DisplayConfig.DeviceRgbWithAlpha.BLACK : DisplayConfig.DeviceRgbWithAlpha.WHITE;
+            fgColors[i] = avg(color) > 0.5 ? DisplayConfig.DeviceRgbWithAlpha.BLACK : DisplayConfig.DeviceRgbWithAlpha.WHITE;
         }
     }
 
