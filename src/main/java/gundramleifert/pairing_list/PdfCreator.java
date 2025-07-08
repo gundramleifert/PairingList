@@ -1,18 +1,15 @@
 package gundramleifert.pairing_list;
 
-import com.itextpdf.io.font.FontProgram;
-import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceGray;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfDictionary;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfDocumentInfo;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.borders.*;
+import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
@@ -23,7 +20,6 @@ import gundramleifert.pairing_list.cost_calculators.CostCalculatorBoatSchedule;
 import gundramleifert.pairing_list.types.*;
 import lombok.SneakyThrows;
 
-import javax.swing.text.StyleConstants;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -75,14 +71,14 @@ public class PdfCreator implements AutoCloseable {
         res.put("HELLBLAU", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 167, 226));
         res.put("DUNKELBLAU", DisplayConfig.DeviceRgbWithAlpha.fromArray(0, 0, 139));
 
-        res.put("LIGHTBLUE",res.get("HELLBLAU"));
-        res.put("DARKBLUE",res.get("DUNKELBLAU"));
-        res.put("GELB",res.get("YELLOW"));
-        res.put("LILA",res.get("PINK"));
-        res.put("GRUEN",res.get("GREEN"));
-        res.put("GREY",res.get("GRAY"));
-        res.put("GRAU",res.get("GRAY"));
-        res.put("SCHWARZ",res.get("BLACK"));
+        res.put("LIGHTBLUE", res.get("HELLBLAU"));
+        res.put("DARKBLUE", res.get("DUNKELBLAU"));
+        res.put("GELB", res.get("YELLOW"));
+        res.put("LILA", res.get("PINK"));
+        res.put("GRUEN", res.get("GREEN"));
+        res.put("GREY", res.get("GRAY"));
+        res.put("GRAU", res.get("GRAY"));
+        res.put("SCHWARZ", res.get("BLACK"));
         res.put("WEISS", res.get("WHITE"));
         res.put("BLAU", res.get("BLUE"));
         res.put("ROT", res.get("RED"));
@@ -109,11 +105,12 @@ public class PdfCreator implements AutoCloseable {
     public void init() {
         init(null);
     }
+
     public void init(String title) {
         try {
-            font =  PdfFontFactory.createFont(displayConfig.font);
+            font = PdfFontFactory.createFont(displayConfig.font);
         } catch (IOException e) {
-            throw new RuntimeException(String.format("cannot find font '%s'", displayConfig.font),e);
+            throw new RuntimeException(String.format("cannot find font '%s'", displayConfig.font), e);
         }
         PdfWriter writer = null;
         try {
@@ -122,18 +119,18 @@ public class PdfCreator implements AutoCloseable {
             throw new RuntimeException(e);
         }
         PageSize pageSize = PageSize.A4;
-        if (displayConfig.landscape){
-            pageSize=pageSize.rotate();
+        if (displayConfig.landscape) {
+            pageSize = pageSize.rotate();
         }
-        this.doc = new Document(new PdfDocument(writer),pageSize);
+        this.doc = new Document(new PdfDocument(writer), pageSize);
         PdfDocumentInfo documentInfo = doc.getPdfDocument().getDocumentInfo();
-        if (title!=null){
+        if (title != null) {
             documentInfo.setTitle(title);
         }
         String creator = "https://github.com/gundramleifert/PairingList";
         String cwd = new File(".").getAbsoluteFile().getParent().toString();
-        if (cwd.contains("PairingList")&&!cwd.contains("Test")){
-            creator = creator.replace("PairingList",cwd.substring(cwd.indexOf("PairingList")));
+        if (cwd.contains("PairingList") && !cwd.contains("Test")) {
+            creator = creator.replace("PairingList", cwd.substring(cwd.indexOf("PairingList")));
         }
         documentInfo.setCreator(creator);
         documentInfo.setAuthor("Gundram Leifert");
@@ -146,8 +143,8 @@ public class PdfCreator implements AutoCloseable {
         colorMap = createColorMap(displayConfig);
         for (int i = 0; i < boats.length; i++) {
             String color_bg = boats[i].color;
-            if (color_bg==null)
-                color_bg=displayConfig.headercolor_default;
+            if (color_bg == null)
+                color_bg = displayConfig.headercolor_default;
             DisplayConfig.DeviceRgbWithAlpha color = colorMap.get(color_bg.toUpperCase());
             if (color == null) {
                 throw new RuntimeException(String.format("cannot interpret key `%s` - choose one of %s",
@@ -299,19 +296,19 @@ public class PdfCreator implements AutoCloseable {
                 .collect(Collectors.joining(" | "));
     }
 
-    public void create(Schedule schedule,String title, Random random, boolean debug) {
+    public void create(Schedule schedule, String title, Random random, boolean debug) {
         init();
         if (debug) {
             createScheduleDistribution(schedule, true);
             createBoatDistribution(schedule);
             createShuttleDistribution(schedule);
         }
-        createSchedule(schedule, title,(byte) -1, null);
+        createSchedule(schedule, title, (byte) -1, null);
         if (displayConfig.teamwise_list) {
             Map<Race, SameShuttle> sameShuttles = Util.teamsOnSameShuttles(schedule, random);
 
             for (byte i = 0; i < scheduleConfig.teams.length; i++) {
-                createSchedule(schedule,title, i, sameShuttles);
+                createSchedule(schedule, title, i, sameShuttles);
             }
         }
         close();
@@ -375,7 +372,7 @@ public class PdfCreator implements AutoCloseable {
         table.addCell(getCellSep(5, 0.3f));
         for (int i = 1; i < schedule.size(); i++) {
             InterFlightStat interFlightStat =
-                    CostCalculatorBoatSchedule.getInterFlightStat(schedule.get(i - 1), schedule.get(i),scheduleConfig.numTeams);
+                    CostCalculatorBoatSchedule.getInterFlightStat(schedule.get(i - 1), schedule.get(i), scheduleConfig.numTeams);
             table.addCell(getCell(String.format("%d -> %d", i, i + 1)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsStayOnBoat)));
             table.addCell(getCell(toString(clubs, interFlightStat.teamsAtWaterAtLastRace)));
@@ -440,7 +437,7 @@ public class PdfCreator implements AutoCloseable {
         int default_index = 1;
         for (int i = 0; i < scheduleConfig.numBoats; i++) {
             String name = this.scheduleConfig.boats[i].name;
-            if(name==null || name.equals("")){
+            if (name == null || name.equals("")) {
                 name = String.format("Boat %d", default_index++);
             }
             table.addCell(getCell(name, i));
@@ -448,8 +445,8 @@ public class PdfCreator implements AutoCloseable {
         int race = 1;
         String[] clubs = scheduleConfig.teams;
         DisplayConfig.DeviceRgbWithAlpha LIGHT_GRAY = null;
-        if (displayConfig.same_boat_color!=null && displayConfig.same_boat_color.length>1){
-          LIGHT_GRAY = DisplayConfig.DeviceRgbWithAlpha.fromArray(displayConfig.same_boat_color);
+        if (displayConfig.same_boat_color != null && displayConfig.same_boat_color.length > 1) {
+            LIGHT_GRAY = DisplayConfig.DeviceRgbWithAlpha.fromArray(displayConfig.same_boat_color);
         }
         DisplayConfig.DeviceRgbWithAlpha DARK_GRAY = DisplayConfig.DeviceRgbWithAlpha.fromArray(100);
         for (int flight = 0; flight < schedule.size(); flight++) {
@@ -463,8 +460,8 @@ public class PdfCreator implements AutoCloseable {
                 for (; col < r.teams.length; col++) {
                     byte team = r.teams[col];
                     String teamName = clubs[team];
-                    if (teamName.isEmpty()){
-                      teamName = this.displayConfig.name_empty_boat;
+                    if (teamName.isEmpty()) {
+                        teamName = this.displayConfig.name_empty_boat;
                     }
 //                    float opacity = getOpacity(team,
 //                            teamIndex,
