@@ -1,0 +1,60 @@
+flights: 16
+titles:
+  - "SAILING Champions League Final 2025 - Kiel"
+teams:
+  - CNC
+  - SCTWV
+  - ASK
+  - Team Salt
+  - BS
+  - KBL
+  - KDY
+  - SN
+  - ÅSS
+  - ESF
+  - APCC
+  - SRH
+  - MSC (GER)
+  - NRV
+  - KYC
+  - WSV
+  - WSVG
+  - ÅLE
+  - ÅSG
+  - GS
+  - TS
+  - YCS
+  - YCG
+  - CNV
+  - RCO
+  - YCB
+  - HSS
+  - KSSS
+  - BSC
+  - MSC (UK)
+  - RTYC
+  - RYC
+  - SFYC
+boats:
+  - color: BLACK
+    name: "J/70 - 01"
+  - color: GREEN
+    name: "J/70 - 02"
+  - color: BLUE
+    name: "J/70 - 03"
+  - color: RED
+    name: "J/70 - 04"
+  - color: GRAY
+    name: "J/70 - 05"
+  - color: ORANGE
+    name: "J/70 - 06"
+  - color: LILA
+    name: "J/70 - 07"
+  - color: GREEN
+    name: "J/70 - 08"
+  - color: BLACK
+    name: "J/70 - 09"
+  - color: WHITE
+    name: "J/70 - 10"
+  - color: LIGHTBLUE
+    name: "J/70 - 11"
