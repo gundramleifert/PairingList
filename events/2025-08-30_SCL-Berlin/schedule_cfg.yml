@@ -1,0 +1,51 @@
+flights: 16
+titles:
+  - "Pairing List - Women's SAILING Champions League 2025 - Berlin"
+teams:
+  - SCM
+  - Team Salt
+  - RCNV
+  - HSK
+  - NJK
+  - STO
+  - ASVW
+  - BYC
+  - DTYC
+  - HSC
+  - MYC
+  - NRV
+  - VSAW
+  - KNZ&RV
+  - WSVG
+  - ASF
+  - FS
+  - KNS
+  - SSF
+  - TS
+  - RCB
+  - RCO
+  - TYC
+  - ZSC
+  - GKSS
+  - KSSS
+  - LTSC
+boats:
+- color: BLACK
+  name: J/70 - 01
+- color: GREEN
+  name: J/70 - 02
+- color: BLUE
+  name: J/70 - 03
+- color: RED
+  name: J/70 - 04
+- color: GRAY
+  name: J/70 - 05
+- color: ORANGE
+  name: J/70 - 06
+- color: BLUE
+  name: J/70 - 07
+- color: GRAY
+  name: J/70 - 08
+- color: RED
+  name: J/70 - 09
+
