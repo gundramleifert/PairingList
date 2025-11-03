@@ -1,0 +1,44 @@
+flights: 14
+titles:
+  - "Pairing List - Youth SAILING Champions League 2025 - Altea"
+teams:
+  - UYCWG
+  - KDY
+  - CNA
+  - STO
+  - SRH
+  - BYC
+  - BSC
+  - BOH-YC
+  - BYCÜ
+  - HSC
+  - KYC
+  - NRV
+  - RSBC
+  - WSVG
+  - ÅS
+  - BSF
+  - NSF
+  - SOON
+  - SS
+  - TS
+  - LAM
+  - SCS
+  - YCB
+  - SFYC
+
+boats:
+  - color: DARK_GRAY
+    name: Boat 1
+  - color: DARK_GRAY
+    name: Boat 2
+  - color: DARK_GRAY
+
+    name: Boat 3
+  - color: DARK_GRAY
+    name: Boat 4
+  - color: DARK_GRAY
+    name: Boat 5
+  - color: DARK_GRAY
+    name: Boat 6
+
