@@ -1,0 +1,39 @@
+flights: 16
+titles:
+  - "Pairing List - 2. Segel-Bundesliga - MRSV/DTYC"
+  - "Pairing List - 2. Segel-Bundesliga - BYC (BA)"
+  - "Pairing List - 2. Segel-Bundesliga - Kieler Förde"
+  - "Pairing List - 2. Segel-Bundesliga - PYC"
+  - "Pairing List - 2. Segel-Bundesliga - VSaW"
+teams:
+  - ASVW
+  - BuSC
+  - DTYC
+  - ETUF
+  - FSC
+  - FYC
+  - HSC
+  - KYC (BW)
+  - LSV
+  - LYC
+  - MRSV
+  - RSN
+  - SCV
+  - SHM
+  - SCR
+  - SV03
+  - VSaW
+  - WSW
+boats:
+- color: BLACK
+  name: Boat 7
+- color: GRAY
+  name: Boat 8
+- color: DARKBLUE
+  name: Boat 9
+- color: GREEN
+  name: Boat 10
+- color: YELLOW
+  name: Boat 11
+- color: RED
+  name: Boat 12
