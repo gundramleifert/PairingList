@@ -1,0 +1,30 @@
+flights: 16
+titles:
+- Pairing List - SAILING Champions League Qualifier 2026 - Starnberg
+teams:
+- SCTWV
+- UYCWö
+- WAW Racing
+- ASS
+- BYC (BMW)
+- BYC (Marinepool)
+- MSC
+- KNZ&RV
+- WSVG
+- KNS
+- HRM
+- ScStä
+- YCB
+- HSS
+- STSS
+- RTYC
+- WHSC
+- EMPTY
+
+boats:
+- color: BLACK
+- color: GREEN
+- color: DARKBLUE
+- color: RED
+- color: GRAY
+- color: ORANGE
