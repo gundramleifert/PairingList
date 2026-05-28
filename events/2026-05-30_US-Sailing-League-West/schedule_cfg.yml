@@ -1,9 +1,9 @@
-flights: 16
+flights: 20
 titles:
-  - Pairing List - 2026 US Sailing League West Coast Championship
+  - "Pairing List
+  2026 US Sailing League West Coast Championship"
 teams:
   - LBYC (w)
-  - BYC
   - SFYC
   - StFYC
   - SFYC (w)
@@ -12,15 +12,15 @@ teams:
   - RHKYC
 
 boats:
+  - color: RED
+    name: Boat 2
+  - color: GREEN
+    name: Boat 5
   - color: BLACK
-    name: J/22 - 01
-  - color: BLACK
-    name: J/22 - 02
-  - color: BLACK
-    name: J/22 - 05
-  - color: BLACK
-    name: J/22 - 06
+    name: Boat 9
+  - color: BLUE
+    name: Boat 10
   #- color: BLACK
-  #  name: J/22 - 09
+  #  name: Boat 13
   #- color: BLACK
   #  name: J/22 - 13
