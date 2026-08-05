@@ -1,0 +1,35 @@
+flights: 16
+titles:
+  - "Pairing List - Women's SAILING Champions League 2026 - Kiel"
+teams:
+  - NCYC
+  - HS
+  - NJK
+  - OM/STO
+  - BYC
+  - DTYC
+  - HSC
+  - KYC
+  - MYC
+  - NRV
+  - SVST
+  - VSaW
+  - KNS
+  - YCG
+  - YCS
+  - RCO
+  - LTSC
+  - RYC
+boats:
+  - color: SCHWARZ
+    name: J/70 - 01
+  - color: GRUEN
+    name: J/70 - 02
+  - color: BLAU
+    name: J/70 - 03
+  - color: ROT
+    name: J/70 - 04
+  - color: GRAU
+    name: J/70 - 05
+  - color: GELB
+    name: J/70 - 06
