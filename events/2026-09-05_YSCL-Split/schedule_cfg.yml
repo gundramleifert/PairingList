@@ -1,0 +1,35 @@
+flights: 16
+titles:
+  - "Pairing List - Youth SAILING Champions League 2026 - Split"
+teams:
+  - RFBYC
+  - UYCWG
+  - Team Mornar
+  - Ploce Team
+  - SCN
+  - CNA
+  - NRV
+  - BOH-YC
+  - WSVG
+  - AS
+  - SSF
+  - LAM
+  - YCG
+  - CER
+  - SCSTÄ
+  - YCB
+  - GKSS
+  - SFYC
+boats:
+  - color: GRAU
+    name: Boat 1
+  - color: GRAU
+    name: Boat 2
+  - color: GRAU
+    name: Boat 3
+  - color: GRAU
+    name: Boat 4
+  - color: GRAU
+    name: Boat 5
+  - color: GRAU
+    name: Boat 6
