@@ -301,6 +301,12 @@ public class PdfCreator implements AutoCloseable {
             Map<Race, SameShuttle> sameShuttles = Util.teamsOnSameShuttles(schedule, random);
 
             for (byte i = 0; i < scheduleConfig.teams.length; i++) {
+                // A fleet the boats do not divide evenly is padded with nameless teams
+                // (ScheduleConfig.init). There is no crew to hand that page to, and it
+                // would carry an empty heading above a list of everyone else's races.
+                if (scheduleConfig.teams[i].isEmpty()) {
+                    continue;
+                }
                 createSchedule(schedule, title, i, sameShuttles);
             }
         }

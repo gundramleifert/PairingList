@@ -92,21 +92,7 @@ public class ReuseSchedule {
     String outCsvValue = cmd.getOptionValue(outCsv, "pairing_list.csv");
     String inputValue = cmd.getOptionValue(input, "pairing_list.yml");
     Schedule schedule = Schedule.readYaml(new File(inputValue), null);
-    if (schedule.size()!=scheduleProps.flights){
-      throw new RuntimeException(String.format("loaded schedule config has %d flights but loaded pairing list has %d.", scheduleProps.flights,schedule.size()));
-    }
-    int cntTeams = 0;
-    int cntBoats=0;
-    for (Race race : schedule.get(0).races) {
-      cntTeams+=race.teams.length;
-      cntBoats = Math.max(cntBoats,race.teams.length);
-    }
-    if (cntTeams!=scheduleProps.teams.length){
-      throw new RuntimeException(String.format("loaded schedule config has %d teams but loaded pairing list has %d.", scheduleProps.teams.length,cntTeams));
-    }
-    if (cntBoats!=scheduleProps.boats.length){
-      throw new RuntimeException(String.format("loaded schedule config has %d boats but loaded pairing list has %d.", scheduleProps.boats.length,cntBoats));
-    }
+    PdfExport.checkFits(scheduleProps, schedule);
 //      List<String> teams = Arrays.asList(scheduleProps.teams);
 //      Collections.shuffle(teams, new Random(optimizationProps.seed));
 //      scheduleProps.teams = teams.toArray(new String[0]);

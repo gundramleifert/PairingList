@@ -120,6 +120,12 @@ public class Util {
     for (int i = 1; i < schedule.size(); i++) {
       Flight flight1 = schedule.get(i - 1);
       Flight flight2 = schedule.get(i);
+      // A shuttle pair is read off three consecutive races around a flight boundary, so a
+      // flight of a single race - as many teams as boats - has none to offer. Without this
+      // the lookups below run off both ends of the array.
+      if (flight1.races.length < 2 || flight2.races.length < 2) {
+        continue;
+      }
       Race race1 = flight1.races[flight1.races.length - 2];
       Race race2 = flight1.races[flight1.races.length - 1];
       Race race3 = flight2.races[0];
