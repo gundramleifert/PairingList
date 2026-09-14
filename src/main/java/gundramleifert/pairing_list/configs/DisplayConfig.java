@@ -42,8 +42,12 @@ public class DisplayConfig {
 
     @JsonProperty
     public String title;
+    /**
+     * Point size of the table text. <b>Unset means: derived from the size of the event</b>
+     * — see {@link #fontsize(ScheduleConfig)}. Set it to overrule that.
+     */
     @JsonProperty
-    public int fontsize = 10;
+    public Integer fontsize = null;
     @JsonProperty
     public int cell_height = 5;
     @JsonProperty
@@ -88,6 +92,35 @@ public class DisplayConfig {
     @JsonProperty
     public Map<String, int[]> additional_colors = new HashMap<>();
 
+
+    /**
+     * The point size to print at: what was configured, or what an event this size is printed at.
+     * <p>
+     * The default is read off the 43 event directories in this repository — every one of
+     * them a sheet that was printed and sailed by — rather than invented. What decides it
+     * is the number of rows the table has, {@code flights * races per flight}: up to 42
+     * rows 10pt, up to 56 8pt, up to 64 7pt, and 6pt beyond that. A league matchday (16
+     * flights of 3) therefore comes out at 8pt, which is what those events set by hand.
+     * <p>
+     * It used to be a flat 10, which does not fit 48 rows on a page — so every caller had
+     * to know the right size, and each one of them arrived at this same table.
+     */
+    public int fontsize(ScheduleConfig scheduleConfig) {
+        if (fontsize != null) {
+            return fontsize;
+        }
+        int rows = scheduleConfig.flights * scheduleConfig.getRaces();
+        if (rows <= 42) {
+            return 10;
+        }
+        if (rows <= 56) {
+            return 8;
+        }
+        if (rows <= 64) {
+            return 7;
+        }
+        return 6;
+    }
 
     public static class DeviceRgbWithAlpha extends DeviceRgb {
 

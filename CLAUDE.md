@@ -100,8 +100,14 @@ boats:
   - ROT
   ```
   (`events/2023-05-12_DSBL-1/schedule_cfg.yml`).
-* `color`-Werte sind **freie GROSSBUCHSTABEN-Token**, deutsch/englisch gemischt und teils
-  synonym: `PdfCreator.defaultColorMap()` kennt u. a. `BLACK`/`SCHWARZ`, `RED`/`ROT`,
+* **Seit 2026-09 auch Hex:** `#1a2b3c` oder kurz `#abc`, mit oder ohne `#`
+  (`PdfCreator.parseHexColor`). Damit braucht ein Farbwähler keinen Umweg über
+  `additional_colors` mehr. Ein Wert, der **weder** bekannter Name **noch** Hex ist, wird
+  nicht mehr als Fehler abgebrochen, sondern in `headercolor_default` gedruckt — mit einer
+  Warnung auf stdout, die Boot, Wert und die bekannten Namen nennt. Eine Pairing-Liste, die
+  am Morgen einer Veranstaltung ausgegeben wird, darf nicht an einem Farbnamen scheitern.
+* `color`-Werte sind ansonsten **freie GROSSBUCHSTABEN-Token**, deutsch/englisch gemischt und
+  teils synonym: `PdfCreator.defaultColorMap()` kennt u. a. `BLACK`/`SCHWARZ`, `RED`/`ROT`,
   `GREEN`/`GRUEN`, `BLUE`/`BLAU`, `YELLOW`/`GELB`, `GRAY`/`GREY`/`GRAU`, `PINK`/`LILA`,
   `DARKBLUE`/`DUNKELBLAU`, `HELLBLAU`/`LIGHTBLUE`. Im Bestand vorkommend: BLACK, BLAU, BLUE,
   DARKBLUE, DARK_GRAY, GELB, GRAU, GRAY, GREEN, GREY, GRUEN, HELLBLAU, LIGHTBLUE, LILA,
@@ -265,6 +271,13 @@ Reine Optimierer-Steuerung (**für den Import irrelevant**, nur als Kontext):
 * **Nur ein Druck-/Anzeige-Artefakt.** Nicht importieren, nicht zum Index-Dekodieren nutzen.
 
 ### 2.6 `display_cfg.yml`  (`DisplayConfig`) – **nur PDF, für den Import ignorierbar**
+
+**`fontsize` ist seit 2026-09 optional.** Fehlt der Wert, wählt `DisplayConfig.fontsize()`
+ihn aus der Zeilenzahl des Blatts (`flights * getRaces()`): bis 42 Zeilen 10, bis 56 8,
+bis 64 7, darüber 6. Die Tabelle ist an den 43 Event-Verzeichnissen dieses Repos abgelesen —
+ein DSBL-Spieltag (16 × 3 = 48 Zeilen) kommt damit auf 8, genau das, was diese Events von
+Hand gesetzt haben. Vorher war der Default fest 10, womit 48 Zeilen nicht auf eine Seite
+passen; jeder Aufrufer musste die Größe selbst kennen.
 
 Beispiel `events/2026_DSBL-1/display_cfg.yml`: `fontsize`, `tablewidth` (wird ignoriert,
 Java-Feld heißt `width`), `factor_flight_race_width`, `show_match_stat`, `show_boat_stat`,

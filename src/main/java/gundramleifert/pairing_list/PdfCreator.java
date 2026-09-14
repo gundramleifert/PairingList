@@ -25,6 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PdfCreator implements AutoCloseable {
@@ -36,6 +38,39 @@ public class PdfCreator implements AutoCloseable {
     private boolean isEmptyPage = true;
     private DisplayConfig.DeviceRgbWithAlpha[] bgColors;
     private PdfFont font;
+    /** Resolved once in {@link #init(String)}: configured, or derived from the event's size. */
+    private int fontsize;
+
+    /**
+     * A colour written as hex rather than named — {@code #1a2b3c}, or {@code #abc} short,
+     * with or without the {@code #}.
+     * <p>
+     * Boat colours are chosen in colour pickers now, and a picker produces hex. Before
+     * this, such a colour had to be smuggled in as an {@code additional_colors} entry
+     * under an invented upper-case name, which every caller reinvented.
+     */
+    private static final Pattern HEX_COLOR =
+            Pattern.compile("#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})");
+
+    static DisplayConfig.DeviceRgbWithAlpha parseHexColor(String value) {
+        Matcher matcher = HEX_COLOR.matcher(value.trim());
+        if (!matcher.matches()) {
+            return null;
+        }
+        String digits = matcher.group(1);
+        if (digits.length() == 3) {
+            // #abc is #aabbcc, the same shorthand CSS uses.
+            StringBuilder expanded = new StringBuilder(6);
+            for (char digit : digits.toCharArray()) {
+                expanded.append(digit).append(digit);
+            }
+            digits = expanded.toString();
+        }
+        return DisplayConfig.DeviceRgbWithAlpha.fromArray(
+                Integer.parseInt(digits.substring(0, 2), 16),
+                Integer.parseInt(digits.substring(2, 4), 16),
+                Integer.parseInt(digits.substring(4, 6), 16));
+    }
 
     private static Map<String, DisplayConfig.DeviceRgbWithAlpha> createColorMap(DisplayConfig displayConfig) {
         Map<String, DisplayConfig.DeviceRgbWithAlpha> res = defaultColorMap();
@@ -135,6 +170,7 @@ public class PdfCreator implements AutoCloseable {
         documentInfo.setSubject("Pairing List");
         doc.setBottomMargin(10.0f);
         doc.setTopMargin(10.0f);
+        this.fontsize = displayConfig.fontsize(scheduleConfig);
         BoatConfig[] boats = scheduleConfig.boats;
         this.bgColors = new DisplayConfig.DeviceRgbWithAlpha[boats.length];
         Map<String, DisplayConfig.DeviceRgbWithAlpha> colorMap = createColorMap(displayConfig);
@@ -144,8 +180,28 @@ public class PdfCreator implements AutoCloseable {
                 color_bg = displayConfig.headercolor_default;
             DisplayConfig.DeviceRgbWithAlpha color = colorMap.get(color_bg.toUpperCase());
             if (color == null) {
-                throw new RuntimeException(String.format("cannot interpret key `%s` - choose one of %s",
-                        color_bg,
+                // A named colour it does not know may still be a hex one, which is what a
+                // colour picker produces.
+                color = parseHexColor(color_bg);
+            }
+            if (color == null) {
+                // Neither a known name nor hex. Print it in the default colour and say so,
+                // rather than refusing to produce the sheet at all: this list is what a
+                // race committee hands out on the morning of an event, and one boat in the
+                // wrong colour is a far smaller problem than no list. The warning is on
+                // stdout so a command-line run sees it too.
+                System.out.printf(
+                        "WARNING: boat %d has colour `%s`, which is neither a known name "
+                                + "nor #rrggbb - printing it as %s. Known names: %s%n",
+                        i + 1, color_bg, displayConfig.headercolor_default,
+                        String.join(",", colorMap.keySet()));
+                color = colorMap.get(displayConfig.headercolor_default.toUpperCase());
+            }
+            if (color == null) {
+                // The *default* being unusable is a configuration error worth failing on.
+                throw new RuntimeException(String.format(
+                        "cannot interpret headercolor_default `%s` - use #rrggbb, or one of %s",
+                        displayConfig.headercolor_default,
                         String.join(",", colorMap.keySet())));
             }
             bgColors[i] = color;
@@ -156,7 +212,7 @@ public class PdfCreator implements AutoCloseable {
     private Cell getDft(int row, int col) {
         return new Cell(row, col)
                 .setPadding(0.0f)
-                .setFontSize(displayConfig.fontsize);
+                .setFontSize(fontsize);
     }
     
     private Cell getCell(String text, int row, int col) {
@@ -500,12 +556,12 @@ public class PdfCreator implements AutoCloseable {
             }
         }
         doc.add(new Paragraph(new Text(title).setFont(font))
-                .setFontSize(displayConfig.fontsize * 2)
+                .setFontSize(fontsize * 2)
                 .setTextAlignment(TextAlignment.CENTER)
         );
         if (teamIndex >= 0) {
             doc.add(new Paragraph(new Text(scheduleConfig.teams[teamIndex]).setFont(font))
-                    .setFontSize(displayConfig.fontsize * 1.5f)
+                    .setFontSize(fontsize * 1.5f)
                     .setTextAlignment(TextAlignment.CENTER)
             );
         }
