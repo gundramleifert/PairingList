@@ -51,3 +51,5 @@ application-*.properties
 application-*.yml
 !application.properties
 !application.yml
+# Windows download markers, created beside any file fetched with a browser.
+*:Zone.Identifier
