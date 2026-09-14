@@ -90,6 +90,14 @@ public class PdfExport {
     titleOption.setRequired(false);
     options.addOption(titleOption);
 
+    Option teamOption = new Option(
+            "team",
+            "team_index",
+            true,
+            "if given, render only this team's page (0-based index into the teams of the schedule configuration)");
+    teamOption.setRequired(false);
+    options.addOption(teamOption);
+
     Option debugOption = new Option(
             "d",
             "debug",
@@ -118,8 +126,13 @@ public class PdfExport {
     String title = cmd.getOptionValue(titleOption, defaultTitle(scheduleProps));
     File out = new File(cmd.getOptionValue(outPdf, "pairing_list.pdf"));
 
-    new PdfCreator(displayProps, scheduleProps, out)
-            .create(schedule, title, new Random(SHUTTLE_SEED), cmd.hasOption(debugOption));
+    PdfCreator creator = new PdfCreator(displayProps, scheduleProps, out);
+    if (cmd.hasOption(teamOption)) {
+      byte team = parseTeam(cmd.getOptionValue(teamOption), scheduleProps);
+      creator.createForTeam(schedule, title, team, new Random(SHUTTLE_SEED));
+    } else {
+      creator.create(schedule, title, new Random(SHUTTLE_SEED), cmd.hasOption(debugOption));
+    }
     System.out.printf("wrote %s%n", out.getAbsolutePath());
   }
 
@@ -146,6 +159,29 @@ public class PdfExport {
       return scheduleProps.titles[0];
     }
     return "Pairing List";
+  }
+
+  /**
+   * The index of the team to render, checked against the list it indexes.
+   * <p>
+   * An index out of range would otherwise reach {@code teams[i]} and fail as an
+   * ArrayIndexOutOfBounds somewhere in the layout, which says nothing about the argument
+   * that caused it. Padding seats of an unevenly divided fleet are refused too: they carry
+   * no name and no crew.
+   */
+  private static byte parseTeam(String value, ScheduleConfig scheduleProps) {
+    int index;
+    try {
+      index = Integer.parseInt(value.trim());
+    } catch (NumberFormatException e) {
+      throw new RuntimeException(String.format("team index `%s` is not a number.", value));
+    }
+    if (index < 0 || index >= scheduleProps.numTeams) {
+      throw new RuntimeException(String.format(
+              "team index %d is outside the %d teams of the schedule configuration.",
+              index, scheduleProps.numTeams));
+    }
+    return (byte) index;
   }
 
   /**

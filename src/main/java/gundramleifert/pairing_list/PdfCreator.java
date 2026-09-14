@@ -313,6 +313,20 @@ public class PdfCreator implements AutoCloseable {
         close();
     }
 
+    /**
+     * One team's page and nothing else — the sheet a single crew takes to its boat.
+     * <p>
+     * {@link #create} renders the overview plus a page for everybody; a crew that wants
+     * its own races marked would have to find its page in eighteen. Same page as the one
+     * {@code create} produces for that team, including the teams it shares a shuttle with,
+     * because the same seed decides those pairs.
+     */
+    public void createForTeam(Schedule schedule, String title, byte teamIndex, Random random) {
+        init();
+        createSchedule(schedule, title, teamIndex, Util.teamsOnSameShuttles(schedule, random));
+        close();
+    }
+
     public PdfCreator createBoatDistribution(Schedule schedule) {
         newPage(false);
         BoatMatrix matchMatrix = new BoatMatrix(scheduleConfig);
