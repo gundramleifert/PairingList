@@ -1,0 +1,34 @@
+# FISU World University Championship Sailing 2026, Croatia.
+# From "Pairing List Croatia.xlsx": 15 nations, 5 boats, "20 flights over 4 days of
+# racing with 3 races in each". Teams are the IOC-style country codes the sheet lists
+# beside each nation.
+flights: 20
+titles:
+  - "Pairing List - FISU World University Championship Sailing"
+teams:
+  - AUS
+  - AUT
+  - CAN
+  - CRO
+  - CZE
+  - GER
+  - HUN
+  - ITA
+  - JPN
+  - MAS
+  - NOR
+  - POL
+  - SGP
+  - KOR
+  - ESP
+boats:
+  - color: GRAU
+    name: Boat 1
+  - color: GRAU
+    name: Boat 2
+  - color: GRAU
+    name: Boat 3
+  - color: GRAU
+    name: Boat 4
+  - color: GRAU
+    name: Boat 5
