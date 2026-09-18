@@ -1,0 +1,48 @@
+# SAILING Champions League Final 2026, Kiel.
+# From "Pairing List SCL Final 2026 Kiel.xlsx": 24 clubs on six J/70. The sheet names
+# the boats but gives neither colours nor a flight count; both are taken from the 2025
+# final in Kiel (2025-07-11_SCL-Kiel): 16 flights, and the colour each boat number had
+# there. Teams are the sheet's club codes in its order. It lists YCG twice — Yacht Club
+# Granville (FRA) and Yacht Club Gdansk (POL) — so both carry their country, the way the
+# sheet itself writes BYC (AUT) and BYC (GER).
+flights: 16
+titles:
+  - "SAILING Champions League Final 2026 - Kiel"
+teams:
+  - DSS
+  - BYC (AUT)
+  - KBL
+  - KDY
+  - SYC
+  - ÅSS
+  - APCC
+  - YCG (FRA)
+  - BYC (GER)
+  - MSC
+  - NRV
+  - RS280
+  - CNC
+  - WSV
+  - WSVG
+  - KNS
+  - TS
+  - HRM
+  - YCG (POL)
+  - CNV
+  - ScStä
+  - GKSS
+  - BSC
+  - SFYC
+boats:
+  - color: BLACK
+    name: "J/70 - 01"
+  - color: GREEN
+    name: "J/70 - 02"
+  - color: BLUE
+    name: "J/70 - 03"
+  - color: RED
+    name: "J/70 - 04"
+  - color: GRAY
+    name: "J/70 - 05"
+  - color: ORANGE
+    name: "J/70 - 06"
